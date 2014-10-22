@@ -56,6 +56,7 @@ def tiq2npy(filename, nframes, lframes, sframes):
         log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
 
         global_counter = start_nbytes              # reset the global counter
+        f.read(start_nbytes)                       # move the pointer
         ba = f.read(4)
         global_counter += 4
         
@@ -91,7 +92,7 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
     parser.add_argument("-n", "--nframes", nargs = '?', type=int, const = 10, help = "Number of frames, default is 10.")
     parser.add_argument("-l", "--lframes", nargs = '?', type=int, const = 1024, help = "Length of frames, default is 1024.")
-    parser.add_argument("-s", "--sframes", nargs = '?', type=int, const = 1024, help = "Starting frame, default is 1.")
+    parser.add_argument("-s", "--sframes", nargs = '?', type=int, const = 1, help = "Starting frame, default is 1.")
     
     args = parser.parse_args()
     if args.verbose:
