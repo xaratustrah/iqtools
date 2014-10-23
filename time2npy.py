@@ -70,6 +70,7 @@ def tiq2npy(filename, nframes, lframes, sframes):
     dic = {'center': center, 'span': span, 'fs': fs, 'data': ar}
     np.save(filename_wo_ext + '.npy', dic)
     # in order to read use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
+    return ar
 
 
 import argparse
