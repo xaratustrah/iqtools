@@ -5,17 +5,18 @@ This code converts data in TIQ format and extracts the data in numpy format
 """
 
 import os, sys
-from xml.dom import minidom
 import xml.etree.ElementTree as et
 import numpy as np
-import matplotlib.pyplot as plt
+import argparse
+import logging as log
 
 verbose = False
 
-def tiq2npy(filename, nframes, lframes, sframes):
+def tiq2npy(filename, nframes = 10, lframes = 1024, sframes = 1):
     """
-    Process the input file and return.
+    Process the input file and return a numpy array.
     """
+    
     filesize = os.path.getsize(filename)
     log.info("File size is {} bytes.".format(filesize))
     filename_wo_ext = os.path.splitext(filename)[0]
@@ -72,9 +73,6 @@ def tiq2npy(filename, nframes, lframes, sframes):
     # in order to read use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
     return ar
 
-
-import argparse
-import logging as log
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
