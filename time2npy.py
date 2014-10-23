@@ -62,10 +62,10 @@ def tiq2npy(filename, nframes, lframes, sframes):
         Q = int.from_bytes(ba[i+4:i+8], byteorder = 'little')
         ar = np.append(ar, scale * complex(I, Q))
         if verbose :
-            sys.stdout.write('\rProgress: ' + str(int(i*100/len(ba)))+'%')
+            sys.stdout.write('\rProgress: ' + str(int(i*100/len(ba)+1))+'% ')
             sys.stdout.flush()
 
-    if verbose : print('\n')
+    if verbose : print('Done.\n')
     log.info("Output complex array has a size of {}.".format(ar.size))
     dic = {'center': center, 'span': span, 'fs': fs, 'data': ar}
     np.save(filename_wo_ext + '.npy', dic)
