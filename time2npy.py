@@ -68,10 +68,10 @@ def tiq2npy(filename, nframes = 10, lframes = 1024, sframes = 1):
 
     if verbose : print('Done.\n')
     log.info("Output complex array has a size of {}.".format(ar.size))
-    dic = {'center': center, 'span': span, 'fs': fs, 'data': ar}
+    dic = {'center': center, 'span': span, 'fs': fs, 'lframes': lframes, 'data': ar}
     np.save(filename_wo_ext + '.npy', dic)
     # in order to read use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
-    return ar
+    return dic
 
 
 if __name__ == "__main__":
