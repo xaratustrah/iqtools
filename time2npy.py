@@ -57,21 +57,15 @@ def tiq2npy(filename, nframes = 10, lframes = 1024, sframes = 1):
         f.seek(data_offset + start_nbytes)
         ba = f.read(total_nbytes)
 
-    ar = np.array([], dtype=complex)
-    for i in range (0, len(ba), 8):
-        I = int.from_bytes(ba[i:i+4], byteorder = 'little')
-        Q = int.from_bytes(ba[i+4:i+8], byteorder = 'little')
-        ar = np.append(ar, scale * complex(I, Q))
-        if verbose :
-            sys.stdout.write('\rProgress: ' + str(int(i*100/len(ba)+1))+'% ')
-            sys.stdout.flush()
+    ar = np.fromstring(ba, dtype='<i4') # little endian 4 byte ints.
+    ar = ar * scale  # return a numpy array of little endian 8 byte floats (known as doubles)
+    ar = ar.view(dtype='c16')  # reinterpret the bytes as a 16 byte complex number, which consists of 2 doubles.
 
-    if verbose : print('Done.\n')
     log.info("Output complex array has a size of {}.".format(ar.size))
     dic = {'center': center, 'span': span, 'fs': fs, 'lframes': lframes, 'data': ar}
     np.save(filename_wo_ext + '.npy', dic)
-    # in order to read use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
-    return dic
+
+    return dic     # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
 
 
 if __name__ == "__main__":
@@ -94,4 +88,3 @@ if __name__ == "__main__":
     log.info("File {} passed for processing.".format(args.filename))
     
     tiq2npy(args.filename, nframes, lframes, sframes)
-
