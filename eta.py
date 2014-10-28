@@ -9,7 +9,7 @@ import os
 import numpy as np
 from pylab import psd
 import matplotlib.pyplot as plt
-from time2npy import *
+from tiq_read import *
 
 def do_it(filename):
 
