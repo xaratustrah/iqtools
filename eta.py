@@ -9,7 +9,7 @@ import os
 import numpy as np
 from pylab import psd
 import matplotlib.pyplot as plt
-from read_tiq import *
+from iqtools import *
 
 def do_it(filename):
 
