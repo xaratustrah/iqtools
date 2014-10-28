@@ -2,6 +2,8 @@
 
 """
 This code converts data in TIQ format and extracts the data in numpy format
+
+xaratustrah oct-2014
 """
 
 import os, sys
