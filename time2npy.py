@@ -12,14 +12,36 @@ import logging as log
 
 verbose = False
 
-def tiq2npy(filename, nframes = 10, lframes = 1024, sframes = 1):
+def filename_wo_ext(filename):
     """
-    Process the input file and return a numpy array.
+    Extracts the filename base
+    """
+    return os.path.splitext(filename)[0]
+    
+
+def save_header(filename, ba):
+    """
+    Saves the header bytearray into a txt tile.
+    """
+    with open (filename_wo_ext(filename) + '.xml', 'wb') as f3 : 
+        f3.write(ba)
+    log.info("Header saved in an xml file.")
+
+
+def save_data(filename, dic):
+    """
+    Saves the dictionary to a numpy file
+    """
+    np.save(filename_wo_ext(filename) + '.npy', dic)
+
+
+def read_tiq(filename, nframes = 10, lframes = 1024, sframes = 1):
+    """
+    Process the tiq input file
     """
     
     filesize = os.path.getsize(filename)
     log.info("File size is {} bytes.".format(filesize))
-    filename_wo_ext = os.path.splitext(filename)[0]
     
     with open (filename) as f:
         line = f.readline()
@@ -41,17 +63,16 @@ def tiq2npy(filename, nframes = 10, lframes = 1024, sframes = 1):
     log.info("Center {0} Hz, span {1} Hz, sampling frequency {2} scale factor {3}.".format(center, span, fs, scale))
     log.info("Header size {} bytes.".format(data_offset))
 
-    with open (filename_wo_ext + '.xml', 'wb') as f3 : 
-        f3.write(ba)
-    log.info("Header saved in an xml file.")
-        
+    log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
     total_nbytes = 8 * nframes * lframes # 8 comes from 2 times 4 byte integer for I and Q
     start_nbytes = 8 * (sframes - 1 ) * lframes
-    log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
-    log.info("Total number of frames: {0} = {1}s".format((filesize-data_offset)/8/lframes, (filesize-data_offset)/8/fs))
+    nframes_tot = int((filesize-data_offset)/8/lframes)
+    log.info("Total number of frames: {0} = {1}s".format(nframes_tot, (filesize-data_offset)/8/fs))
     log.info("Frame length: {0} data points = {1}s".format(lframes, lframes/fs))
     log.info("Frame offset: {0} = {1}s".format(sframes, start_nbytes/fs))
     log.info("Reading {0} frames = {1}s.".format(nframes, total_nbytes/fs))
+
+    header = ba
 
     with open (filename, 'rb') as f:
         f.seek(data_offset + start_nbytes)
@@ -61,11 +82,11 @@ def tiq2npy(filename, nframes = 10, lframes = 1024, sframes = 1):
     ar = ar * scale  # return a numpy array of little endian 8 byte floats (known as doubles)
     ar = ar.view(dtype='c16')  # reinterpret the bytes as a 16 byte complex number, which consists of 2 doubles.
 
-    log.info("Output complex array has a size of {}.".format(ar.size))
-    dic = {'center': center, 'span': span, 'fs': fs, 'lframes': lframes, 'data': ar}
-    np.save(filename_wo_ext + '.npy', dic)
 
-    return dic     # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
+    log.info("Output complex array has a size of {}.".format(ar.size))
+    dic = {'center': center, 'span': span, 'fs': fs, 'lframes': lframes, 'data': ar, 'nframes_tot': nframes_tot}
+
+    return dic, header     # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
 
 
 if __name__ == "__main__":
@@ -87,4 +108,7 @@ if __name__ == "__main__":
     
     log.info("File {} passed for processing.".format(args.filename))
     
-    tiq2npy(args.filename, nframes, lframes, sframes)
+    dic, header = read_tiq(args.filename, nframes, lframes, sframes)
+    save_header (args.filename, header)
+    save_data (args.filename, dic)
+    
