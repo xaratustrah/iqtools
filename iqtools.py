@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-This code converts data in TIQ format and extracts the data in numpy format
+Collection of tools for dealing with IQ data. This code converts data in TIQ
+format and extracts the data in numpy format
 
 xaratustrah oct-2014
 """
@@ -41,7 +42,6 @@ def read_tiq(filename, nframes = 10, lframes = 1024, sframes = 1):
     """
     Process the tiq input file
     """
-    
     filesize = os.path.getsize(filename)
     log.info("File size is {} bytes.".format(filesize))
     
