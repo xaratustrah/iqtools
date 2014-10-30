@@ -9,11 +9,43 @@ xaratustrah oct-2014
 
 import os, sys
 import xml.etree.ElementTree as et
+import matplotlib.pyplot as plt
+from scipy.signal import hilbert
 import numpy as np
 import argparse
 import logging as log
+from scipy.io import wavfile
+
 
 verbose = False
+
+
+def plot_hilbert(x):
+    """Show Hilbert plot"""
+
+    y = hilbert(x)
+    I = np.real(x)
+    Q = np.imag(x)
+    plt.plot(I, Q)
+    plt.grid(True)
+    plt.xlabel('Real Part')
+    plt.ylabel('Imag Part')
+    return I, Q
+
+
+def plot_fft(x, fs, c):
+    """ Plots the fft of a power signal """
+    
+    n = x.size
+    ts = 1.0/fs
+    f = np.fft.fftfreq(n, ts) + c
+    y = np.fft.fft(x)/n
+    plt.plot(f, 10*np.log10(pow(abs(y),2)), '.')
+    plt.xlabel("Frequency [Hz]")
+    plt.ylabel("Power Spectral Density [dB/Hz]")
+    plt.grid(True)
+    return f, y
+
 
 def filename_wo_ext(filename):
     """
@@ -36,6 +68,11 @@ def save_data(filename, dic):
     Saves the dictionary to a numpy file
     """
     np.save(filename_wo_ext(filename) + '.npy', dic)
+
+
+def save_audio(filename, afs, na):
+    """ Save the singal as an audio wave """
+    wavfile.write(filename_wo_ext(filename) + '.wav', afs, abs(na))
 
 
 def read_tiq(filename, nframes = 10, lframes = 1024, sframes = 1):
