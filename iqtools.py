@@ -7,21 +7,32 @@ format and extracts the data in numpy format
 xaratustrah oct-2014
 """
 
-import os, sys
+import os, sys, argparse
 import xml.etree.ElementTree as et
 import matplotlib.pyplot as plt
-from scipy.signal import hilbert
 import numpy as np
-import argparse
 import logging as log
+from scipy.signal import hilbert
 from scipy.io import wavfile
 
 
 verbose = False
 
 
+def make_signal(f, fs, l = 1, nharm = 0, noise = True):
+    """Make a sine signal with/without noise."""
+    
+    t = np.arange(0, l, 1/fs)
+    x = np.zeros(len(t))
+    for i in range(nharm + 2):
+        x += np.sin (2 * np.pi * i * f * t)
+        
+    if noise: x += np.random.normal(0, 1, len(t))
+    return t, x
+
+
 def plot_hilbert(x):
-    """Show Hilbert plot"""
+    """Show Hilbert plot."""
 
     y = hilbert(x)
     I = np.real(x)
@@ -34,7 +45,7 @@ def plot_hilbert(x):
 
 
 def plot_fft(x, fs, c):
-    """ Plots the fft of a power signal """
+    """ Plots the fft of a power signal."""
     
     n = x.size
     ts = 1.0/fs
@@ -48,37 +59,34 @@ def plot_fft(x, fs, c):
 
 
 def filename_wo_ext(filename):
-    """
-    Extracts the filename base
-    """
+    """Extracts the filename base"""
+    
     return os.path.splitext(filename)[0]
     
 
 def save_header(filename, ba):
-    """
-    Saves the header bytearray into a txt tile.
-    """
+    """Saves the header bytearray into a txt tile."""
+    
     with open (filename_wo_ext(filename) + '.xml', 'wb') as f3 : 
         f3.write(ba)
     log.info("Header saved in an xml file.")
 
 
 def save_data(filename, dic):
-    """
-    Saves the dictionary to a numpy file
-    """
+    """Saves the dictionary to a numpy file."""
+    
     np.save(filename_wo_ext(filename) + '.npy', dic)
 
 
 def save_audio(filename, afs, na):
     """ Save the singal as an audio wave """
+
     wavfile.write(filename_wo_ext(filename) + '.wav', afs, abs(na))
 
 
 def read_tiq(filename, nframes = 10, lframes = 1024, sframes = 1):
-    """
-    Process the tiq input file
-    """
+    """Process the tiq input file."""
+    
     filesize = os.path.getsize(filename)
     log.info("File size is {} bytes.".format(filesize))
     
