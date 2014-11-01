@@ -35,8 +35,8 @@ def plot_hilbert(x):
     """Show Hilbert plot."""
 
     y = hilbert(x)
-    I = np.real(x)
-    Q = np.imag(x)
+    I = np.real(y)
+    Q = np.imag(y)
     plt.plot(I, Q)
     plt.grid(True)
     plt.xlabel('Real Part')
