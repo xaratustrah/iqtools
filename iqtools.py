@@ -30,18 +30,23 @@ def make_signal(f, fs, l = 1, nharm = 0, noise = True):
     if noise: x += np.random.normal(0, 1, len(t))
     return t, x
 
-
-def plot_hilbert(x):
-    """Show Hilbert plot."""
-
-    y = hilbert(x)
+def make_analytical(x):
+    """Make an analitical signal from the real signal"""
+    
+    y= hilbert(x)
     I = np.real(y)
     Q = np.imag(y)
-    plt.plot(I, Q)
+    xbar = np.vectorize(complex)(I,Q)
+    ins_ph = np.angle(xbar)*180/np.pi
+    return xbar, ins_ph
+
+def plot_hilbert(xbar):
+    """Show Hilbert plot."""
+
+    plt.plot(np.real(xbar), np.imag(xbar))
     plt.grid(True)
     plt.xlabel('Real Part')
     plt.ylabel('Imag Part')
-    return I, Q
 
 
 def plot_fft(x, fs, c):
