@@ -145,22 +145,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", type=str, help = "Name of the input file.")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
-    parser.add_argument("-n", "--nframes", nargs = '?', type=int, const = 10, help = "Number of frames, default is 10.")
-    parser.add_argument("-l", "--lframes", nargs = '?', type=int, const = 1024, help = "Length of frames, default is 1024.")
-    parser.add_argument("-s", "--sframes", nargs = '?', type=int, const = 1, help = "Starting frame, default is 1.")
+    parser.add_argument("-n", "--nframes", nargs = '?', type=int, const = 10, default = 10, help = "Number of frames, default is 10.")
+    parser.add_argument("-l", "--lframes", nargs = '?', type=int, const = 1024, default = 1024, help = "Length of frames, default is 1024.")
+    parser.add_argument("-s", "--sframes", nargs = '?', type=int, const = 1, default = 1, help = "Starting frame, default is 1.")
     
     args = parser.parse_args()
     if args.verbose:
         log.basicConfig(level=log.DEBUG)
         verbose = True
         
-    nframes = 10 if not args.nframes else args.nframes
-    lframes = 1024 if not args.lframes else args.lframes
-    sframes = 1 if not args.sframes else args.sframes
-    
     log.info("File {} passed for processing.".format(args.filename))
     
-    dic, header = read_tiq(args.filename, nframes, lframes, sframes)
+    dic, header = read_tiq(args.filename, args.nframes, args.lframes, args.sframes)
     save_header (args.filename, header)
     save_data (args.filename, dic)
     
