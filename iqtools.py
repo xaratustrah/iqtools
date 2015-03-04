@@ -5,6 +5,7 @@ Collection of tools for dealing with IQ data. This code converts data in TIQ
 format and extracts the data in numpy format
 
 xaratustrah oct-2014
+            mar-2015
 """
 
 import os, argparse
@@ -33,20 +34,20 @@ def make_signal(f, fs, l=1, nharm=0, noise=True):
 
 
 def make_analytical(x):
-    """Make an analitical signal from the real signal"""
+    """Make an analytical signal from the real signal"""
 
     y = hilbert(x)
     I = np.real(y)
     Q = np.imag(y)
-    xbar = np.vectorize(complex)(I, Q)
-    ins_ph = np.angle(xbar) * 180 / np.pi
-    return xbar, ins_ph
+    x_bar = np.vectorize(complex)(I, Q)
+    ins_ph = np.angle(x_bar) * 180 / np.pi
+    return x_bar, ins_ph
 
 
-def plot_hilbert(xbar):
+def plot_hilbert(x_bar):
     """Show Hilbert plot."""
 
-    plt.plot(np.real(xbar), np.imag(xbar))
+    plt.plot(np.real(x_bar), np.imag(x_bar))
     plt.grid(True)
     plt.xlabel('Real Part')
     plt.ylabel('Imag Part')
@@ -92,6 +93,14 @@ def save_audio(filename, afs, na):
     """ Save the singal as an audio wave """
 
     wavfile.write(filename_wo_ext(filename) + '.wav', afs, abs(na))
+
+
+def get_dbm(watt):
+    return 10 * np.log10(watt * 1000)
+
+
+def get_watt(dbm):
+    return 10 ** (dbm / 10) / 1000
 
 
 def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
