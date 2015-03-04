@@ -16,6 +16,7 @@ import numpy as np
 import logging as log
 from scipy.signal import hilbert
 from scipy.io import wavfile
+from pylab import psd
 
 
 verbose = False
@@ -36,10 +37,10 @@ def make_signal(f, fs, l=1, nharm=0, noise=True):
 def make_analytical(x):
     """Make an analytical signal from the real signal"""
 
-    y = hilbert(x)
-    I = np.real(y)
-    Q = np.imag(y)
-    x_bar = np.vectorize(complex)(I, Q)
+    yy = hilbert(x)
+    ii = np.real(yy)
+    qq = np.imag(yy)
+    x_bar = np.vectorize(complex)(ii, qq)
     ins_ph = np.angle(x_bar) * 180 / np.pi
     return x_bar, ins_ph
 
@@ -50,23 +51,45 @@ def plot_hilbert(x_bar):
     plt.plot(np.real(x_bar), np.imag(x_bar))
     plt.grid(True)
     plt.xlabel('Real Part')
-    plt.ylabel('Imag Part')
+    plt.ylabel('Imag. Part')
 
 
-def plot_fft(x, fs, c, filename=None):
+def channel_power(f, p):
+    """ Return total power in band in dBm
+    """
+    return get_dbm(np.trapz(p, x=f))
+
+
+def plot_fft(x, fs, c, filename='', plot=False):
     """ Plots the fft of a power signal."""
 
     n = x.size
     ts = 1.0 / fs
     f = np.fft.fftfreq(n, ts) + c
-    y = np.fft.fft(x) / n
-    plt.plot(f, 10 * np.log10(pow(abs(y), 2)), ',')
+    v_peak_iq = np.fft.fft(x) / n
+    v_rms = abs(v_peak_iq) / np.sqrt(2)
+    p_avg = v_rms ** 2 / 50
+    p_avg_dbm = get_dbm(p_avg)
+    plt.plot(f, p_avg_dbm, '.')
     plt.xlabel("Frequency [Hz]")
+    plt.title(filename)
+    plt.ylabel("Power Spectral Density [dBm/Hz]")
+    plt.grid(True)
+    if plot:
+        plt.savefig(filename + '.pdf')
+    return f, v_peak_iq, p_avg
+
+
+def plot_psd(x, fs, filename, plot=False):
+    Pxx1, freqs1 = psd(x, NFFT=1024, Fs=fs, noverlap=0)
+    # plt.plot(freqs1, Pxx1, 'r-')
+    plt.xlabel("Frequency [Hz]")
+    plt.title(filename)
     plt.ylabel("Power Spectral Density [dB/Hz]")
     plt.grid(True)
-    if filename:
+    if plot:
         plt.savefig(filename + '.pdf')
-    return f, y
+    return freqs1, Pxx1
 
 
 def filename_wo_ext(filename):
@@ -109,6 +132,7 @@ def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
 
     AcquisitionBandwidth
     Frequency
+    File name
     Data I and Q [Unit is Volt]
     Data_offset
     DateTime
@@ -169,23 +193,26 @@ def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
         f.seek(data_offset + start_nbytes)
         ba = f.read(total_nbytes)
 
+    # return a numpy array of little endian 8 byte floats (known as doubles)
     ar = np.fromstring(ba, dtype='<i4')  # little endian 4 byte ints.
-    ar = ar * scale  # return a numpy array of little endian 8 byte floats (known as doubles) Augmented assigment does not work here.
+    ar = ar * scale  # Scale to retreive value in Volts. Augmented assigment does not work here.
     ar = ar.view(dtype='c16')  # reinterpret the bytes as a 16 byte complex number, which consists of 2 doubles.
 
     log.info("Output complex array has a size of {}.".format(ar.size))
-    dic = {'center': center, 'number_samples': number_samples, 'fs': fs, 'lframes': lframes, 'data': ar,
-           'nframes_tot': nframes_tot, 'DataTime': date_time, 'rf_att': rf_att, 'span': span, 'acq_bw': acq_bw}
+    dictt = {'center': center, 'number_samples': number_samples, 'fs': fs, 'lframes': lframes, 'data': ar,
+             'nframes_tot': nframes_tot, 'DataTime': date_time, 'rf_att': rf_att, 'span': span, 'acq_bw': acq_bw,
+             'file_name': filename}
 
     # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
-    return dic, head
+    return dictt, head
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", type=str, help="Name of the input file.")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
-    parser.add_argument("-p", "--plot", help="Plot FFT to file.", action="store_true")
+    parser.add_argument("-f", "--fft", help="Plot FFT to file.", action="store_true")
+    parser.add_argument("-p", "--psd", help="Plot PSD to file.", action="store_true")
     parser.add_argument("-x", "--xml", help="Write XML header to file.", action="store_true")
     parser.add_argument("-y", "--npy", help="Write dic to NPY file.", action="store_true")
     parser.add_argument("-n", "--nframes", nargs='?', type=int, const=10, default=10,
@@ -204,9 +231,13 @@ if __name__ == "__main__":
 
     dic, header = read_tiq(args.filename, args.nframes, args.lframes, args.sframes)
 
-    if args.plot:
+    if args.fft:
         log.info('Generating FFT plot.')
-        plot_fft(dic['data'], dic['fs'], dic['center'], filename_wo_ext(args.filename))
+        plot_fft(dic['data'], dic['fs'], dic['center'], filename_wo_ext(args.filename) + '_fft', True)
+
+    if args.psd:
+        log.info('Generating PSD plot.')
+        plot_psd(dic['data'], dic['fs'], filename_wo_ext(args.filename) + '_psd', True)
 
     if args.xml:
         log.info('Saving header into xml file.')
@@ -216,6 +247,6 @@ if __name__ == "__main__":
         log.info('Saving data dictionary in numpy format.')
         save_data(filename_wo_ext(args.filename), dic)
 
-    if not args.plot and not args.xml and not args.npy:
+    if not args.psd and not args.fft and not args.xml and not args.npy:
         log.info('No other options provided, so printing the dictionary screen.')
         pprint(dic)
