@@ -54,10 +54,11 @@ def plot_hilbert(x_bar):
     plt.ylabel('Imag. Part')
 
 
-def channel_power(f, p):
+def channel_power_dbm(f, p_avg):
     """ Return total power in band in dBm
+    Input: average power in Watts
     """
-    return get_dbm(np.trapz(p, x=f))
+    return get_dbm(np.trapz(p_avg, x=f))
 
 
 def plot_fft(x, fs, c, filename='', plot=False):
@@ -69,7 +70,7 @@ def plot_fft(x, fs, c, filename='', plot=False):
     v_peak_iq = np.fft.fft(x) / n
     v_rms = abs(v_peak_iq) / np.sqrt(2)
     p_avg = v_rms ** 2 / 50
-    p_avg_dbm = get_dbm(p_avg)
+    p_avg_dbm = 10 * np.log10(p_avg * 1000)
     plt.plot(f, p_avg_dbm, '.')
     plt.xlabel("Frequency [Hz]")
     plt.title(filename)
@@ -80,16 +81,15 @@ def plot_fft(x, fs, c, filename='', plot=False):
     return f, v_peak_iq, p_avg
 
 
-def plot_psd(x, fs, filename, plot=False):
-    Pxx1, freqs1 = psd(x, NFFT=1024, Fs=fs, noverlap=0)
-    # plt.plot(freqs1, Pxx1, 'r-')
+def plot_pwelch(x, fs, filename='', plot=False):
+    p_avg, f = psd(x, NFFT=1024, Fs=fs, noverlap=0)
     plt.xlabel("Frequency [Hz]")
     plt.title(filename)
     plt.ylabel("Power Spectral Density [dB/Hz]")
     plt.grid(True)
     if plot:
         plt.savefig(filename + '.pdf')
-    return freqs1, Pxx1
+    return f, p_avg
 
 
 def filename_wo_ext(filename):
@@ -154,25 +154,27 @@ def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
     with open(filename, 'rb') as f:
         ba = f.read(data_offset)
 
-    xml_tree = et.fromstring(ba)
+    xml_tree_root = et.fromstring(ba)
 
-    for elem in xml_tree.iter(tag='{http://www.tektronix.com}AcquisitionBandwidth'):
+    for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}AcquisitionBandwidth'):
         acq_bw = float(elem.text)
-    for elem in xml_tree.iter(tag='{http://www.tektronix.com}Frequency'):
+    for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}Frequency'):
         center = float(elem.text)
-    for elem in xml_tree.iter(tag='{http://www.tektronix.com}DateTime'):
+    for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}DateTime'):
         date_time = str(elem.text)
-    for elem in xml_tree.iter(tag='{http://www.tektronix.com}NumberSamples'):
+    for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}NumberSamples'):
         number_samples = str(elem.text)
-    # RBW
-    for elem in xml_tree.iter(tag='{http://www.tektronix.com}RFAttenuation'):
+    for elem in xml_tree_root.iter('NumericParameter'):
+        if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'rbw':
+            rbw = float(elem.find('Value').text)
+    for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}RFAttenuation'):
         rf_att = float(elem.text)
-    for elem in xml_tree.iter(tag='{http://www.tektronix.com}SamplingFrequency'):
+    for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}SamplingFrequency'):
         fs = float(elem.text)
-    # for elem in xml_tree.iter(tag='{http://www.tektronix.com}MaxSpan'):
-    # span = float(elem.text)
-    span = 0
-    for elem in xml_tree.iter(tag='{http://www.tektronix.com}Scaling'):
+    for elem in xml_tree_root.iter('NumericParameter'):
+        if 'name' in elem.attrib and elem.attrib['name'] == 'Span' and elem.attrib['pid'] == 'globalrange':
+            span = float(elem.find('Value').text)
+    for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}Scaling'):
         scale = float(elem.text)
 
     log.info("Center {0} Hz, span {1} Hz, sampling frequency {2} scale factor {3}.".format(center, span, fs, scale))
@@ -199,28 +201,29 @@ def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
     ar = ar.view(dtype='c16')  # reinterpret the bytes as a 16 byte complex number, which consists of 2 doubles.
 
     log.info("Output complex array has a size of {}.".format(ar.size))
-    dictt = {'center': center, 'number_samples': number_samples, 'fs': fs, 'lframes': lframes, 'data': ar,
-             'nframes_tot': nframes_tot, 'DataTime': date_time, 'rf_att': rf_att, 'span': span, 'acq_bw': acq_bw,
-             'file_name': filename}
+    dict_local = {'center': center, 'number_samples': number_samples, 'fs': fs, 'lframes': lframes, 'data': ar,
+                  'nframes_tot': nframes_tot, 'DataTime': date_time, 'rf_att': rf_att, 'span': span, 'acq_bw': acq_bw,
+                  'file_name': filename, 'rbw': rbw}
 
     # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
-    return dictt, head
+    return dict_local, head
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", type=str, help="Name of the input file.")
-    parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
-    parser.add_argument("-f", "--fft", help="Plot FFT to file.", action="store_true")
-    parser.add_argument("-p", "--psd", help="Plot PSD to file.", action="store_true")
-    parser.add_argument("-x", "--xml", help="Write XML header to file.", action="store_true")
-    parser.add_argument("-y", "--npy", help="Write dic to NPY file.", action="store_true")
-    parser.add_argument("-n", "--nframes", nargs='?', type=int, const=10, default=10,
-                        help="Number of frames, default is 10.")
     parser.add_argument("-l", "--lframes", nargs='?', type=int, const=1024, default=1024,
                         help="Length of frames, default is 1024.")
+    parser.add_argument("-n", "--nframes", nargs='?', type=int, const=10, default=10,
+                        help="Number of frames, default is 10.")
     parser.add_argument("-s", "--sframes", nargs='?', type=int, const=1, default=1,
                         help="Starting frame, default is 1.")
+    parser.add_argument("-d", "--dic", help="Print dictionary to screen.", action="store_true")
+    parser.add_argument("-f", "--fft", help="Plot FFT to file.", action="store_true")
+    parser.add_argument("-p", "--psd", help="Plot PSD to file.", action="store_true")
+    parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
+    parser.add_argument("-x", "--xml", help="Write XML header to file.", action="store_true")
+    parser.add_argument("-y", "--npy", help="Write dic to NPY file.", action="store_true")
 
     args = parser.parse_args()
     if args.verbose:
@@ -237,7 +240,7 @@ if __name__ == "__main__":
 
     if args.psd:
         log.info('Generating PSD plot.')
-        plot_psd(dic['data'], dic['fs'], filename_wo_ext(args.filename) + '_psd', True)
+        plot_pwelch(dic['data'], dic['fs'], filename_wo_ext(args.filename) + '_psd', True)
 
     if args.xml:
         log.info('Saving header into xml file.')
@@ -247,6 +250,6 @@ if __name__ == "__main__":
         log.info('Saving data dictionary in numpy format.')
         save_data(filename_wo_ext(args.filename), dic)
 
-    if not args.psd and not args.fft and not args.xml and not args.npy:
-        log.info('No other options provided, so printing the dictionary screen.')
+    if args.dic:
+        log.info('Printing dictionary on the screen.')
         pprint(dic)
