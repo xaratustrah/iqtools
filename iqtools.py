@@ -30,7 +30,8 @@ def make_signal(f, fs, l=1, nharm=0, noise=True):
     for i in range(nharm + 2):
         x += np.sin(2 * np.pi * i * f * t)
 
-    if noise: x += np.random.normal(0, 1, len(t))
+    if noise:
+        x += np.random.normal(0, 1, len(t))
     return t, x
 
 
@@ -61,7 +62,7 @@ def channel_power_dbm(f, p_avg):
     return get_dbm(np.trapz(p_avg, x=f))
 
 
-def plot_fft(x, fs, c, filename='', plot=False):
+def get_fft_50(x, fs, c, plot=False, filename=''):
     """ Plots the fft of a power signal."""
 
     n = x.size
@@ -71,15 +72,33 @@ def plot_fft(x, fs, c, filename='', plot=False):
     v_rms = abs(v_peak_iq) / np.sqrt(2)
     p_avg = v_rms ** 2 / 50
     p_avg_dbm = 10 * np.log10(p_avg * 1000)
-    plt.plot(f, p_avg_dbm, '.')
-    plt.xlabel("Frequency [Hz]")
-    plt.title(filename)
-    plt.ylabel("Power Spectral Density [dBm/Hz]")
-    plt.grid(True)
     if plot:
         plt.savefig(filename + '.pdf')
+        plt.plot(f, p_avg_dbm, '.')
+        plt.xlabel("Frequency [Hz]")
+        plt.title(filename)
+        plt.ylabel("Power Spectral Density [dBm/Hz]")
+        plt.grid(True)
     return f, v_peak_iq, p_avg
 
+def get_fft_1(x, fs, c, plot=False, filename=''):
+    """ Plots the fft of a power signal."""
+
+    n = x.size
+    ts = 1.0 / fs
+    f = np.fft.fftfreq(n, ts) + c
+    v_peak_iq = np.fft.fft(x) / n
+    v_rms = abs(v_peak_iq) / np.sqrt(2)
+    p_avg = v_rms ** 2 / 1
+    p_avg_dbm = 10 * np.log10(p_avg * 1000)
+    if plot:
+        plt.savefig(filename + '.pdf')
+        plt.plot(f, p_avg_dbm, '.')
+        plt.xlabel("Frequency [Hz]")
+        plt.title(filename)
+        plt.ylabel("Power Spectral Density [dBm/Hz]")
+        plt.grid(True)
+    return f, v_peak_iq, p_avg
 
 def plot_pwelch(x, fs, filename='', plot=False):
     p_avg, f = psd(x, NFFT=1024, Fs=fs, noverlap=0)
@@ -124,6 +143,29 @@ def get_dbm(watt):
 
 def get_watt(dbm):
     return 10 ** (dbm / 10) / 1000
+
+
+def read_result_csv(filename):
+    p = np.genfromtxt(filename, skip_header=63)
+    with open(filename) as f:
+        cont = f.readlines()
+    for l in cont:
+        l = l.split(',')
+        if 'Frequency' in l and len (l) == 3:
+            center = float(l[1])
+        if 'XStart' in l and len (l) == 3:
+            start = float(l[1])
+        if 'XStop' in l and len (l) == 3:
+            stop = float(l[1])
+    f = np.linspace(start - center, stop - center, len(p))
+    return f, p
+
+def read_data_csv(filename):
+    """Reads the CSV data export from the instrument
+    """
+    data = np.genfromtxt(filename, skip_header=10, delimiter=",")
+    data = np.ravel(data).view(dtype='c16')  # has one dimension more, should use ravel
+    return data
 
 
 def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
@@ -253,3 +295,4 @@ if __name__ == "__main__":
     if args.dic:
         log.info('Printing dictionary on the screen.')
         pprint(dic)
+    print(dic['data'])
