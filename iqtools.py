@@ -62,52 +62,36 @@ def channel_power_dbm(f, p_avg):
     return get_dbm(np.trapz(p_avg, x=f))
 
 
-def get_fft_50(x, fs, c, plot=False, filename=''):
-    """ Plots the fft of a power signal."""
+def plot_dbm_per_hz(f, p, cen=0, span=None, filename='', to_file=False):
+    """Plot average power in dBm per Hz"""
+
+    if not span:
+        mask = (f != 0) | (f == 0)
+    else:
+        mask = (f <= span / 2) & (f >= -span / 2)
+    plt.plot(f[mask], 10 * np.log10(p[mask] * 1000))
+    plt.xlabel("Delta f [Hz] @ {} [Hz]".format(cen))
+    plt.title(filename)
+    plt.ylabel("Power Spectral Density [dBm/Hz]")
+    plt.grid(True)
+    if to_file:
+        plt.savefig(filename + '.pdf')
+
+
+def get_fft_50(x, fs):
+    """ Get the FFT spectrum of a signal over a load of 50 ohm."""
 
     n = x.size
     ts = 1.0 / fs
-    f = np.fft.fftfreq(n, ts) + c
+    f = np.fft.fftfreq(n, ts)
     v_peak_iq = np.fft.fft(x) / n
     v_rms = abs(v_peak_iq) / np.sqrt(2)
     p_avg = v_rms ** 2 / 50
-    p_avg_dbm = 10 * np.log10(p_avg * 1000)
-    if plot:
-        plt.savefig(filename + '.pdf')
-        plt.plot(f, p_avg_dbm, '.')
-        plt.xlabel("Frequency [Hz]")
-        plt.title(filename)
-        plt.ylabel("Power Spectral Density [dBm/Hz]")
-        plt.grid(True)
     return f, v_peak_iq, p_avg
 
-def get_fft_1(x, fs, c, plot=False, filename=''):
-    """ Plots the fft of a power signal."""
 
-    n = x.size
-    ts = 1.0 / fs
-    f = np.fft.fftfreq(n, ts) + c
-    v_peak_iq = np.fft.fft(x) / n
-    v_rms = abs(v_peak_iq) / np.sqrt(2)
-    p_avg = v_rms ** 2 / 1
-    p_avg_dbm = 10 * np.log10(p_avg * 1000)
-    if plot:
-        plt.savefig(filename + '.pdf')
-        plt.plot(f, p_avg_dbm, '.')
-        plt.xlabel("Frequency [Hz]")
-        plt.title(filename)
-        plt.ylabel("Power Spectral Density [dBm/Hz]")
-        plt.grid(True)
-    return f, v_peak_iq, p_avg
-
-def plot_pwelch(x, fs, filename='', plot=False):
+def get_pwelch(x, fs):
     p_avg, f = psd(x, NFFT=1024, Fs=fs, noverlap=0)
-    plt.xlabel("Frequency [Hz]")
-    plt.title(filename)
-    plt.ylabel("Power Spectral Density [dB/Hz]")
-    plt.grid(True)
-    if plot:
-        plt.savefig(filename + '.pdf')
     return f, p_avg
 
 
@@ -151,14 +135,15 @@ def read_result_csv(filename):
         cont = f.readlines()
     for l in cont:
         l = l.split(',')
-        if 'Frequency' in l and len (l) == 3:
+        if 'Frequency' in l and len(l) == 3:
             center = float(l[1])
-        if 'XStart' in l and len (l) == 3:
+        if 'XStart' in l and len(l) == 3:
             start = float(l[1])
-        if 'XStop' in l and len (l) == 3:
+        if 'XStop' in l and len(l) == 3:
             stop = float(l[1])
     f = np.linspace(start - center, stop - center, len(p))
     return f, p
+
 
 def read_data_csv(filename):
     """Reads the CSV data export from the instrument
@@ -197,6 +182,7 @@ def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
         ba = f.read(data_offset)
 
     xml_tree_root = et.fromstring(ba)
+    rbw = None
 
     for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}AcquisitionBandwidth'):
         acq_bw = float(elem.text)
@@ -278,11 +264,13 @@ if __name__ == "__main__":
 
     if args.fft:
         log.info('Generating FFT plot.')
-        plot_fft(dic['data'], dic['fs'], dic['center'], filename_wo_ext(args.filename) + '_fft', True)
+        f1, v1, p1 = get_fft_50(dic['data'], dic['fs'])
+        plot_dbm_per_hz(f1, p1, dic['center'], dic['span'], filename_wo_ext(args.filename) + '_psd_fft', True)
 
     if args.psd:
         log.info('Generating PSD plot.')
-        plot_pwelch(dic['data'], dic['fs'], filename_wo_ext(args.filename) + '_psd', True)
+        f2, p2 = get_pwelch(dic['data'], dic['fs'])
+        plot_dbm_per_hz(f2, p2, dic['center'], dic['span'], filename_wo_ext(args.filename) + '_psd_welch', True)
 
     if args.xml:
         log.info('Saving header into xml file.')
@@ -295,4 +283,3 @@ if __name__ == "__main__":
     if args.dic:
         log.info('Printing dictionary on the screen.')
         pprint(dic)
-    print(dic['data'])
