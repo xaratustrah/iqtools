@@ -14,7 +14,7 @@ import xml.etree.ElementTree as et
 import matplotlib.pyplot as plt
 import numpy as np
 import logging as log
-from scipy.signal import hilbert
+from scipy.signal import hilbert, find_peaks_cwt
 from scipy.io import wavfile
 from pylab import psd
 
@@ -129,6 +129,42 @@ def get_watt(dbm):
     return 10 ** (dbm / 10) / 1000
 
 
+def get_narrow_peaks_dbm(f, p, accuracy=50):
+    p_dbm = 10 * np.log10(p * 1000)
+    peak_ind = find_peaks_cwt(p_dbm, np.arange(1, accuracy))
+    return f[peak_ind], p_dbm[peak_ind]
+
+
+def get_broad_peak_dbm(f, p):
+    p_dbm = get_dbm(p)
+    # return as an array for compatibility
+    return [f[p_dbm.argmax()]], [p_dbm.max()]
+
+
+def get_fwhm(f, p):
+    """f and p are arrays of points correponing to the original data, whereas
+    the f_peak and p_peak are arrays of containing the coordinates of the peaks only
+    """
+    a = get_dbm(p)
+    peak = a.max()
+    f_p3db = 0
+    f_m3db = 0
+    p_p3db = 0
+    p_m3db = 0
+    peak_index = a.argmax()
+    for i in range(peak_index, len(a)):
+        if a[i] <= (peak - 3):
+            p_p3db = a[i]
+            f_p3db = f[i]
+            break
+    for i in range(peak_index, -1, -1):
+        if a[i] <= (peak - 3):
+            p_m3db = a[i]
+            f_m3db = f[i]
+            break
+    return [f_m3db, f_p3db], [p_m3db, p_p3db]
+
+
 def read_result_csv(filename):
     p = np.genfromtxt(filename, skip_header=63)
     with open(filename) as f:
@@ -146,16 +182,28 @@ def read_result_csv(filename):
 
 
 def read_data_csv(filename):
-    """Reads the CSV data export from the instrument
+    """Reads the CSV data export from the instrument. Please note that 50 ohm power termination is already considered for these data.
     """
     data = np.genfromtxt(filename, skip_header=10, delimiter=",")
     data = np.ravel(data).view(dtype='c16')  # has one dimension more, should use ravel
     return data
 
 
+def read_tdms(data_filename, meta_filename, nframes=0, lframes=0, sframes=0):
+    """Some good fried will continue here"""
+
+    # todo: returns a dictionary containing info e.g. complex array (c16), sampling rate etc...
+    return None
+
+
+def read_iqt(filename):
+    # todo: to be done
+    return None
+
+
 def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
     """Process the tiq input file.
-    Following information are extracted, except Data offset, all other are stored in the dic
+    Following information are extracted, except Data offset, all other are stored in the dic. Data needs to be normalized over 50 ohm.
 
     AcquisitionBandwidth
     Frequency
