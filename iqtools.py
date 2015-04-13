@@ -278,7 +278,7 @@ def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
 
     log.info("Output complex array has a size of {}.".format(ar.size))
     dict_local = {'center': center, 'number_samples': number_samples, 'fs': fs, 'lframes': lframes, 'data': ar,
-                  'nframes_tot': nframes_tot, 'DataTime': date_time, 'rf_att': rf_att, 'span': span, 'acq_bw': acq_bw,
+                  'nframes_tot': nframes_tot, 'DateTime': date_time, 'rf_att': rf_att, 'span': span, 'acq_bw': acq_bw,
                   'file_name': filename, 'rbw': rbw}
 
     # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
