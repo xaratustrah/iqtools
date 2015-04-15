@@ -21,15 +21,22 @@ import time
 
 DELTA_F = 600.0  # single sided distance around the expected frequency in Hz
 F_MUST = 244911450.27923584  # expected frequency of mother ion in Hz
-F_START = 1000  # starting frame in time
+TIME_START = 15  # starting time in seconds
+DURATION = 120  # n of frames to read
 P_THRESH = 1e8  # linear power threshold between noise and a signal
 
 
 def main(in_filename, out_filename):
-    dic1, _ = read_tiq(in_filename, 100, 1024, F_START)
+    # dummy read one frame to obtain the constants
+    dic1, _ = read_tiq(in_filename, 1, 1024, 1)
     center1 = dic1['center']
     datime = dic1['DateTime']
     fs1 = dic1['fs']
+    lframes1 = dic1['lframes']
+    f_start = int(TIME_START * fs1 / lframes1)
+    # read the real data
+    log.info('Starting frame for {} seconds would be {}.'.format(TIME_START, f_start))
+    dic1, _ = read_tiq(in_filename, DURATION, 1024, f_start)
     x1 = dic1['data']
     # f, p = get_pwelch(x1, fs1)
     f, v, p = get_fft_50(x1, fs1)
@@ -50,8 +57,10 @@ def main(in_filename, out_filename):
 
     tm_format = '%Y-%m-%dT%H:%M:%S'
     tm = time.strptime(datime[:19], tm_format)
+    tm_format_number_only = '%Y%m%d%H%M%S'
     with open(out_filename, 'a') as f:
-        f.write('{}\t{}\n'.format(time.mktime(tm), f_shifted_cut[p_shifted_cut.argmax()]))
+        f.write('{}\t{}\t{}\n'.format(time.mktime(tm), time.strftime(tm_format_number_only, tm),
+                                      f_shifted_cut[p_shifted_cut.argmax()]))
 
 
 if __name__ == '__main__':

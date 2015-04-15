@@ -239,7 +239,7 @@ def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
     for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}DateTime'):
         date_time = str(elem.text)
     for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}NumberSamples'):
-        number_samples = str(elem.text)
+        number_samples = int(elem.text) # this entry matches (filesize - data_offset) / 8) well
     for elem in xml_tree_root.iter('NumericParameter'):
         if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'rbw':
             rbw = float(elem.find('Value').text)
@@ -257,15 +257,17 @@ def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
     log.info("Header size {} bytes.".format(data_offset))
 
     log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
-    total_nbytes = 8 * nframes * lframes  # 8 comes from 2 times 4 byte integer for I and Q
-    start_nbytes = 8 * (sframes - 1 ) * lframes
-    nframes_tot = int((filesize - data_offset) / 8 / lframes)
-    log.info("Total number of frames: {0} = {1}s".format(nframes_tot, (filesize - data_offset) / 8 / fs))
+    log.info('Total number of samples: {}'.format(number_samples))
     log.info("Frame length: {0} data points = {1}s".format(lframes, lframes / fs))
-    log.info("Frame offset: {0} = {1}s".format(sframes, start_nbytes / fs))
-    log.info("Reading {0} frames = {1}s.".format(nframes, total_nbytes / fs))
+    nframes_tot = int(number_samples / lframes)
+    log.info("Total number of frames: {0} = {1}s".format(nframes_tot, number_samples / fs))
+    log.info("Start reading at offset: {0} = {1}s".format(sframes, sframes * lframes / fs))
+    log.info("Reading {0} frames = {1}s.".format(nframes, nframes * lframes / fs))
 
     head = ba
+
+    total_nbytes = 8 * nframes * lframes  # 8 comes from 2 times 4 byte integer for I and Q
+    start_nbytes = 8 * (sframes - 1) * lframes
 
     with open(filename, 'rb') as f:
         f.seek(data_offset + start_nbytes)
