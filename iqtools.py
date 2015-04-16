@@ -14,9 +14,8 @@ import xml.etree.ElementTree as et
 import matplotlib.pyplot as plt
 import numpy as np
 import logging as log
-from scipy.signal import hilbert, find_peaks_cwt
+from scipy.signal import hilbert, find_peaks_cwt, welch
 from scipy.io import wavfile
-from pylab import psd
 
 
 verbose = False
@@ -78,7 +77,7 @@ def plot_dbm_per_hz(f, p, cen=0, span=None, filename='', to_file=False):
         plt.savefig(filename + '.pdf')
 
 
-def get_fft_50(x, fs):
+def get_fft_50_ohm(x, fs):
     """ Get the FFT spectrum of a signal over a load of 50 ohm."""
 
     n = x.size
@@ -90,8 +89,13 @@ def get_fft_50(x, fs):
     return f, v_peak_iq, p_avg
 
 
+# def get_psd(x, fs):
+#     p_avg, f = psd(x, NFFT=1024, Fs=fs, noverlap=0)
+#     return f, p_avg
+
+
 def get_pwelch(x, fs):
-    p_avg, f = psd(x, NFFT=1024, Fs=fs, noverlap=0)
+    f, p_avg = welch(x, fs, nperseg=1024)
     return f, p_avg
 
 
@@ -239,7 +243,7 @@ def read_tiq(filename, nframes=10, lframes=1024, sframes=1):
     for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}DateTime'):
         date_time = str(elem.text)
     for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}NumberSamples'):
-        number_samples = int(elem.text) # this entry matches (filesize - data_offset) / 8) well
+        number_samples = int(elem.text)  # this entry matches (filesize - data_offset) / 8) well
     for elem in xml_tree_root.iter('NumericParameter'):
         if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'rbw':
             rbw = float(elem.find('Value').text)

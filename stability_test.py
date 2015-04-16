@@ -1,32 +1,28 @@
 #!/usr/bin/env python
 
 """
-Script for determination of frequency stability.
+Script for determination of frequency stability and plot.
 
 xaratustra Apr-2015
-
-usage:
-
-find ./ -iname '*.TIQ' -exec ./freq_stabil.py {} ./graph.txt \;
-
-then plot graph.txt
 """
 
+import os, argparse, time
 import numpy as np
-import os, argparse
-from iqtools import *
 import logging as log
-import time
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
+from iqtools import *
 
 
 DELTA_F = 600.0  # single sided distance around the expected frequency in Hz
-F_MUST = 244911450.27923584  # expected frequency of mother ion in Hz
+F_MUST = 244913357.628  # expected frequency of mother ion in Hz
 TIME_START = 15  # starting time in seconds
 DURATION = 120  # n of frames to read
-P_THRESH = 1e8  # linear power threshold between noise and a signal
+P_NOISE = -96  # dBm of approximate noise level
 
 
-def main(in_filename, out_filename):
+def process_data(in_filename, out_filename):
+    in_filename = 'RSA51-2014.10.12.01.01.57.831.TIQ'
     # dummy read one frame to obtain the constants
     dic1, _ = read_tiq(in_filename, 1, 1024, 1)
     center1 = dic1['center']
@@ -38,12 +34,13 @@ def main(in_filename, out_filename):
     log.info('Starting frame for {} seconds would be {}.'.format(TIME_START, f_start))
     dic1, _ = read_tiq(in_filename, DURATION, 1024, f_start)
     x1 = dic1['data']
-    # f, p = get_pwelch(x1, fs1)
-    f, v, p = get_fft_50(x1, fs1)
+    f, p = get_pwelch(x1, fs1)
+    # f, v, p = get_fft_50(x1, fs1)
 
-    if p.max() / p.min() < P_THRESH:
-        log.info('No peaks in file {}, since the ratio is {} which is smaller than {}. Skipping.\n'.format(
-            os.path.basename(in_filename), p.max() / p.min(), P_THRESH))
+    max_power = get_dbm(p.max())
+    log.info('Signal power: '.format(max_power))
+    if max_power < P_NOISE:
+        log.info('No peaks in file {}. Skipping.\n'.format(os.path.basename(in_filename)))
         return
 
     log.info('Processing file {}.\n'.format(os.path.basename(in_filename)))
@@ -63,14 +60,42 @@ def main(in_filename, out_filename):
                                       f_shifted_cut[p_shifted_cut.argmax()]))
 
 
+def get_plot(infile, outfile):
+    print(infile)
+    data = np.genfromtxt(infile)
+    data.sort(axis=0)
+    first_time = data[0, 0]
+    # first_freq = data[0, 1]
+    avg = ((data[:, 2]).max() + (data[:, 2]).min()) / 2
+    fig = plt.figure()
+    plt.gcf().subplots_adjust(bottom=0.16, left=0.16)  # otherwise buttom is cut
+    ax = fig.gca()
+    ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.2e'))
+    ax.plot(data[:, 0] - first_time, (data[:, 2] - avg) / avg, 'r.')
+    plt.xlabel('Injection times [s]')
+    plt.ylabel('∂f/f [Hz]')
+    plt.title('Revolution frequency of 142-Pm nuclei during GO2014')
+    plt.grid(True)
+    plt.savefig('{}.pdf'.format(outfile))
+
+
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("in_filename", type=str, help="Name of the input file.")
-    parser.add_argument("out_filename", type=str, help="Name of the output file.")
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
+    parser.add_argument('-o', '--outfile', nargs='+', help="Output file names")
+
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-i', '--infile', nargs='+', help="Data filenames")
+    group.add_argument('-p', '--plot', nargs='+', help="Filenames for plotting")
+
     args = parser.parse_args()
+
     if args.verbose:
         log.basicConfig(level=log.DEBUG)
         verbose = True
 
-    main(args.in_filename, args.out_filename)
+    if args.plot:
+        get_plot(args.plot[0], args.outfile[0])
+    else:
+        for i in range(len(args.infile)):
+            process_data(args.infile[i], args.outfile[0])
