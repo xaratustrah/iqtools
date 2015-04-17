@@ -15,14 +15,37 @@ from iqtools import *
 
 
 DELTA_F = 600.0  # single sided distance around the expected frequency in Hz
-F_MUST = 244913357.628  # expected frequency of mother ion in Hz
+#F_MUST = 244913357.628  # expected frequency of mother ion in Hz
+#F_MUST = 244911450.27923584
+F_MUST = 244912100
 TIME_START = 15  # starting time in seconds
 DURATION = 120  # n of frames to read
 P_NOISE = -96  # dBm of approximate noise level
 
 
+def get_plot(infile, outfile):
+    log.info('Processing file: {}.'.format(os.path.basename(infile)))
+    data = np.genfromtxt(infile)
+    data.sort(axis=0)
+    first_time = data[0, 0]
+    # first_freq = data[0, 1]
+    avg = ((data[:, 2]).max() + (data[:, 2]).min()) / 2
+    fig = plt.figure()
+    plt.gcf().subplots_adjust(bottom=0.16, left=0.16)  # otherwise bottom is cut
+    ax = fig.gca()
+    ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.2e'))
+    ax.plot(data[:, 0] - first_time, (data[:, 2] - avg) / avg, 'r.')
+    plt.xlabel('Injection times [s]')
+    plt.ylabel('∂f/f [Hz]')
+    plt.title('Revolution frequency of 142-Pm nuclei during GO2014')
+    plt.grid(True)
+    log.info('Writing to file: {}.pdf.'.format(os.path.basename(outfile)))
+    plt.savefig('{}.pdf'.format(outfile))
+    log.info('Done.')
+
+
 def process_data(in_filename, out_filename):
-    in_filename = 'RSA51-2014.10.12.01.01.57.831.TIQ'
+    log.info('Processing file: {}.'.format(os.path.basename(in_filename)))
     # dummy read one frame to obtain the constants
     dic1, _ = read_tiq(in_filename, 1, 1024, 1)
     center1 = dic1['center']
@@ -37,46 +60,31 @@ def process_data(in_filename, out_filename):
     f, p = get_pwelch(x1, fs1)
     # f, v, p = get_fft_50(x1, fs1)
 
-    max_power = get_dbm(p.max())
-    log.info('Signal power: '.format(max_power))
-    if max_power < P_NOISE:
-        log.info('No peaks in file {}. Skipping.\n'.format(os.path.basename(in_filename)))
-        return
-
-    log.info('Processing file {}.\n'.format(os.path.basename(in_filename)))
-
-    # F_MUST = f_shifted[p.argmax()]
     f_shifted = center1 + f
 
-    f_shifted_cut = f_shifted[
-                    np.abs(f_shifted - (F_MUST - DELTA_F)).argmin():np.abs(f_shifted - (F_MUST + DELTA_F)).argmin()]
-    p_shifted_cut = p[np.abs(f_shifted - (F_MUST - DELTA_F)).argmin():np.abs(f_shifted - (F_MUST + DELTA_F)).argmin()]
+    lower_bound_freq_cut = np.abs(f_shifted - (F_MUST - DELTA_F)).argmin()
+    upper_bound_freq_cut = np.abs(f_shifted - (F_MUST + DELTA_F)).argmin()
 
+    # f_shifted_min = f_shifted.min()
+    # f_shifted_max = f_shifted.max()
+
+    f_shifted_cut = f_shifted[lower_bound_freq_cut:upper_bound_freq_cut]
+    p_shifted_cut = p[lower_bound_freq_cut:upper_bound_freq_cut]
+
+    max_power = get_dbm(p_shifted_cut.max())
+    log.info('Found signal power: {} dBm.'.format(max_power))
+    if max_power < P_NOISE:
+        log.info('No peaks in file: {}. Skipping.\n'.format(os.path.basename(in_filename)))
+        return
+
+    log.info('Writing to file: {}.'.format(out_filename))
     tm_format = '%Y-%m-%dT%H:%M:%S'
     tm = time.strptime(datime[:19], tm_format)
     tm_format_number_only = '%Y%m%d%H%M%S'
     with open(out_filename, 'a') as f:
         f.write('{}\t{}\t{}\n'.format(time.mktime(tm), time.strftime(tm_format_number_only, tm),
                                       f_shifted_cut[p_shifted_cut.argmax()]))
-
-
-def get_plot(infile, outfile):
-    print(infile)
-    data = np.genfromtxt(infile)
-    data.sort(axis=0)
-    first_time = data[0, 0]
-    # first_freq = data[0, 1]
-    avg = ((data[:, 2]).max() + (data[:, 2]).min()) / 2
-    fig = plt.figure()
-    plt.gcf().subplots_adjust(bottom=0.16, left=0.16)  # otherwise buttom is cut
-    ax = fig.gca()
-    ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.2e'))
-    ax.plot(data[:, 0] - first_time, (data[:, 2] - avg) / avg, 'r.')
-    plt.xlabel('Injection times [s]')
-    plt.ylabel('∂f/f [Hz]')
-    plt.title('Revolution frequency of 142-Pm nuclei during GO2014')
-    plt.grid(True)
-    plt.savefig('{}.pdf'.format(outfile))
+    log.info('Done.')
 
 
 if __name__ == '__main__':
