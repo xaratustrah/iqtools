@@ -86,17 +86,12 @@ def get_fft_50_ohm(x, fs):
     v_peak_iq = np.fft.fft(x) / n
     v_rms = abs(v_peak_iq) / np.sqrt(2)
     p_avg = v_rms ** 2 / 50
-    return f, v_peak_iq, p_avg
-
-
-# def get_psd(x, fs):
-#     p_avg, f = psd(x, NFFT=1024, Fs=fs, noverlap=0)
-#     return f, p_avg
+    return np.fft.fftshift(f), np.fft.fftshift(v_peak_iq), np.fft.fftshift(p_avg)
 
 
 def get_pwelch(x, fs):
     f, p_avg = welch(x, fs, nperseg=1024)
-    return f, p_avg
+    return np.fft.fftshift(f), np.fft.fftshift(p_avg)
 
 
 def filename_wo_ext(filename):
@@ -167,6 +162,17 @@ def get_fwhm(f, p):
             f_m3db = f[i]
             break
     return [f_m3db, f_p3db], [p_m3db, p_p3db]
+
+
+def zoom_in_freq(f, p, center=0, span=1000):
+    low = center - span / 2
+    high = center + span / 2
+    mask = (f > low) & (f < high)
+    return f[mask], p[mask]
+
+
+def shift_to_center(f, center):
+    return center + f
 
 
 def read_result_csv(filename):
