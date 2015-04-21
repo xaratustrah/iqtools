@@ -195,26 +195,10 @@ class IQData(object):
 
 # ------------- END OF CLASS DEFINITION ------------- #
 
-def make_signal(f, fs, l=1, nharm=0, noise=True):
-    """Make a sine signal with/without noise."""
-
-    t = np.arange(0, l, 1 / fs)
-    x = np.zeros(len(t))
-    for i in range(nharm + 2):
-        x += np.sin(2 * np.pi * i * f * t)
-
-    if noise:
-        x += np.random.normal(0, 1, len(t))
-    return t, x
-
-
-def plot_hilbert(x_bar):
-    """Show Hilbert plot."""
-
-    plt.plot(np.real(x_bar), np.imag(x_bar))
-    plt.grid(True)
-    plt.xlabel('Real Part')
-    plt.ylabel('Imag. Part')
+def get_broad_peak_dbm(f, p):
+    p_dbm = get_dbm(p)
+    # return as an array for compatibility
+    return [f[p_dbm.argmax()]], [p_dbm.max()]
 
 
 def get_channel_power_dbm(f, p_avg):
@@ -228,22 +212,6 @@ def get_dbm(watt):
     return 10 * np.log10(watt * 1000)
 
 
-def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
-    """Plot average power in dBm per Hz"""
-
-    if not span:
-        mask = (f != 0) | (f == 0)
-    else:
-        mask = (f <= span / 2) & (f >= -span / 2)
-    plt.plot(f[mask], 10 * np.log10(p[mask] * 1000))
-    plt.xlabel("Delta f [Hz] @ {} [Hz]".format(cen))
-    plt.title(filename)
-    plt.ylabel("Power Spectral Density [dBm/Hz]")
-    plt.grid(True)
-    if to_file:
-        plt.savefig(filename + '.pdf')
-
-
 def get_fft_50_ohm(x, fs):
     """ Get the FFT spectrum of a signal over a load of 50 ohm."""
 
@@ -254,27 +222,6 @@ def get_fft_50_ohm(x, fs):
     v_rms = abs(v_peak_iq) / np.sqrt(2)
     p_avg = v_rms ** 2 / 50
     return np.fft.fftshift(f), np.fft.fftshift(v_peak_iq), np.fft.fftshift(p_avg)
-
-
-def get_pwelch(x, fs):
-    f, p_avg = welch(x, fs, nperseg=1024)
-    return np.fft.fftshift(f), np.fft.fftshift(p_avg)
-
-
-def get_watt(dbm):
-    return 10 ** (dbm / 10) / 1000
-
-
-def get_narrow_peaks_dbm(f, p, accuracy=50):
-    p_dbm = 10 * np.log10(p * 1000)
-    peak_ind = find_peaks_cwt(p_dbm, np.arange(1, accuracy))
-    return f[peak_ind], p_dbm[peak_ind]
-
-
-def get_broad_peak_dbm(f, p):
-    p_dbm = get_dbm(p)
-    # return as an array for compatibility
-    return [f[p_dbm.argmax()]], [p_dbm.max()]
 
 
 def get_fwhm(f, p):
@@ -299,6 +246,59 @@ def get_fwhm(f, p):
             f_m3db = f[i]
             break
     return [f_m3db, f_p3db], [p_m3db, p_p3db]
+
+
+def get_narrow_peaks_dbm(f, p, accuracy=50):
+    p_dbm = 10 * np.log10(p * 1000)
+    peak_ind = find_peaks_cwt(p_dbm, np.arange(1, accuracy))
+    return f[peak_ind], p_dbm[peak_ind]
+
+
+def get_pwelch(x, fs):
+    f, p_avg = welch(x, fs, nperseg=1024)
+    return np.fft.fftshift(f), np.fft.fftshift(p_avg)
+
+
+def get_watt(dbm):
+    return 10 ** (dbm / 10) / 1000
+
+
+def make_signal(f, fs, l=1, nharm=0, noise=True):
+    """Make a sine signal with/without noise."""
+
+    t = np.arange(0, l, 1 / fs)
+    x = np.zeros(len(t))
+    for i in range(nharm + 2):
+        x += np.sin(2 * np.pi * i * f * t)
+
+    if noise:
+        x += np.random.normal(0, 1, len(t))
+    return t, x
+
+
+def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
+    """Plot average power in dBm per Hz"""
+
+    if not span:
+        mask = (f != 0) | (f == 0)
+    else:
+        mask = (f <= span / 2) & (f >= -span / 2)
+    plt.plot(f[mask], 10 * np.log10(p[mask] * 1000))
+    plt.xlabel("Delta f [Hz] @ {} [Hz]".format(cen))
+    plt.title(filename)
+    plt.ylabel("Power Spectral Density [dBm/Hz]")
+    plt.grid(True)
+    if to_file:
+        plt.savefig(filename + '.pdf')
+
+
+def plot_hilbert(x_bar):
+    """Show Hilbert plot."""
+
+    plt.plot(np.real(x_bar), np.imag(x_bar))
+    plt.grid(True)
+    plt.xlabel('Real Part')
+    plt.ylabel('Imag. Part')
 
 
 def make_analytical(x):

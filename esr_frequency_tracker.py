@@ -43,17 +43,18 @@ def get_plot(infile, outfile):
 
 def process_data(in_filename, out_filename, f_estimate):
     log.info('Processing file: {}.'.format(os.path.basename(in_filename)))
+    iq_data = IQData()
     # dummy read one frame to obtain the constants
-    dic1, _ = read_tiq(in_filename, 1, 1024, 1)
-    center1 = dic1['center']
-    datime = dic1['DateTime']
-    fs1 = dic1['fs']
-    lframes1 = dic1['lframes']
+    _, _ = iq_data.read_tiq(in_filename, 1, 1024, 1)
+    center1 = iq_data.center
+    datime = iq_data.date_time
+    fs1 = iq_data.fs
+    lframes1 = iq_data.lframes
     f_start = int(TIME_START * fs1 / lframes1)
     # read the real data
     log.info('Starting frame for {} seconds would be {}.'.format(TIME_START, f_start))
-    dic1, _ = read_tiq(in_filename, DURATION, 1024, f_start)
-    x1 = dic1['data']
+    _, _ = iq_data.read_tiq(in_filename, DURATION, 1024, f_start)
+    x1 = iq_data.data_array
     f, p = get_pwelch(x1, fs1)
 
     log.info('Searching peaks {} Hz around {} Hz.'.format(A_SPAN, f_estimate))
