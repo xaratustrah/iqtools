@@ -6,11 +6,15 @@ Script for determination of frequency stability and plot.
 xaratustra Apr-2015
 """
 
-import os, argparse, time
-import numpy as np
+import os
+import argparse
+import time
 import logging as log
+
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
+
 from iqtools import *
 
 
@@ -66,8 +70,10 @@ def process_data(in_filename, out_filename, f_estimate, save_plot):
 
     max_power = get_dbm(p_masked.max())
     if max_power < P_NOISE:
-        log.info('No peaks in file: {}. Skipping.'.format(os.path.basename(in_filename)))
-        return
+        log.info('No peaks in file: {}. Skipping.\n'.format(os.path.basename(in_filename)))
+        # no peaks found, return the previous value
+        return f_estimate
+
     log.info('Signal power in this range: {} dBm.'.format(max_power))
 
     final_frequency = f_centered_masked[p_masked.argmax()]
