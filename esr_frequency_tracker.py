@@ -33,7 +33,7 @@ def get_plot(infile, outfile):
     ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.2e'))
     ax.plot(data[:, 0] - first_time, (data[:, 2] - avg) / avg, 'r.')
     plt.xlabel('Injection times [s]')
-    plt.ylabel('∂f/f [Hz]')
+    plt.ylabel('delta_f/f [Hz]')
     plt.title('Revolution frequency of 142-Pm nuclei during GO2014')
     plt.grid(True)
     log.info('Writing to file: {}.pdf.'.format(os.path.basename(outfile)))
@@ -41,7 +41,7 @@ def get_plot(infile, outfile):
     log.info('Done.')
 
 
-def process_data(in_filename, out_filename, f_estimate):
+def process_data(in_filename, out_filename, f_estimate, save_plot):
     log.info('Processing file: {}.'.format(os.path.basename(in_filename)))
     iq_data = IQData()
     # dummy read one frame to obtain the constants
@@ -61,7 +61,7 @@ def process_data(in_filename, out_filename, f_estimate):
     f_centered = shift_to_center(f, center1)
     f_centered_masked, p_masked = zoom_in_freq(f_centered, p, center=f_estimate, span=A_SPAN)
 
-    np.savetxt('test_p.out', p_masked)
+    # np.savetxt('test_p.out', p_masked)
 
     max_power = get_dbm(p_masked.max())
     if max_power < P_NOISE:
@@ -76,8 +76,23 @@ def process_data(in_filename, out_filename, f_estimate):
     tm_format = '%Y-%m-%dT%H:%M:%S'
     tm = time.strptime(datime[:19], tm_format)
     tm_format_number_only = '%Y%m%d%H%M%S'
+
+    if save_plot:
+        fig = plt.figure()
+        ax = fig.gca()
+        ax.plot(f_centered, 10 * np.log10(p * 1000))
+        ax.plot(final_frequency, max_power, 'rv')
+        ax.grid(True)
+        plt.draw()
+        in_filename_wo_ext = os.path.splitext(os.path.basename(in_filename))[0]
+        out_filename_wo_ext = os.path.splitext(os.path.basename(out_filename))[0]
+        if not os.path.exists(out_filename_wo_ext):
+            os.mkdir(out_filename_wo_ext)
+        plt.savefig('{0}/{1}.png'.format(out_filename_wo_ext, in_filename_wo_ext))
+
     with open(out_filename, 'a') as f:
         f.write('{}\t{}\t{}\n'.format(time.mktime(tm), time.strftime(tm_format_number_only, tm), final_frequency))
+
     log.info('Remembering this frequency for the next time.')
     log.info('Done.')
 
@@ -87,6 +102,7 @@ def process_data(in_filename, out_filename, f_estimate):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
+    parser.add_argument("-s", "--save_plot", help="Save output plot", action="store_true")
     parser.add_argument('-o', '--outfile', nargs='+', help="Output file names")
     parser.add_argument('-f', '--f_estimate', nargs='+', help="Estimated frequency")
 
@@ -98,9 +114,14 @@ if __name__ == '__main__':
 
     internal_estimate = 0
 
+    verbose = False
     if args.verbose:
         log.basicConfig(level=log.DEBUG)
         verbose = True
+
+    save_plot = False
+    if args.save_plot:
+        save_plot = True
 
     if args.plot:
         get_plot(args.plot[0], args.outfile[0])
@@ -112,4 +133,4 @@ if __name__ == '__main__':
                 internal_estimate = float(args.f_estimate[0])
             log.info(
                 'Calculation using frequency estimate {} Hz.'.format(internal_estimate))
-            internal_estimate = process_data(args.infile[i], args.outfile[0], internal_estimate)
+            internal_estimate = process_data(args.infile[i], args.outfile[0], internal_estimate, save_plot)
