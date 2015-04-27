@@ -14,7 +14,7 @@ import matplotlib.ticker as mtick
 from iqtools import *
 
 
-A_SPAN = 1400.0  # double sided analysis span in Hz
+A_SPAN = 1000.0  # double sided analysis span in Hz
 TIME_START = 15  # starting time in seconds
 DURATION = 120  # n of frames to read
 P_NOISE = -96  # dBm of approximate noise level
@@ -38,7 +38,7 @@ def get_plot(infile, outfile):
     plt.grid(True)
     log.info('Writing to file: {}.pdf.'.format(os.path.basename(outfile)))
     plt.savefig('{}.pdf'.format(outfile))
-    log.info('Done.')
+    log.info('Done.\n')
 
 
 def process_data(in_filename, out_filename, f_estimate, save_plot):
@@ -49,6 +49,7 @@ def process_data(in_filename, out_filename, f_estimate, save_plot):
     center1 = iq_data.center
     datime = iq_data.date_time
     fs1 = iq_data.fs
+    log.info('Sampling frequency {} /s.'.format(fs1))
     lframes1 = iq_data.lframes
     f_start = int(TIME_START * fs1 / lframes1)
     # read the real data
@@ -81,7 +82,7 @@ def process_data(in_filename, out_filename, f_estimate, save_plot):
         log.info('Writing a plot of a file on disk.')
         fig = plt.figure()
         ax = fig.gca()
-        ax.plot(f_centered, 10 * np.log10(p * 1000))
+        ax.plot(f_centered, 10 * np.log10(p * 1000), '.')
         ax.plot(final_frequency, max_power, 'rv')
         ax.grid(True)
         plt.draw()
@@ -96,7 +97,7 @@ def process_data(in_filename, out_filename, f_estimate, save_plot):
         f.write('{}\t{}\t{}\n'.format(time.mktime(tm), time.strftime(tm_format_number_only, tm), final_frequency))
 
     log.info('Remembering this frequency for the next time.')
-    log.info('Done.')
+    log.info('Done.\n')
 
     return final_frequency
 
