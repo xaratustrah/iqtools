@@ -78,6 +78,7 @@ def process_data(in_filename, out_filename, f_estimate, save_plot):
     tm_format_number_only = '%Y%m%d%H%M%S'
 
     if save_plot:
+        log.info('Writing a plot of a file on disk.')
         fig = plt.figure()
         ax = fig.gca()
         ax.plot(f_centered, 10 * np.log10(p * 1000))
@@ -89,6 +90,7 @@ def process_data(in_filename, out_filename, f_estimate, save_plot):
         if not os.path.exists(out_filename_wo_ext):
             os.mkdir(out_filename_wo_ext)
         plt.savefig('{0}/{1}.png'.format(out_filename_wo_ext, in_filename_wo_ext))
+        log.info('File {}.png was saved in {}.'.format(in_filename_wo_ext, out_filename_wo_ext))
 
     with open(out_filename, 'a') as f:
         f.write('{}\t{}\t{}\n'.format(time.mktime(tm), time.strftime(tm_format_number_only, tm), final_frequency))
