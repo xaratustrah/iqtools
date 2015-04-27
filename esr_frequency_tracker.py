@@ -78,7 +78,10 @@ def process_data(in_filename, out_filename, f_estimate):
     tm_format_number_only = '%Y%m%d%H%M%S'
     with open(out_filename, 'a') as f:
         f.write('{}\t{}\t{}\n'.format(time.mktime(tm), time.strftime(tm_format_number_only, tm), final_frequency))
+    log.info('Remembering this frequency for the next time.')
     log.info('Done.')
+
+    return final_frequency
 
 
 if __name__ == '__main__':
@@ -93,6 +96,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    internal_estimate = 0
+
     if args.verbose:
         log.basicConfig(level=log.DEBUG)
         verbose = True
@@ -101,4 +106,10 @@ if __name__ == '__main__':
         get_plot(args.plot[0], args.outfile[0])
     else:
         for i in range(len(args.infile)):
-            process_data(args.infile[i], args.outfile[0], float(args.f_estimate[0]))
+            if internal_estimate == 0:
+                log.info('First time call. Using the frequency estimate {} Hz given in the command line.'.format(
+                    args.f_estimate[0]))
+                internal_estimate = float(args.f_estimate[0])
+            log.info(
+                'Calculation using frequency estimate {} Hz.'.format(internal_estimate))
+            internal_estimate = process_data(args.infile[i], args.outfile[0], internal_estimate)

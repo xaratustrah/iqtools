@@ -18,8 +18,6 @@ from scipy.signal import hilbert, find_peaks_cwt, welch
 from scipy.io import wavfile
 
 
-verbose = False
-
 # ------------- BEGIN OF CLASS DEFINITION ------------- #
 
 
@@ -312,6 +310,10 @@ def make_analytical(x):
     return x_bar, ins_ph
 
 
+def shift_and_cut(x, val):
+    return x[:-val], x[val:]
+
+
 def shift_to_center(f, center):
     return center + f
 
@@ -322,6 +324,10 @@ def zoom_in_freq(f, p, center=0, span=1000):
     mask = (f > low) & (f < high)
     return f[mask], p[mask]
 
+
+# ----------------------------------------
+
+verbose = False
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
