@@ -24,10 +24,16 @@ DURATION = 120  # n of frames to read
 P_NOISE = -96  # dBm of approximate noise level
 
 
+def num_format(x, pos):
+    """The two args are the value and tick position"""
+
+    # return '$%1.1fM' % (x * 1e-6)
+    return '%8.0f' % x
+
+
 def get_plot(infile, outfile):
     log.info('Processing file: {}.'.format(os.path.basename(infile)))
     data = np.genfromtxt(infile)
-    data.sort(axis=0)
     first_time = data[0, 0]
     # first_freq = data[0, 1]
     avg = ((data[:, 2]).max() + (data[:, 2]).min()) / 2
@@ -35,9 +41,14 @@ def get_plot(infile, outfile):
     plt.gcf().subplots_adjust(bottom=0.16, left=0.16)  # otherwise bottom is cut
     ax = fig.gca()
     ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.2e'))
-    ax.plot(data[:, 0] - first_time, (data[:, 2] - avg) / avg, 'r.')
+    # ax.plot(data[:, 0] - first_time, (data[:, 2] - avg) / avg, 'r.')
+
+    formatter = mtick.FuncFormatter(num_format)
+    ax.yaxis.set_major_formatter(formatter)
+    ax.plot(data[:, 0] - first_time, data[:, 2], 'r.')
+    # plt.ylabel('delta_f/f [Hz]')
+    plt.ylabel('f_r [Hz]')
     plt.xlabel('Injection times [s]')
-    plt.ylabel('delta_f/f [Hz]')
     plt.title('Revolution frequency of 142-Pm nuclei during GO2014')
     plt.grid(True)
     log.info('Writing to file: {}.pdf.'.format(os.path.basename(outfile)))
