@@ -220,6 +220,7 @@ def get_fft_50_ohm(x, fs):
     v_rms = abs(v_peak_iq) / np.sqrt(2)
     p_avg = v_rms ** 2 / 50
     return np.fft.fftshift(f), np.fft.fftshift(v_peak_iq), np.fft.fftshift(p_avg)
+    #return f, v_peak_iq, p_avg
 
 
 def get_fwhm(f, p):
@@ -261,10 +262,10 @@ def get_watt(dbm):
     return 10 ** (dbm / 10) / 1000
 
 
-def make_signal(f, fs, l=1, nharm=0, noise=True):
+def make_signal(f, fs, length=1, nharm=0, noise=False):
     """Make a sine signal with/without noise."""
 
-    t = np.arange(0, l, 1 / fs)
+    t = np.arange(0, length, 1 / fs)
     x = np.zeros(len(t))
     for i in range(nharm + 2):
         x += np.sin(2 * np.pi * i * f * t)
