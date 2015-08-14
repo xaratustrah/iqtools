@@ -12,6 +12,7 @@ import os, argparse
 from pprint import pprint
 import xml.etree.ElementTree as et
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import numpy as np
 import logging as log
 from scipy.signal import hilbert, find_peaks_cwt, welch
@@ -34,24 +35,23 @@ class IQData(object):
         self.fs = 0.0
         self.span = 0.0
         self.scale = 0.0
-        self.n_frames_tot = 0
         self.dictionary = {}
         self.header = None
         self.data_array = None
         self.lframes = 0
+        self.nframes_tot = 0
+        self.nframes = 0
         return
 
     def read_iqt(self, filename):
         # todo: to be done
         return None
 
-
     def read_tdms(self, filename, meta_filename, nframes=0, lframes=0, sframes=0):
-        """Some good fried will continue here"""
+        """Some good friend will continue here"""
 
         # todo: returns a dictionary containing info e.g. complex array (c16), sampling rate etc...
         return None
-
 
     def read_tiq(self, filename, nframes=10, lframes=1024, sframes=1):
         """Process the tiq input file.
@@ -72,6 +72,7 @@ class IQData(object):
         """
 
         self.lframes = lframes
+        self.nframes = nframes
         self.filename = filename
         self.filename_wo_ext = os.path.splitext(filename)[0]
 
@@ -115,8 +116,8 @@ class IQData(object):
         log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
         log.info('Total number of samples: {}'.format(self.number_samples))
         log.info("Frame length: {0} data points = {1}s".format(lframes, lframes / self.fs))
-        self.n_frames_tot = int(self.number_samples / lframes)
-        log.info("Total number of frames: {0} = {1}s".format(self.n_frames_tot, self.number_samples / self.fs))
+        self.nframes_tot = int(self.number_samples / lframes)
+        log.info("Total number of frames: {0} = {1}s".format(self.nframes_tot, self.number_samples / self.fs))
         log.info("Start reading at offset: {0} = {1}s".format(sframes, sframes * lframes / self.fs))
         log.info("Reading {0} frames = {1}s.".format(nframes, nframes * lframes / self.fs))
 
@@ -138,8 +139,9 @@ class IQData(object):
 
         log.info("Output complex array has a size of {}.".format(self.data_array.size))
         self.dictionary = {'center': self.center, 'number_samples': self.number_samples, 'fs': self.fs,
+                           'nframes': self.nframes,
                            'lframes': self.lframes, 'data': self.data_array,
-                           'nframes_tot': self.n_frames_tot, 'DateTime': self.date_time, 'rf_att': self.rf_att,
+                           'nframes_tot': self.nframes_tot, 'DateTime': self.date_time, 'rf_att': self.rf_att,
                            'span': self.span,
                            'acq_bw': self.acq_bw,
                            'file_name': self.filename, 'rbw': self.rbw}
@@ -147,23 +149,19 @@ class IQData(object):
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
         return self.dictionary, self.header
 
-
     def save_header(self):
         """Saves the header byte array into a txt tile."""
         with open(self.filename_wo_ext + '.xml', 'wb') as f3:
             f3.write(self.header)
         log.info("Header saved in an xml file.")
 
-
     def save_data(self):
         """Saves the dictionary to a numpy file."""
         np.save(self.filename_wo_ext + '.npy', self.dictionary)
 
-
     def save_audio(self, afs):
         """ Save the singal as an audio wave """
         wavfile.write(self.filename_wo_ext + '.wav', afs, abs(self.data_array))
-
 
     @staticmethod
     def read_result_csv(filename):
@@ -180,7 +178,6 @@ class IQData(object):
                 stop = float(l[1])
         f = np.linspace(start - center, stop - center, len(p))
         return f, p
-
 
     @staticmethod
     def read_data_csv(filename):
@@ -199,11 +196,11 @@ def get_broad_peak_dbm(f, p):
     return [f[p_dbm.argmax()]], [p_dbm.max()]
 
 
-def get_channel_power_dbm(f, p_avg):
-    """ Return total power in band in dBm
+def get_channel_power(f, p_avg):
+    """ Return total power in band in Watts
     Input: average power in Watts
     """
-    return get_dbm(np.trapz(p_avg, x=f))
+    return np.trapz(p_avg, x=f)
 
 
 def get_dbm(watt):
@@ -220,7 +217,7 @@ def get_fft_50_ohm(x, fs):
     v_rms = abs(v_peak_iq) / np.sqrt(2)
     p_avg = v_rms ** 2 / 50
     return np.fft.fftshift(f), np.fft.fftshift(v_peak_iq), np.fft.fftshift(p_avg)
-    #return f, v_peak_iq, p_avg
+    # return f, v_peak_iq, p_avg
 
 
 def get_fwhm(f, p):
@@ -251,6 +248,41 @@ def get_narrow_peaks_dbm(f, p, accuracy=50):
     p_dbm = 10 * np.log10(p * 1000)
     peak_ind = find_peaks_cwt(p_dbm, np.arange(1, accuracy))
     return f[peak_ind], p_dbm[peak_ind]
+
+
+def get_spectrogram(x, fs, nframes, lframes):
+    # define an empty array for appending
+    pout = np.array([])
+    frame_power = np.array([])
+
+    # go through the array section wise and create a results array
+    for i in range(nframes):
+        f, p = get_pwelch(x[i * lframes:(i + 1) * lframes], fs)
+        pout = np.append(pout, p)
+        frame_power = np.append(frame_power, get_channel_power(f, p))
+
+    # create a mesh grid from 0 to n-1 in Y direction
+    xx, yy = np.meshgrid(f, np.arange(nframes))
+
+    # fold the results array to the mesh grid
+    zz = np.reshape(pout, (nframes, lframes))
+    return xx, yy * lframes / fs, zz, frame_power
+
+
+def plot_frame_power(yy, frame_power):
+    plt.plot(yy[:, 0], get_dbm(frame_power))
+    plt.ylabel('Power [dBm]')
+    plt.xlabel('Time [sec]')
+    plt.title('Frame power')
+
+
+def plot_spectrogram_dbm(xx, yy, zz, cen=0.0):
+    sp = plt.pcolormesh(xx, yy, get_dbm(zz), cmap=cm.jet)
+    cb = plt.colorbar(sp)
+    plt.xlabel("Delta f [Hz] @ {} [Hz]".format(cen))
+    plt.ylabel('Time [sec]')
+    plt.title('Spectrogram')
+    cb.set_label('Power Spectral Density [dBm/Hz]')
 
 
 def get_pwelch(x, fs):
@@ -324,7 +356,6 @@ def zoom_in_freq(f, p, center=0, span=1000):
     high = center + span / 2
     mask = (f > low) & (f < high)
     return f[mask], p[mask]
-
 
 # ----------------------------------------
 
