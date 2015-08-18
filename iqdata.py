@@ -185,6 +185,11 @@ class IQData(object):
         return np.fft.fftshift(f), np.fft.fftshift(p_avg)
 
     def get_spectrogram(self):
+        """
+        Go through the data frame by frame and perform transformation
+        :return: frequency, time and power for XYZ plot,
+        frame power for each frame and delta_f over f for each frame
+        """
         x = self.data_array
         fs = self.fs
         nframes = self.nframes
@@ -193,55 +198,96 @@ class IQData(object):
         # define an empty array for appending
         pout = np.array([])
         frame_power = np.array([])
+        dp_p = np.array([])
 
         # go through the array section wise and create a results array
         for i in range(nframes):
             f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes])
             pout = np.append(pout, p)
             frame_power = np.append(frame_power, IQData.get_channel_power(f, p))
+            fwhm, f_peak, _, _ = IQData.get_fwhm(f, p, skip=15)
+            dp_p = np.append(dp_p, self.get_delta_p_p(1.20397172736, fwhm, f_peak))
 
         # create a mesh grid from 0 to n-1 in Y direction
         xx, yy = np.meshgrid(f, np.arange(nframes))
 
         # fold the results array to the mesh grid
         zz = np.reshape(pout, (nframes, lframes))
-        return xx, yy * lframes / fs, zz, frame_power
+        return xx, yy * lframes / fs, zz, frame_power, dp_p
 
     @staticmethod
-    def get_fwhm(f, p):
-        """f and p are arrays of points correponing to the original data, whereas
-        the f_peak and p_peak are arrays of containing the coordinates of the peaks only
+    def get_fwhm(f, p, skip=None):
         """
-        a = IQData.get_dbm(p)
-        peak = a.max()
+        Return the full width at half maximum.
+        f and p are arrays of points corresponding to the original data, whereas
+        the f_peak and p_peak are arrays of containing the coordinates of the peaks only
+        :param f:
+        :param p:
+        :param skip: Sometimes peaks have a dip, skip this number of bins, use with care or visual inspection
+        :return:
+        """
+        p_dbm = IQData.get_dbm(p)
+        f_peak = p_dbm.max()
         f_p3db = 0
         f_m3db = 0
         p_p3db = 0
         p_m3db = 0
-        peak_index = a.argmax()
-        for i in range(peak_index, len(a)):
-            if a[i] <= (peak - 3):
-                p_p3db = a[i]
+        f_peak_index = p_dbm.argmax()
+        for i in range(f_peak_index, len(p_dbm)):
+            if skip is not None and i < skip:
+                continue
+            if p_dbm[i] <= (f_peak - 3):
+                p_p3db = p[i]
                 f_p3db = f[i]
                 break
-        for i in range(peak_index, -1, -1):
-            if a[i] <= (peak - 3):
-                p_m3db = a[i]
+        for i in range(f_peak_index, -1, -1):
+            if skip is not None and f_peak_index - i < skip:
+                continue
+            if p_dbm[i] <= (f_peak - 3):
+                p_m3db = p[i]
                 f_m3db = f[i]
                 break
-        return [f_m3db, f_p3db], [p_m3db, p_p3db]
+        fwhm = f_p3db - f_m3db
+        # return watt values not dbm
+        return fwhm, f_peak, [f_m3db, f_p3db], [p_m3db, p_p3db]
+
+    def get_delta_p_p(self, gamma, fwhm, f_peak):
+        """
+        Return momentum spread
+        :param gamma:
+        :param fwhm:
+        :param f_peak:
+        :return:
+        """
+        gamma_t = 1.34
+        eta = (1 / gamma ** 2) - (1 / gamma_t ** 2)
+        return fwhm / (f_peak + self.center) / eta
 
     @staticmethod
     def get_narrow_peaks_dbm(f, p, accuracy=50):
-        p_dbm = 10 * np.log10(p * 1000)
+        """
+        Find narrow peaks and return them
+        :param f:
+        :param p:
+        :param accuracy:
+        :return:
+        """
+        # convert to dbm for convenience
+        p_dbm = IQData.get_dbm(p)
         peak_ind = find_peaks_cwt(p_dbm, np.arange(1, accuracy))
-        return f[peak_ind], p_dbm[peak_ind]
+        # return the watt value, not dbm
+        return f[peak_ind], p[peak_ind]
 
     @staticmethod
     def get_broad_peak_dbm(f, p):
-        p_dbm = IQData.get_dbm(p)
+        """
+        Returns the maximum usually useful for a broad peak
+        :param f:
+        :param p:
+        :return:
+        """
         # return as an array for compatibility
-        return [f[p_dbm.argmax()]], [p_dbm.max()]
+        return [f[p.argmax()]], [p.max()]
 
     @staticmethod
     def get_dbm(watt):
@@ -249,7 +295,7 @@ class IQData(object):
         :param watt: value in Watt
         :return: value in dBm
         """
-        return 10 * np.log10(watt * 1000)
+        return 10 * np.log10(np.array(watt) * 1000)
 
     @staticmethod
     def get_watt(dbm):
@@ -257,7 +303,7 @@ class IQData(object):
         :param watt: value in dBm
         :return: value in Watt
         """
-        return 10 ** (dbm / 10) / 1000
+        return 10 ** (np.array(dbm) / 10) / 1000
 
     @staticmethod
     def get_channel_power(f, p):

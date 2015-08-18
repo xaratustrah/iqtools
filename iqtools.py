@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """
 Collection of tools for dealing with IQ data. This code converts data in TIQ
 format and extracts the data in numpy format
@@ -45,6 +44,8 @@ def make_analytical(x):
     return x_bar, ins_ph
 
 
+# ------------ PLOTTERS ----------------------------
+
 def plot_hilbert(x_bar):
     """Show Hilbert plot."""
 
@@ -56,7 +57,7 @@ def plot_hilbert(x_bar):
 
 def plot_frame_power(yy, frame_power):
     """
-    Plot frame power, i.e. trapezoid alond each time frame
+    Plot frame power, i.e. trapezoid along each time frame
     :param yy:
     :param frame_power:
     :return:
