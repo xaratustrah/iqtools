@@ -186,34 +186,79 @@ class IQData(object):
 
     def get_spectrogram(self):
         """
-        Go through the data frame by frame and perform transformation
+        Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh
+        x, y and z are ndarrays and have the same shape. In order to access the contents use these kind of
+        indexing as below:
+
+        #Slices parallel to frequency axis
+        nrows = np.shape(x)[0]
+        for i in range (nrows):
+            plt.plot(x[i,:], z[i,:])
+
+        #Slices parallel to time axis
+        ncols = np.shape(y)[1]
+        for i in range (ncols):
+            plt.plot(y[:,i], z[:, i])
+
         :return: frequency, time and power for XYZ plot,
-        frame power for each frame and delta_f over f for each frame
         """
         x = self.data_array
         fs = self.fs
         nframes = self.nframes
         lframes = self.lframes
 
-        # define an empty array for appending
+        # define an empty np-array for appending
         pout = np.array([])
-        frame_power = np.array([])
-        dp_p = np.array([])
 
-        # go through the array section wise and create a results array
+        # go through the data array section wise and create a results array
         for i in range(nframes):
             f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes])
             pout = np.append(pout, p)
-            frame_power = np.append(frame_power, IQData.get_channel_power(f, p))
-            fwhm, f_peak, _, _ = IQData.get_fwhm(f, p, skip=15)
-            dp_p = np.append(dp_p, self.get_delta_p_p(1.20397172736, fwhm, f_peak))
 
         # create a mesh grid from 0 to n-1 in Y direction
         xx, yy = np.meshgrid(f, np.arange(nframes))
 
         # fold the results array to the mesh grid
         zz = np.reshape(pout, (nframes, lframes))
-        return xx, yy * lframes / fs, zz, frame_power, dp_p
+        return xx, yy * lframes / fs, zz
+
+    def get_dp_p_vs_time(self, xx, yy, zz):
+        """
+        Returns two arrays for plotting dp_p vs time
+        :param xx: from spectrogram
+        :param yy: from spectrogram
+        :param zz: from spectrogram
+        :return: Flattened array for 2D plot
+        """
+        gamma = 1.20397172736
+        gamma_t = 1.34
+        eta = (1 / gamma ** 2) - (1 / gamma_t ** 2)
+        # Slices parallel to frequency axis
+        n_time_frames = np.shape(xx)[0]
+        dp_p = np.zeros(n_time_frames)
+        for i in range(n_time_frames):
+            fwhm, f_peak, _, _ = IQData.get_fwhm(xx[i, :], zz[i, :], skip=15)
+            dp_p[i] = fwhm / (f_peak + self.center) / eta
+
+        # Flatten array for 2D plot
+        return yy[:, 0], dp_p
+
+    def get_frame_power_vs_time(self, xx, yy, zz):
+        """
+        Returns two arrays for plotting frame power vs time
+        :param xx: from spectrogram
+        :param yy: from spectrogram
+        :param zz: from spectrogram
+        :return: Flattened array for 2D plot
+        """
+        # Slices parallel to frequency axis
+        n_time_frames = np.shape(xx)[0]
+        frame_power = np.zeros(n_time_frames)
+        for i in range(n_time_frames):
+            frame_power[i] = IQData.get_channel_power(xx[i, :], zz[i, :])
+
+        # Flatten array for 2D plot
+        return yy[:, 0], frame_power
 
     @staticmethod
     def get_fwhm(f, p, skip=None):
@@ -250,18 +295,6 @@ class IQData(object):
         fwhm = f_p3db - f_m3db
         # return watt values not dbm
         return fwhm, f_peak, [f_m3db, f_p3db], [p_m3db, p_p3db]
-
-    def get_delta_p_p(self, gamma, fwhm, f_peak):
-        """
-        Return momentum spread
-        :param gamma:
-        :param fwhm:
-        :param f_peak:
-        :return:
-        """
-        gamma_t = 1.34
-        eta = (1 / gamma ** 2) - (1 / gamma_t ** 2)
-        return fwhm / (f_peak + self.center) / eta
 
     @staticmethod
     def get_narrow_peaks_dbm(f, p, accuracy=50):
