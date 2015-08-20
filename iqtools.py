@@ -44,6 +44,40 @@ def make_analytical(x):
     return x_bar, ins_ph
 
 
+def read_result_csv(filename):
+    """
+    Read special format CSV result file from RSA5100 series output
+    :param filename:
+    :return:
+    """
+    p = np.genfromtxt(filename, skip_header=63)
+    with open(filename) as f:
+        cont = f.readlines()
+    for l in cont:
+        l = l.split(',')
+        if 'Frequency' in l and len(l) == 3:
+            center = float(l[1])
+        if 'XStart' in l and len(l) == 3:
+            start = float(l[1])
+        if 'XStop' in l and len(l) == 3:
+            stop = float(l[1])
+    f = np.linspace(start - center, stop - center, len(p))
+    return f, p
+
+
+def read_data_csv(filename):
+    """
+    Read special format CSV data file from RSA5100 series output.
+    Please note that 50 ohm power termination is already considered
+    for these data.
+    :param filename:
+    :return:
+    """
+    data = np.genfromtxt(filename, skip_header=10, delimiter=",")
+    data = np.ravel(data).view(dtype='c16')  # has one dimension more, should use ravel
+    return data
+
+
 # ------------ PLOTTERS ----------------------------
 
 def plot_hilbert(x_bar):
@@ -77,10 +111,12 @@ def plot_spectrogram_dbm(xx, yy, zz, cen=0.0, filename='', to_file=False):
     :param cen:
     :return:
     """
+    delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
+    delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
     sp = plt.pcolormesh(xx, yy, IQData.get_dbm(zz), cmap=cm.jet)
     cb = plt.colorbar(sp)
-    plt.xlabel("Delta f [Hz] @ {} [Hz]".format(cen))
-    plt.ylabel('Time [sec]')
+    plt.xlabel("Delta f [Hz] @ {} [Hz] (resolution = {:.2e} [Hz])".format(cen, delta_f))
+    plt.ylabel('Time [sec] (resolution = {:.2e} [s])'.format(delta_t))
     plt.title('Spectrogram')
     cb.set_label('Power Spectral Density [dBm/Hz]')
     if to_file:
@@ -130,8 +166,8 @@ if __name__ == "__main__":
 
     log.info("File {} passed for processing.".format(args.filename))
 
-    iq_data = IQData()
-    _, _ = iq_data.read_tiq(args.filename, args.nframes, args.lframes, args.sframes)
+    iq_data = IQData(args.filename)
+    _, _ = iq_data.read_tiq(args.nframes, args.lframes, args.sframes)
 
     if args.fft:
         log.info('Generating FFT plot.')
@@ -146,7 +182,7 @@ if __name__ == "__main__":
     if args.spec:
         log.info('Generating spectrogram plot.')
         f2, p2 = iq_data.get_pwelch()
-        x, y, z, fp = iq_data.get_spectrogram()
+        x, y, z = iq_data.get_spectrogram()
         plot_spectrogram_dbm(x, y, z, iq_data.center, iq_data.filename_wo_ext + '_spectrogram', True)
 
     if args.xml:

@@ -17,10 +17,9 @@ class IQData(object):
     """
     The main class definition
     """
-
-    def __init__(self):
-        self.filename = ''
-        self.filename_wo_ext = ''
+    def __init__(self, filename):
+        self.filename = filename
+        self.filename_wo_ext = os.path.splitext(filename)[0]
         self.acq_bw = 0.0
         self.center = 0.0
         self.date_time = ''
@@ -48,7 +47,7 @@ class IQData(object):
         # todo: returns a dictionary containing info e.g. complex array (c16), sampling rate etc...
         return None
 
-    def read_tiq(self, filename, nframes=10, lframes=1024, sframes=1):
+    def read_tiq(self, nframes=10, lframes=1024, sframes=1):
         """Process the tiq input file.
         Following information are extracted, except Data offset, all other are stored in the dic. Data needs to be normalized over 50 ohm.
 
@@ -68,17 +67,15 @@ class IQData(object):
 
         self.lframes = lframes
         self.nframes = nframes
-        self.filename = filename
-        self.filename_wo_ext = os.path.splitext(filename)[0]
 
-        filesize = os.path.getsize(filename)
+        filesize = os.path.getsize(self.filename)
         log.info("File size is {} bytes.".format(filesize))
 
-        with open(filename) as f:
+        with open(self.filename) as f:
             line = f.readline()
         data_offset = int(line.split("\"")[1])
 
-        with open(filename, 'rb') as f:
+        with open(self.filename, 'rb') as f:
             ba = f.read(data_offset)
 
         xml_tree_root = et.fromstring(ba)
@@ -121,7 +118,7 @@ class IQData(object):
         total_n_bytes = 8 * nframes * lframes  # 8 comes from 2 times 4 byte integer for I and Q
         start_n_bytes = 8 * (sframes - 1) * lframes
 
-        with open(filename, 'rb') as f:
+        with open(self.filename, 'rb') as f:
             f.seek(data_offset + start_n_bytes)
             ba = f.read(total_n_bytes)
 
@@ -158,18 +155,20 @@ class IQData(object):
         """ Save the singal as an audio wave """
         wavfile.write(self.filename_wo_ext + '.wav', afs, abs(self.data_array))
 
-    def get_fft_50_ohm(self):
+    def get_fft(self, x=None):
         """ Get the FFT spectrum of a signal over a load of 50 ohm."""
-
-        x = self.data_array
-        n = x.size
+        termination = 1  # in Ohms for termination resistor
+        if x is None:
+            data = self.data_array
+        else:
+            data = x
+        n = data.size
         ts = 1.0 / self.fs
         f = np.fft.fftfreq(n, ts)
-        v_peak_iq = np.fft.fft(x) / n
+        v_peak_iq = np.fft.fft(data) / n
         v_rms = abs(v_peak_iq) / np.sqrt(2)
-        p_avg = v_rms ** 2 / 50
-        return np.fft.fftshift(f), np.fft.fftshift(v_peak_iq), np.fft.fftshift(p_avg)
-        # return f, v_peak_iq, p_avg
+        p_avg = v_rms ** 2 / termination
+        return np.fft.fftshift(f), np.fft.fftshift(p_avg), np.fft.fftshift(v_peak_iq)
 
     def get_pwelch(self, x=None):
         """
@@ -181,7 +180,7 @@ class IQData(object):
             data = self.data_array
         else:
             data = x
-        f, p_avg = welch(data, self.fs, nperseg=1024)
+        f, p_avg = welch(data, self.fs, nperseg=self.lframes)
         return np.fft.fftshift(f), np.fft.fftshift(p_avg)
 
     def get_spectrogram(self):
@@ -215,7 +214,7 @@ class IQData(object):
             f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes])
             pout = np.append(pout, p)
 
-        # create a mesh grid from 0 to n-1 in Y direction
+        # create a mesh grid from 0 to nframes -1 in Y direction
         xx, yy = np.meshgrid(f, np.arange(nframes))
 
         # fold the results array to the mesh grid
@@ -379,37 +378,3 @@ class IQData(object):
         :return:
         """
         return center + f
-
-    @staticmethod
-    def read_result_csv(filename):
-        """
-        Read special format CSV result file from RSA5100 series output
-        :param filename:
-        :return:
-        """
-        p = np.genfromtxt(filename, skip_header=63)
-        with open(filename) as f:
-            cont = f.readlines()
-        for l in cont:
-            l = l.split(',')
-            if 'Frequency' in l and len(l) == 3:
-                center = float(l[1])
-            if 'XStart' in l and len(l) == 3:
-                start = float(l[1])
-            if 'XStop' in l and len(l) == 3:
-                stop = float(l[1])
-        f = np.linspace(start - center, stop - center, len(p))
-        return f, p
-
-    @staticmethod
-    def read_data_csv(filename):
-        """
-        Read special format CSV data file from RSA5100 series output.
-        Please note that 50 ohm power termination is already considered
-        for these data.
-        :param filename:
-        :return:
-        """
-        data = np.genfromtxt(filename, skip_header=10, delimiter=",")
-        data = np.ravel(data).view(dtype='c16')  # has one dimension more, should use ravel
-        return data
