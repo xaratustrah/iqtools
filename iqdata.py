@@ -17,8 +17,10 @@ class IQData(object):
     """
     The main class definition
     """
+
     def __init__(self, filename):
         self.filename = filename
+        self.file_basename = os.path.basename(filename)
         self.filename_wo_ext = os.path.splitext(filename)[0]
         self.acq_bw = 0.0
         self.center = 0.0
@@ -36,6 +38,18 @@ class IQData(object):
         self.nframes_tot = 0
         self.nframes = 0
         return
+
+    def __str__(self):
+        return \
+            'Date and Time: {}'.format(self.date_time) + '\n' + \
+            'Center freq.: {} [Hz]'.format(self.center) + '\n' + \
+            'Span: {} [Hz]'.format(self.span) + '\n' + \
+            'Acq. BW.:'.format(self.acq_bw) + '\n' + \
+            'RBW: {}'.format(self.rbw) + '\n' + \
+            'RF Att.: {}'.format(self.rf_att) + '\n' + \
+            'Sampling rate: {} sps'.format(self.fs) + '\n' + \
+            'No. Samples: {}'.format(self.number_samples) + '\n' + \
+            'Scale factor: {}'.format(self.scale)
 
     def read_iqt(self, filename):
         # todo: to be done
