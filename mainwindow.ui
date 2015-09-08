@@ -27,8 +27,15 @@
      <string>Plot</string>
     </property>
     <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="0">
+     <item row="0" column="1">
       <widget class="MatplotLibWidget" name="mplWidget" native="true"/>
+     </item>
+     <item row="0" column="0">
+      <widget class="QSlider" name="verticalSlider">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -50,13 +57,6 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>No. of frames:</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="1">
            <widget class="QSpinBox" name="spinBox_nframes">
             <property name="maximum">
@@ -67,27 +67,10 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_20">
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_21">
             <property name="text">
-             <string>Length of frames:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="spinBox_lframes">
-            <property name="maximum">
-             <number>10000</number>
-            </property>
-            <property name="value">
-             <number>1024</number>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Starting frame:</string>
+             <string>Color map:</string>
             </property>
            </widget>
           </item>
@@ -101,10 +84,34 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_21">
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>Color map:</string>
+             <string>Starting frame:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>No. of frames:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="spinBox_lframes">
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+            <property name="value">
+             <number>1024</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>Length of frames:</string>
             </property>
            </widget>
           </item>
@@ -168,9 +175,12 @@
      <string>File</string>
     </property>
     <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+    <addaction name="separator"/>
     <addaction name="actionChoose_file"/>
     <addaction name="actionReplot"/>
     <addaction name="separator"/>
+    <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -202,6 +212,16 @@
     <string>Ctrl+O</string>
    </property>
   </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -212,5 +232,38 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>spinBox_sframes</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>verticalSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>332</x>
+     <y>313</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>verticalSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>spinBox_sframes</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>332</x>
+     <y>313</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>218</x>
+     <y>160</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

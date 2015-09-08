@@ -7,12 +7,13 @@ AUG 2015 Xaratustrah
 
 """
 
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QDialog
 from PyQt5.QtGui import QKeyEvent
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QCoreApplication
 import numpy as np
 import matplotlib.cm as cm
 from mainwindow_ui import Ui_MainWindow
+from aboutdialog_ui import Ui_AbooutDialog
 from iqdata import IQData
 
 
@@ -40,6 +41,13 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         # UI related stuff
         self.connect_signals()
 
+    def showAboutDialog(self):
+        about_dialog = QDialog()
+        about_dialog.ui = Ui_AbooutDialog()
+        about_dialog.ui.setupUi(about_dialog)
+        about_dialog.exec_()
+        about_dialog.show()
+
     def connect_signals(self):
         """
         Connects signals.
@@ -50,6 +58,8 @@ class mainWindow(QMainWindow, Ui_MainWindow):
 
         self.actionChoose_file.triggered.connect(self.open_file_dialog)
         self.actionReplot.triggered.connect(self.plot)
+        self.actionAbout.triggered.connect(self.showAboutDialog)
+        self.actionQuit.triggered.connect(QCoreApplication.instance().quit)
 
     def plot(self):
 
