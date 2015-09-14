@@ -61,6 +61,8 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.actionAbout.triggered.connect(self.showAboutDialog)
         self.actionQuit.triggered.connect(QCoreApplication.instance().quit)
 
+        self.spinBox_lframes.valueChanged.connect(self.setup_gui_element_limits)
+
     def plot(self):
 
         if not self.file_loaded:
@@ -131,8 +133,26 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if file_name.lower().endswith('tiq'):
             self.iq_data = IQData(file_name)
             self.show_message('Loaded file: {}'.format(self.iq_data.file_basename))
+
+            # make a dummy read to get the header
+            _, _ = self.iq_data.read_tiq(1, 1, 0)
             self.textBrowser.clear()
+            self.textBrowser.append(str(self.iq_data))
             self.file_loaded = True
+            self.setup_gui_element_limits()
+
+    def setup_gui_element_limits(self):
+        if not self.file_loaded:
+            return
+        
+        nf = self.spinBox_nframes.value()
+        ns = self.iq_data.number_samples
+        lf = self.spinBox_lframes.value()
+        self.spinBox_nframes.setMaximum(int(ns / lf))
+        # allow for scrolling up to the last frame
+        self.spinBox_sframes.setMaximum(int(ns / lf) - nf - 1)
+        self.verticalSlider_sframes.setMaximum(int(ns / lf) - nf - 1)
+        self.verticalSlider_sframes.setTickInterval(int(ns / lf / 10))
 
     def keyPressEvent(self, event):
         """
@@ -148,5 +168,6 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             if event.key() == Qt.Key_Up:
                 print('up')
                 event.accept()
+                self.verticalSlider_sframes.setTickPosition(self.verticalSlider_sframes.tickPosition() + 10)
         else:
             event.ignore()
