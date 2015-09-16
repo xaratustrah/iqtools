@@ -12,6 +12,7 @@ from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtCore import Qt, QCoreApplication
 import numpy as np
 import matplotlib.cm as cm
+from matplotlib.ticker import FormatStrFormatter
 from mainwindow_ui import Ui_MainWindow
 from aboutdialog_ui import Ui_AbooutDialog
 from iqdata import IQData
@@ -42,6 +43,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.connect_signals()
 
     def showAboutDialog(self):
+        """
+        Show about dialog
+        :return:
+        """
         about_dialog = QDialog()
         about_dialog.ui = Ui_AbooutDialog()
         about_dialog.ui.setupUi(about_dialog)
@@ -65,7 +70,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.verticalSlider_sframes.valueChanged.connect(self.setup_gui_element_limits)
 
     def plot(self):
-
+        """
+        Main plot function
+        :return:
+        """
         if not self.file_loaded:
             self.show_message('Please choose a valid file first.')
             return
@@ -94,16 +102,24 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if self.comboBox_color.currentText() == 'Gray':
             cmap = cm.gray
 
-        _ = self.mplWidget.canvas.ax.pcolormesh(xx, yy, IQData.get_dbm(zz), cmap=cmap)
-        # cb = self.mplWidget.canvas.colorbar(sp)
-        # cb.set_label('Power Spectral Density [dBm/Hz]')
+        sp = self.mplWidget.canvas.ax.pcolormesh(xx, yy, IQData.get_dbm(zz), cmap=cmap)
+        #cb = self.mplWidget.colorbar(sp)
+        #cb.set_label('Power Spectral Density [dBm/Hz]')
+
+        # Change frequency axis formatting
+        self.mplWidget.canvas.ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))
         self.mplWidget.canvas.ax.set_xlabel(
-            "Delta f [Hz] @ {} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
+            "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
         self.mplWidget.canvas.ax.set_ylabel('Time [sec] (resolution = {:.2e} [s])'.format(delta_t))
         self.mplWidget.canvas.ax.set_title('Spectrogram')
         self.mplWidget.canvas.draw()
 
     def addmpl(self, fig):
+        """
+        Add plot widget
+        :param fig:
+        :return:
+        """
         self.canvas = FigureCanvas(fig)
         self.mplvl.addWidget(self.canvas)
         self.canvas.draw()
