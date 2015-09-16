@@ -11,12 +11,17 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QDialog
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtCore import Qt, QCoreApplication
 import numpy as np
-import matplotlib.cm as cm
-from matplotlib.ticker import FormatStrFormatter
+
 from mainwindow_ui import Ui_MainWindow
 from aboutdialog_ui import Ui_AbooutDialog
 from iqdata import IQData
 
+# force Matplotlib to use PyQt5 backend, call before importing pyplot and backends!
+from matplotlib import use
+use("Qt5Agg")
+import matplotlib.cm as cm
+from matplotlib.ticker import FormatStrFormatter
+from matplotlib.pyplot import colorbar
 
 class mainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -66,8 +71,8 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.actionAbout.triggered.connect(self.showAboutDialog)
         self.actionQuit.triggered.connect(QCoreApplication.instance().quit)
 
-        self.spinBox_lframes.valueChanged.connect(self.setup_gui_element_limits)
-        self.verticalSlider_sframes.valueChanged.connect(self.setup_gui_element_limits)
+        self.spinBox_lframes.valueChanged.connect(self.on_sframes_changed)
+        self.verticalSlider_sframes.valueChanged.connect(self.on_sframes_changed)
 
     def plot(self):
         """
@@ -102,9 +107,11 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if self.comboBox_color.currentText() == 'Gray':
             cmap = cm.gray
 
+        # find the correct object in the matplotlib widget
         sp = self.mplWidget.canvas.ax.pcolormesh(xx, yy, IQData.get_dbm(zz), cmap=cmap)
-        #cb = self.mplWidget.colorbar(sp)
-        #cb.set_label('Power Spectral Density [dBm/Hz]')
+        cb = colorbar(sp)
+        cb.set_label('Power Spectral Density [dBm/Hz]')
+        # TODO: Colorbar doesn't show here.
 
         # Change frequency axis formatting
         self.mplWidget.canvas.ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))
@@ -149,6 +156,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             return False
 
     def open_file_dialog(self):
+        """
+        Open file dialog
+        :return:
+        """
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose files...", '',
                                                    "TIQ Files (*.tiq)")
 
@@ -164,9 +175,13 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             self.textBrowser.clear()
             self.textBrowser.append(str(self.iq_data))
             self.file_loaded = True
-            self.setup_gui_element_limits()
+            self.on_sframes_changed()
 
-    def setup_gui_element_limits(self):
+    def on_sframes_changed(self):
+        """
+        Take care of the changes in the frame size and set limits for GUI elements such as sliders
+        :return:
+        """
         if not self.file_loaded:
             return
         nf = self.spinBox_nframes.value()

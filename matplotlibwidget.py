@@ -15,8 +15,8 @@ http://blog.rcnelson.com/building-a-matplotlib-gui-with-qt-designer-part-2/
 
 # force Matplotlib to use PyQt5 backend, call before importing pyplot and backends!
 from matplotlib import use
-
 use("Qt5Agg")
+
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg as FigureCanvas,
                                                 NavigationToolbar2QT as NavigationToolbar)
