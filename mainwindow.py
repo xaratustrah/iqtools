@@ -18,10 +18,12 @@ from iqdata import IQData
 
 # force Matplotlib to use PyQt5 backend, call before importing pyplot and backends!
 from matplotlib import use
+
 use("Qt5Agg")
 import matplotlib.cm as cm
 from matplotlib.ticker import FormatStrFormatter
 from matplotlib.pyplot import colorbar
+
 
 class mainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -42,7 +44,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.file_loaded = False
 
         # fill combo box with names
-        self.comboBox_color.addItems(['Jet', 'Blues', 'Hot', 'Cool', 'Copper', 'Gray'])
+        self.comboBox_color.addItems(['Jet', 'Blues', 'Cool', 'Copper', 'Hot', 'Gray'])
 
         # UI related stuff
         self.connect_signals()
@@ -107,8 +109,13 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if self.comboBox_color.currentText() == 'Gray':
             cmap = cm.gray
 
-        # find the correct object in the matplotlib widget
-        sp = self.mplWidget.canvas.ax.pcolormesh(xx, yy, IQData.get_dbm(zz), cmap=cmap)
+        zz_dbm = IQData.get_dbm(zz)
+
+        # Apply threshold
+        zz_dbm[zz_dbm < self.verticalSlider_thld.value()] = 0
+
+        # find the correct object in the matplotlib widget and plot on it
+        sp = self.mplWidget.canvas.ax.pcolormesh(xx, yy, zz_dbm, cmap=cmap)
         cb = colorbar(sp)
         cb.set_label('Power Spectral Density [dBm/Hz]')
         # TODO: Colorbar doesn't show here.
@@ -203,11 +210,9 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if type(event) == QKeyEvent:
             # here accept the event and do something
             if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:  # code enter key
-                # self.do_calculate()
                 self.plot()
                 event.accept()
             if event.key() == Qt.Key_Up:
-                print('up')
                 event.accept()
                 self.verticalSlider_sframes.setTickPosition(self.verticalSlider_sframes.tickPosition() + 10)
         else:
