@@ -41,7 +41,6 @@ class IQData(object):
 
     def __str__(self):
         return \
-            'Date and Time: {}'.format(self.date_time) + '\n' + \
             'Record length: {} [s]'.format(self.number_samples / self.fs) + '\n' + \
             'No. Samples: {}'.format(self.number_samples) + '\n' + \
             'Sampling rate: {} sps'.format(self.fs) + '\n' + \
@@ -49,7 +48,8 @@ class IQData(object):
             'Span: {} [Hz]'.format(self.span) + '\n' + \
             'Acq. BW.:'.format(self.acq_bw) + '\n' + \
             'RBW: {}'.format(self.rbw) + '\n' + \
-            'RF Att.: {}'.format(self.rf_att) + '\n'
+            'RF Att.: {}'.format(self.rf_att) + '\n' + \
+            'Date and Time: {}'.format(self.date_time) + '\n'
             #'Scale factor: {}'.format(self.scale)
 
     def read_iqt(self, filename):
