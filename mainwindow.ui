@@ -29,10 +29,13 @@
          <string>Navigation</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
+         <item row="4" column="1">
+          <widget class="QComboBox" name="comboBox_color"/>
+         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label_20">
            <property name="text">
-            <string>Length of frames:</string>
+            <string>Points per frames:</string>
            </property>
           </widget>
          </item>
@@ -80,15 +83,29 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="4" column="0">
           <widget class="QLabel" name="label_21">
            <property name="text">
             <string>Color map:</string>
            </property>
           </widget>
          </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Starting time [s]:</string>
+           </property>
+          </widget>
+         </item>
          <item row="3" column="1">
-          <widget class="QComboBox" name="comboBox_color"/>
+          <widget class="QLCDNumber" name="lcdNumber_sframes">
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -153,7 +170,7 @@
       <property name="title">
        <string>Sliders</string>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QSlider" name="verticalSlider_sframes">
          <property name="orientation">

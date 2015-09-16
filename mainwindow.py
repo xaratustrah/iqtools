@@ -36,7 +36,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.file_loaded = False
 
         # fill combo box with names
-        self.comboBox_color.addItems(['Jet', 'Blues'])
+        self.comboBox_color.addItems(['Jet', 'Blues', 'Hot', 'Cool', 'Copper', 'Gray'])
 
         # UI related stuff
         self.connect_signals()
@@ -62,6 +62,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.actionQuit.triggered.connect(QCoreApplication.instance().quit)
 
         self.spinBox_lframes.valueChanged.connect(self.setup_gui_element_limits)
+        self.verticalSlider_sframes.valueChanged.connect(self.setup_gui_element_limits)
 
     def plot(self):
 
@@ -84,8 +85,16 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             cmap = cm.jet
         if self.comboBox_color.currentText() == 'Blues':
             cmap = cm.Blues
+        if self.comboBox_color.currentText() == 'Hot':
+            cmap = cm.hot
+        if self.comboBox_color.currentText() == 'Cool':
+            cmap = cm.cool
+        if self.comboBox_color.currentText() == 'Copper':
+            cmap = cm.copper
+        if self.comboBox_color.currentText() == 'Gray':
+            cmap = cm.gray
 
-        sp = self.mplWidget.canvas.ax.pcolormesh(xx, yy, IQData.get_dbm(zz), cmap=cmap)
+        _ = self.mplWidget.canvas.ax.pcolormesh(xx, yy, IQData.get_dbm(zz), cmap=cmap)
         # cb = self.mplWidget.canvas.colorbar(sp)
         # cb.set_label('Power Spectral Density [dBm/Hz]')
         self.mplWidget.canvas.ax.set_xlabel(
@@ -144,15 +153,16 @@ class mainWindow(QMainWindow, Ui_MainWindow):
     def setup_gui_element_limits(self):
         if not self.file_loaded:
             return
-        
         nf = self.spinBox_nframes.value()
         ns = self.iq_data.number_samples
         lf = self.spinBox_lframes.value()
+        start = self.spinBox_sframes.value()
         self.spinBox_nframes.setMaximum(int(ns / lf))
         # allow for scrolling up to the last frame
         self.spinBox_sframes.setMaximum(int(ns / lf) - nf - 1)
         self.verticalSlider_sframes.setMaximum(int(ns / lf) - nf - 1)
         self.verticalSlider_sframes.setTickInterval(int(ns / lf / 10))
+        self.lcdNumber_sframes.display(start * self.spinBox_lframes.value() / self.iq_data.fs)
 
     def keyPressEvent(self, event):
         """

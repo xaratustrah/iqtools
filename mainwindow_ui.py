@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Mon Sep 14 11:52:37 2015
+# Created: Wed Sep 16 12:59:38 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -28,6 +28,9 @@ class Ui_MainWindow(object):
         self.groupBox.setObjectName("groupBox")
         self.gridLayout = QtWidgets.QGridLayout(self.groupBox)
         self.gridLayout.setObjectName("gridLayout")
+        self.comboBox_color = QtWidgets.QComboBox(self.groupBox)
+        self.comboBox_color.setObjectName("comboBox_color")
+        self.gridLayout.addWidget(self.comboBox_color, 4, 1, 1, 1)
         self.label_20 = QtWidgets.QLabel(self.groupBox)
         self.label_20.setObjectName("label_20")
         self.gridLayout.addWidget(self.label_20, 0, 0, 1, 1)
@@ -54,10 +57,15 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.spinBox_sframes, 2, 1, 1, 1)
         self.label_21 = QtWidgets.QLabel(self.groupBox)
         self.label_21.setObjectName("label_21")
-        self.gridLayout.addWidget(self.label_21, 3, 0, 1, 1)
-        self.comboBox_color = QtWidgets.QComboBox(self.groupBox)
-        self.comboBox_color.setObjectName("comboBox_color")
-        self.gridLayout.addWidget(self.comboBox_color, 3, 1, 1, 1)
+        self.gridLayout.addWidget(self.label_21, 4, 0, 1, 1)
+        self.label = QtWidgets.QLabel(self.groupBox)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 3, 0, 1, 1)
+        self.lcdNumber_sframes = QtWidgets.QLCDNumber(self.groupBox)
+        self.lcdNumber_sframes.setDigitCount(7)
+        self.lcdNumber_sframes.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
+        self.lcdNumber_sframes.setObjectName("lcdNumber_sframes")
+        self.gridLayout.addWidget(self.lcdNumber_sframes, 3, 1, 1, 1)
         self.verticalLayout_2.addWidget(self.groupBox)
         self.groupBox_5 = QtWidgets.QGroupBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
@@ -96,15 +104,15 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
         self.groupBox_3.setSizePolicy(sizePolicy)
         self.groupBox_3.setObjectName("groupBox_3")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.groupBox_3)
-        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.groupBox_3)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.verticalSlider_sframes = QtWidgets.QSlider(self.groupBox_3)
         self.verticalSlider_sframes.setOrientation(QtCore.Qt.Vertical)
         self.verticalSlider_sframes.setInvertedAppearance(False)
         self.verticalSlider_sframes.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.verticalSlider_sframes.setTickInterval(1)
         self.verticalSlider_sframes.setObjectName("verticalSlider_sframes")
-        self.horizontalLayout.addWidget(self.verticalSlider_sframes)
+        self.verticalLayout_3.addWidget(self.verticalSlider_sframes)
         self.horizontalLayout_2.addWidget(self.groupBox_3)
         self.groupBox_4 = QtWidgets.QGroupBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
@@ -161,10 +169,11 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "barion"))
         self.groupBox.setTitle(_translate("MainWindow", "Navigation"))
-        self.label_20.setText(_translate("MainWindow", "Length of frames:"))
+        self.label_20.setText(_translate("MainWindow", "Points per frames:"))
         self.label_2.setText(_translate("MainWindow", "No. of frames:"))
         self.label_3.setText(_translate("MainWindow", "Starting frame:"))
         self.label_21.setText(_translate("MainWindow", "Color map:"))
+        self.label.setText(_translate("MainWindow", "Starting time [s]:"))
         self.groupBox_5.setTitle(_translate("MainWindow", "Actions"))
         self.pushButton_choose_file.setText(_translate("MainWindow", "Choose file"))
         self.pushButton_replot.setText(_translate("MainWindow", "Plot"))
