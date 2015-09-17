@@ -21,7 +21,10 @@ includes = ['sip',
             'PyQt5',
             'PyQt5.QtWidgets',
             'PyQt5.QtCore',
-            'PyQt5.QtGui']
+            'PyQt5.QtGui',
+            'numpy',
+            'matplotlib.backends.backend_qt5agg'
+            ]
 
 options = {'bundle_files': 1,
            'compressed': True,
