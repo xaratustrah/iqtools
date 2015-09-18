@@ -11,10 +11,9 @@ AUG 2015 Xaratustrah
 from distutils.core import setup
 import py2exe
 import matplotlib
+from version import __version__
 
 name = 'iqgui'
-
-version = '0.0.1'
 
 pkgs = []
 
@@ -26,7 +25,8 @@ includes = ['sip',
             'PyQt5.QtCore',
             'PyQt5.QtGui',
             'numpy',
-            'matplotlib.backends.backend_qt5agg'
+            'matplotlib.backends.backend_qt5agg',
+			'mainwindow'
 			#'matplotlib.figure',
 			#'matplotlib.cm',
 			#'matplotlib.ticker',
@@ -45,7 +45,7 @@ datafiles = [("platforms", ["C:\\Python34\\Lib\\site-packages\\PyQt5\\plugins\\p
 
 setup(
     name=name,
-    version=version,
+    version=__version__,
     url='',
     license='',
     zipfile=None,
