@@ -58,6 +58,26 @@ setup(
     options={'py2exe': options}
 )
 
+#------------ current package setup win -------------
+
+# Current package setup under windows:
+
+# Python 3.4.0 and PyQt5.5.0 both x64 versions. 
+ 
+# matplotlib-1.4.3-cp34-none-win_amd64.whl
+# numpy-1.10.0b1+mkl-cp34-none-win_amd64.whl
+# scipy-0.16.0-cp34-none-win_amd64.whl
+
+# cycler (0.9.0)
+# fortranformat (0.2.5)
+# pip (1.5.4)
+# py2exe (0.9.2.2)
+# pyparsing (2.0.3)
+# python-dateutil (2.4.2)
+# pytz (2015.4)
+# scipy (0.16.0)
+# setuptools (2.1)
+# six (1.9.0)
 
 #------------ errors + solutions --------
 
