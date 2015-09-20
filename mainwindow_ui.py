@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Sep 16 22:25:22 2015
+# Created: Sun Sep 20 02:31:25 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -159,12 +159,6 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.toolBar = QtWidgets.QToolBar(MainWindow)
-        self.toolBar.setObjectName("toolBar")
-        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
-        self.toolBar_2 = QtWidgets.QToolBar(MainWindow)
-        self.toolBar_2.setObjectName("toolBar_2")
-        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar_2)
         self.actionReplot = QtWidgets.QAction(MainWindow)
         self.actionReplot.setObjectName("actionReplot")
         self.actionChoose_file = QtWidgets.QAction(MainWindow)
@@ -205,8 +199,6 @@ class Ui_MainWindow(object):
         self.groupBox_3.setTitle(_translate("MainWindow", "Sliders"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Plot"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
-        self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
-        self.toolBar_2.setWindowTitle(_translate("MainWindow", "toolBar_2"))
         self.actionReplot.setText(_translate("MainWindow", "Replot"))
         self.actionReplot.setShortcut(_translate("MainWindow", "Ctrl+R"))
         self.actionChoose_file.setText(_translate("MainWindow", "Choose file"))

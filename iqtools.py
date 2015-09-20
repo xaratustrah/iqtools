@@ -8,7 +8,7 @@ xaratustrah oct-2014
             aug-2015
 """
 
-import argparse
+import argparse, os
 from pprint import pprint
 
 import matplotlib.pyplot as plt
@@ -167,7 +167,15 @@ if __name__ == "__main__":
     log.info("File {} passed for processing.".format(args.filename))
 
     iq_data = IQData(args.filename)
-    _, _ = iq_data.read_tiq(args.nframes, args.lframes, args.sframes)
+    _, file_extension = os.path.splitext(args.filename)
+
+    if file_extension.lower() == '.iqt':
+        log.info('This is an iqt file.')
+        _, _ = iq_data.read_iqt(args.nframes, args.lframes, args.sframes)
+
+    if file_extension.lower() == '.tiq':
+        log.info('This is a tiq file.')
+        _, _ = iq_data.read_tiq(args.nframes, args.lframes, args.sframes)
 
     if args.fft:
         log.info('Generating FFT plot.')

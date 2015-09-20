@@ -168,21 +168,24 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         :return:
         """
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose files...", '',
-                                                   "TIQ Files (*.tiq)")
+                                                   "TIQ Files (*.tiq);;IQT Files (*.iqt)")
 
         if not file_name:
             return
 
-        if file_name.lower().endswith('tiq'):
-            self.iq_data = IQData(file_name)
-            self.show_message('Loaded file: {}'.format(self.iq_data.file_basename))
+        self.iq_data = IQData(file_name)
+        self.show_message('Loaded file: {}'.format(self.iq_data.file_basename))
 
-            # make a dummy read to get the header
-            _, _ = self.iq_data.read_tiq(1, 1, 0)
-            self.textBrowser.clear()
-            self.textBrowser.append(str(self.iq_data))
-            self.file_loaded = True
-            self.on_sframes_changed()
+        # make a dummy read to get the header
+        if file_name.lower().endswith('tiq'):
+            _, _ = self.iq_data.read_tiq(1, 1, 1)
+        if file_name.lower().endswith('iqt'):
+            _, _ = self.iq_data.read_iqt(1, 1, 1)
+        self.textBrowser.clear()
+        self.textBrowser.append(str(self.iq_data))
+        self.file_loaded = True
+        self.on_sframes_changed()
+
 
     def on_sframes_changed(self):
         """

@@ -5,7 +5,7 @@ Xaratustrah Aug-2015
 
 """
 
-import os
+import os, re
 import numpy as np
 import xml.etree.ElementTree as et
 import logging as log
@@ -44,24 +44,87 @@ class IQData(object):
             '<font size="4" color="green">Record length:</font> {} <font size="4" color="green">[s]</font><br>'.format(
                 self.number_samples / self.fs) + '\n' + \
             '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
-            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(self.fs) + '\n' + \
-            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(self.center) + '\n' + \
-            '<font size="4" color="green">Span:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(self.span) + '\n' + \
+            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
+                self.fs) + '\n' + \
+            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
+                self.center) + '\n' + \
+            '<font size="4" color="green">Span:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
+                self.span) + '\n' + \
             '<font size="4" color="green">Acq. BW.:</font> {} <br>'.format(self.acq_bw) + '\n' + \
             '<font size="4" color="green">RBW:</font> {} <br>'.format(self.rbw) + '\n' + \
             '<font size="4" color="green">RF Att.:</font> {} <br>'.format(self.rf_att) + '\n' + \
             '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
         # 'Scale factor: {}'.format(self.scale)
 
-    def read_iqt(self, filename):
-        # todo: to be done
-        return None
-
     def read_tdms(self, filename, meta_filename, nframes=0, lframes=0, sframes=0):
         """Some good friend will continue here"""
 
         # todo: returns a dictionary containing info e.g. complex array (c16), sampling rate etc...
         return None
+
+    def read_iqt(self, nframes=10, lframes=1024, sframes=1):
+        # todo: to be done
+        self.lframes = lframes
+        self.nframes = nframes
+
+        filesize = os.path.getsize(self.filename)
+        log.info("File size is {} bytes.".format(filesize))
+
+        with open(self.filename, 'rb') as f:
+            line = f.read(12).decode('utf8')
+
+        m = re.search('^[0-9]*', line)
+        data_offset = int(m.group(0)[2:]) + 6
+
+        with open(self.filename, 'rb') as f:
+            self.header = f.read(data_offset - 1).decode('utf8')
+
+        test = self.header.split('\n')
+        print(test)
+        for l in test:
+            if 'Span=' in l:
+                m = re.search('-*[0-9]+.*[0-9]+', l)
+                self.span = float(m.group(0)) * 1e3
+            if 'CenterFrequency=' in l:
+                m = re.search('-*[0-9]+.*[0-9]+', l)
+                self.center = float(m.group(0)) * 1e6
+            if 'FFTPoints=' in l:
+                m = re.search('-*[0-9]+.*[0-9]+', l)
+                fft_points = int(m.group(0))
+            if 'ValidFrames=' in l:
+                m = re.search('-*[0-9]+.*[0-9]+', l)
+                self.nframes_tot = int(m.group(0))
+            if 'FrameLength=' in l:
+                m = re.search('-*[0-9]+.*[0-9]+', l)
+                frame_length = float(m.group(0))
+            if 'DateTime=' in l:
+                self.date_time = l.split('=')[1]
+
+        self.number_samples = self.nframes_tot * fft_points
+        self.fs = fft_points / frame_length
+
+        log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
+
+        total_n_bytes = 8 * nframes * lframes  # 8 comes from 2 times 4 byte integer for I and Q
+        start_n_bytes = 8 * (sframes - 1) * lframes
+
+        with open(self.filename, 'rb') as f:
+            f.seek(data_offset + start_n_bytes)
+            ba = f.read(total_n_bytes)
+
+        self.data_array = np.fromstring(ba, dtype='<i4')  # little endian 4 byte ints.
+        self.data_array = self.data_array.view(
+            dtype='c16')  # reinterpret the bytes as a 16 byte complex number, which consists of 2 doubles.
+
+        self.dictionary = {'center': self.center, 'number_samples': self.number_samples, 'fs': self.fs,
+                           'nframes': self.nframes,
+                           'lframes': self.lframes, 'data': self.data_array,
+                           'nframes_tot': self.nframes_tot, 'DateTime': self.date_time, 'rf_att': self.rf_att,
+                           'span': self.span,
+                           'acq_bw': self.acq_bw,
+                           'file_name': self.filename, 'rbw': self.rbw}
+
+        return self.dictionary, self.header
 
     def read_tiq(self, nframes=10, lframes=1024, sframes=1):
         """Process the tiq input file.
