@@ -24,6 +24,7 @@ import matplotlib.cm as cm
 from matplotlib.ticker import FormatStrFormatter
 from matplotlib.pyplot import colorbar
 
+from version import __version__
 
 class mainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -57,6 +58,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         about_dialog = QDialog()
         about_dialog.ui = Ui_AbooutDialog()
         about_dialog.ui.setupUi(about_dialog)
+        about_dialog.ui.labelVersion.setText('Version: {}'.format(__version__))
         about_dialog.exec_()
         about_dialog.show()
 

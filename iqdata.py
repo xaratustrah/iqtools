@@ -37,6 +37,7 @@ class IQData(object):
         self.lframes = 0
         self.nframes_tot = 0
         self.nframes = 0
+
         return
 
     def __str__(self):
@@ -67,38 +68,51 @@ class IQData(object):
         self.lframes = lframes
         self.nframes = nframes
 
+        FrameHeaderLength = 12
+
         filesize = os.path.getsize(self.filename)
         log.info("File size is {} bytes.".format(filesize))
 
+        data_offset = 0
         with open(self.filename, 'rb') as f:
-            line = f.read(12).decode('utf8')
+            ba = f.read(1)
+            data_offset += 1
+            header_size_size = int(ba.decode('utf8'))
+            ba = f.read(header_size_size)
+            data_offset += header_size_size
+            header_size = int(ba.decode('utf8'))
+            ba = f.read(header_size)
+            data_offset += header_size
+            self.header = ba.decode('utf8')
 
-        m = re.search('^[0-9]*', line)
-        data_offset = int(m.group(0)[2:]) + 6
-
-        with open(self.filename, 'rb') as f:
-            self.header = f.read(data_offset - 1).decode('utf8')
-
-        test = self.header.split('\n')
-        print(test)
-        for l in test:
+        for l in self.header.split('\n'):
             if 'Span=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
                 self.span = float(m.group(0)) * 1e3
+                continue
             if 'CenterFrequency=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
                 self.center = float(m.group(0)) * 1e6
+                continue
             if 'FFTPoints=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
                 fft_points = int(m.group(0))
+                continue
             if 'ValidFrames=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
                 self.nframes_tot = int(m.group(0))
+                continue
             if 'FrameLength=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
                 frame_length = float(m.group(0))
+                continue
+            if 'GainOffset=' in l:
+                m = re.search('-*[0-9]+.*[0-9]+', l)
+                gain_offset = float(m.group(0))
+                continue
             if 'DateTime=' in l:
                 self.date_time = l.split('=')[1]
+                continue
 
         self.number_samples = self.nframes_tot * fft_points
         self.fs = fft_points / frame_length
@@ -209,6 +223,7 @@ class IQData(object):
             dtype='c16')  # reinterpret the bytes as a 16 byte complex number, which consists of 2 doubles.
 
         log.info("Output complex array has a size of {}.".format(self.data_array.size))
+        # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
         self.dictionary = {'center': self.center, 'number_samples': self.number_samples, 'fs': self.fs,
                            'nframes': self.nframes,
                            'lframes': self.lframes, 'data': self.data_array,
@@ -217,7 +232,6 @@ class IQData(object):
                            'acq_bw': self.acq_bw,
                            'file_name': self.filename, 'rbw': self.rbw}
 
-        # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
         return self.dictionary, self.header
 
     def save_header(self):
