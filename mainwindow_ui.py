@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Sun Sep 20 02:31:25 2015
+# Created: Tue Sep 22 17:26:10 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -184,7 +184,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "barion"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "iqgui"))
         self.groupBox.setTitle(_translate("MainWindow", "Navigation"))
         self.label_3.setText(_translate("MainWindow", "Starting frame:"))
         self.label_21.setText(_translate("MainWindow", "Color map:"))
