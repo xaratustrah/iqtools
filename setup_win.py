@@ -54,7 +54,7 @@ options = {'bundle_files': 3,
 
 datafiles = matplotlib.get_py2exe_datafiles() + \
             [("platforms", ["C:\\Python34\\Lib\\site-packages\\PyQt5\\plugins\\platforms\\qwindows.dll"]),
-             ("", [r"c:\windows\syswow64\MSVCP100.dll", r"c:\windows\syswow64\MSVCR100.dll"]),
+             ("", [r"c:\windows\syswow64\MSVCP100.dll", r"C:\Windows\System32\MSVCR100.dll"]),
              ("", [r"C:\Python34\Lib\site-packages\numpy\core\libifcoremd.dll"]),
              ("", [r"C:\Python34\Lib\site-packages\numpy\core\libifportmd.dll"]),
              ("", [r"C:\Python34\Lib\site-packages\numpy\core\libiomp5md.dll"]),
