@@ -119,16 +119,31 @@ class IQData(object):
 
         log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
 
-        total_n_bytes = 8 * nframes * lframes  # 8 comes from 2 times 4 byte integer for I and Q
-        start_n_bytes = 8 * (sframes - 1) * lframes
+        frame_header_type = np.dtype(
+            {'names': ['reserved1', 'validA', 'validP', 'validI', 'validQ', 'bins', 'reserved2', 'triggered',
+                       'overLoad', 'lastFrame', 'ticks'],
+             'formats': [np.int16, np.int16, np.int16, np.int16, np.int16, np.int16, np.int16,
+                         np.int16, np.int16, np.int16, np.int32]})
+
+        iq_type = np.dtype({'names': ['Q', 'I'], 'formats': [np.int16, np.int16]})
+        frame_type = np.dtype({'names': ['header', 'data'],
+                               'formats': [(frame_header_type, 1), (iq_type, 1024)]})
+
+        total_n_bytes = nframes * frame_type.itemsize
+        start_n_bytes = (sframes - 1) * frame_type.itemsize
 
         with open(self.filename, 'rb') as f:
             f.seek(data_offset + start_n_bytes)
             ba = f.read(total_n_bytes)
 
-        self.data_array = np.fromstring(ba, dtype='<i4')  # little endian 4 byte ints.
-        self.data_array = self.data_array.view(
-            dtype='c16')  # reinterpret the bytes as a 16 byte complex number, which consists of 2 doubles.
+        frame_data = np.fromstring(ba, dtype=frame_type)
+        #print(frame_header[0])
+        print(frame_data)
+        #print(frame_data[0]['data'][0])
+        #print(frame_data[1]['data'][0])
+        print(frame_data.size)
+        print(frame_type.itemsize)
+
 
         self.dictionary = {'center': self.center, 'number_samples': self.number_samples, 'fs': self.fs,
                            'nframes': self.nframes,
