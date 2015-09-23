@@ -22,7 +22,7 @@ Building iqgui under windows has been tested using a minimal python installation
 
 Python 3.4.0 and PyQt5.5.0 both x64 versions, directly from their respective official websites. Following packages were installed from [Ch. Gohlke](http://www.lfd.uci.edu/~gohlke/pythonlibs/)'s website: 
 
-matplotlib-1.4.3-cp34-none-win_amd64.whl
+matplotlib-1.5.0rc1-cp34-none-win_amd64
 numpy-1.10.0b1+mkl-cp34-none-win_amd64.whl
 scipy-0.16.0-cp34-none-win_amd64.whl
 
