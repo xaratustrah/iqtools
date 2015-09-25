@@ -64,14 +64,11 @@ class IQData(object):
         return None
 
     def read_iqt(self, nframes=10, lframes=1024, sframes=1):
-        # todo: to be done
+        # in iqt files, lframes is always fixed 1024 at the time of reading the file.
+        # Later the lframe can be changed from time data
+
         self.lframes = lframes
         self.nframes = nframes
-
-        FrameHeaderLength = 12
-
-        filesize = os.path.getsize(self.filename)
-        log.info("File size is {} bytes.".format(filesize))
 
         data_offset = 0
         with open(self.filename, 'rb') as f:
@@ -85,18 +82,26 @@ class IQData(object):
             data_offset += header_size
             self.header = ba.decode('utf8')
 
-        for l in self.header.split('\n'):
-            if 'Span=' in l:
+        for l in self.header.split('\r\n'):
+            if 'FFTPoints=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
-                self.span = float(m.group(0)) * 1e3
+                fft_points = int(m.group(0))
                 continue
+            if 'MaxInputLevel=' in l:
+                m = re.search('-*[0-9]+.*[0-9]+', l)
+                max_input_level = float(m.group(0))
+                continue
+            # if 'LevelOffset=' in l:
+            #     m = re.search('-*[0-9]+.*[0-9]+', l)
+            #     level_offset = float(m.group(0))
+            #     continue
             if 'CenterFrequency=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
                 self.center = float(m.group(0)) * 1e6
                 continue
-            if 'FFTPoints=' in l:
+            if 'Span=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
-                fft_points = int(m.group(0))
+                self.span = float(m.group(0)) * 1e3
                 continue
             if 'ValidFrames=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
@@ -104,18 +109,21 @@ class IQData(object):
                 continue
             if 'FrameLength=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
-                frame_length = float(m.group(0))
+                frame_length = float(m.group(0)) * 1e-3
+                continue
+            if 'DateTime=' in l:
+                self.date_time = l.split('=')[1]
                 continue
             if 'GainOffset=' in l:
                 m = re.search('-*[0-9]+.*[0-9]+', l)
                 gain_offset = float(m.group(0))
                 continue
-            if 'DateTime=' in l:
-                self.date_time = l.split('=')[1]
-                continue
 
         self.number_samples = self.nframes_tot * fft_points
         self.fs = fft_points / frame_length
+
+        level_offset = 0
+        self.scale = np.sqrt(np.power(10, (gain_offset + max_input_level + level_offset) / 10) / 20 * 2)
 
         log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
 
@@ -125,25 +133,31 @@ class IQData(object):
              'formats': [np.int16, np.int16, np.int16, np.int16, np.int16, np.int16, np.int16,
                          np.int16, np.int16, np.int16, np.int32]})
 
-        iq_type = np.dtype({'names': ['Q', 'I'], 'formats': [np.int16, np.int16]})
+        frame_data_type = np.dtype((np.int16, 2 * 1024))
         frame_type = np.dtype({'names': ['header', 'data'],
-                               'formats': [(frame_header_type, 1), (iq_type, 1024)]})
+                               'formats': [(frame_header_type, 1), (frame_data_type, 1)]})
 
         total_n_bytes = nframes * frame_type.itemsize
         start_n_bytes = (sframes - 1) * frame_type.itemsize
 
+        # prepare an empty array with enough room
+        self.data_array = np.zeros(1024 * nframes, np.complex64)
+
+        # Read n frames at once
         with open(self.filename, 'rb') as f:
             f.seek(data_offset + start_n_bytes)
             ba = f.read(total_n_bytes)
 
-        frame_data = np.fromstring(ba, dtype=frame_type)
-        #print(frame_header[0])
-        print(frame_data)
-        #print(frame_data[0]['data'][0])
-        #print(frame_data[1]['data'][0])
-        print(frame_data.size)
-        print(frame_type.itemsize)
+        frame_array = np.fromstring(ba, dtype=frame_type)
 
+        for i in range(frame_array.size):
+            temp_array = np.zeros(2 * 1024, np.int16)
+            temp_array[::2], temp_array[1::2] = frame_array[i]['data'][1::2], frame_array[i]['data'][::2]
+            temp_array = temp_array.astype(np.float32)
+            temp_array = temp_array.view(np.complex64)
+            self.data_array[i * 1024:(i + 1) * 1024] = temp_array
+
+        self.data_array = self.data_array * self.scale
 
         self.dictionary = {'center': self.center, 'number_samples': self.number_samples, 'fs': self.fs,
                            'nframes': self.nframes,

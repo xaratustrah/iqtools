@@ -42,7 +42,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
 
         # instance of data
         self.iq_data = None
-        self.file_loaded = False
+        self.loaded_file_type = None
 
         # fill combo box with names
         self.comboBox_color.addItems(['Jet', 'Blues', 'Cool', 'Copper', 'Hot', 'Gray'])
@@ -83,11 +83,16 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         Main plot function
         :return:
         """
-        if not self.file_loaded:
+        if not self.loaded_file_type:
             self.show_message('Please choose a valid file first.')
             return
 
-        _, _ = self.iq_data.read_tiq(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
+        if self.loaded_file_type == 'tiq':
+            _, _ = self.iq_data.read_tiq(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
+                                     self.spinBox_sframes.value())
+
+        if self.loaded_file_type == 'iqt':
+            _, _ = self.iq_data.read_iqt(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                                      self.spinBox_sframes.value())
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
@@ -181,11 +186,14 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         # make a dummy read to get the header
         if file_name.lower().endswith('tiq'):
             _, _ = self.iq_data.read_tiq(1, 1, 1)
+            self.loaded_file_type = 'tiq'
+
         if file_name.lower().endswith('iqt'):
             _, _ = self.iq_data.read_iqt(1, 1, 1)
+            self.loaded_file_type = 'iqt'
+
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
-        self.file_loaded = True
         self.on_sframes_changed()
 
 
@@ -194,7 +202,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         Take care of the changes in the frame size and set limits for GUI elements such as sliders
         :return:
         """
-        if not self.file_loaded:
+        if not self.loaded_file_type:
             return
         nf = self.spinBox_nframes.value()
         ns = self.iq_data.number_samples

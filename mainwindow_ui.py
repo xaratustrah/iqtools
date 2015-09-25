@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Tue Sep 22 17:26:10 2015
+# Created: Fri Sep 25 12:16:43 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -29,8 +29,9 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.groupBox)
         self.gridLayout.setObjectName("gridLayout")
         self.spinBox_sframes = QtWidgets.QSpinBox(self.groupBox)
+        self.spinBox_sframes.setMinimum(1)
         self.spinBox_sframes.setMaximum(1500)
-        self.spinBox_sframes.setProperty("value", 0)
+        self.spinBox_sframes.setProperty("value", 1)
         self.spinBox_sframes.setObjectName("spinBox_sframes")
         self.gridLayout.addWidget(self.spinBox_sframes, 2, 1, 1, 1)
         self.label_3 = QtWidgets.QLabel(self.groupBox)

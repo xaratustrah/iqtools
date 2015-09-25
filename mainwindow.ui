@@ -31,11 +31,14 @@
         <layout class="QGridLayout" name="gridLayout">
          <item row="2" column="1">
           <widget class="QSpinBox" name="spinBox_sframes">
+           <property name="minimum">
+            <number>1</number>
+           </property>
            <property name="maximum">
             <number>1500</number>
            </property>
            <property name="value">
-            <number>0</number>
+            <number>1</number>
            </property>
           </widget>
          </item>
