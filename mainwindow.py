@@ -175,7 +175,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         :return:
         """
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose files...", '',
-                                                   "TIQ Files (*.tiq);;IQT Files (*.iqt)")
+                                                   "IQ Files (*.tiq *.iqt)")
 
         if not file_name:
             return

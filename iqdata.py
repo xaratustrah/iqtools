@@ -65,7 +65,7 @@ class IQData(object):
 
     def read_iqt(self, nframes=10, lframes=1024, sframes=1):
         # in iqt files, lframes is always fixed 1024 at the time of reading the file.
-        # Later the lframe can be changed from time data
+        # At the usage time, the lframe can be changed from time data
 
         self.lframes = lframes
         self.nframes = nframes
@@ -80,49 +80,23 @@ class IQData(object):
             header_size = int(ba.decode('utf8'))
             ba = f.read(header_size)
             data_offset += header_size
-            self.header = ba.decode('utf8')
 
-        for l in self.header.split('\r\n'):
-            if 'FFTPoints=' in l:
-                m = re.search('-*[0-9]+.*[0-9]+', l)
-                fft_points = int(m.group(0))
-                continue
-            if 'MaxInputLevel=' in l:
-                m = re.search('-*[0-9]+.*[0-9]+', l)
-                max_input_level = float(m.group(0))
-                continue
-            # if 'LevelOffset=' in l:
-            #     m = re.search('-*[0-9]+.*[0-9]+', l)
-            #     level_offset = float(m.group(0))
-            #     continue
-            if 'CenterFrequency=' in l:
-                m = re.search('-*[0-9]+.*[0-9]+', l)
-                self.center = float(m.group(0)) * 1e6
-                continue
-            if 'Span=' in l:
-                m = re.search('-*[0-9]+.*[0-9]+', l)
-                self.span = float(m.group(0)) * 1e3
-                continue
-            if 'ValidFrames=' in l:
-                m = re.search('-*[0-9]+.*[0-9]+', l)
-                self.nframes_tot = int(m.group(0))
-                continue
-            if 'FrameLength=' in l:
-                m = re.search('-*[0-9]+.*[0-9]+', l)
-                frame_length = float(m.group(0)) * 1e-3
-                continue
-            if 'DateTime=' in l:
-                self.date_time = l.split('=')[1]
-                continue
-            if 'GainOffset=' in l:
-                m = re.search('-*[0-9]+.*[0-9]+', l)
-                gain_offset = float(m.group(0))
-                continue
+        self.header = ba.decode('utf8').split('\n')
+        header_dic = IQData.text_header_parser(self.header)
+
+        fft_points = int(header_dic['FFTPoints'])
+        max_input_level = float(header_dic['MaxInputLevel'])
+        level_offset = float(header_dic['LevelOffset'])
+        frame_length = float(header_dic['FrameLength'])
+        gain_offset = float(header_dic['GainOffset'])
+        self.center = float(header_dic['CenterFrequency'])
+        self.span = float(header_dic['Span'])
+        self.nframes_tot = int(header_dic['ValidFrames'])
+        self.date_time = header_dic['DateTime']
 
         self.number_samples = self.nframes_tot * fft_points
         self.fs = fft_points / frame_length
 
-        level_offset = 0
         self.scale = np.sqrt(np.power(10, (gain_offset + max_input_level + level_offset) / 10) / 20 * 2)
 
         log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
@@ -133,7 +107,7 @@ class IQData(object):
              'formats': [np.int16, np.int16, np.int16, np.int16, np.int16, np.int16, np.int16,
                          np.int16, np.int16, np.int16, np.int32]})
 
-        frame_data_type = np.dtype((np.int16, 2 * 1024))
+        frame_data_type = np.dtype((np.int16, 2 * 1024)) # 2 byte integer for Q, 2 byte integer for I
         frame_type = np.dtype({'names': ['header', 'data'],
                                'formats': [(frame_header_type, 1), (frame_data_type, 1)]})
 
@@ -500,3 +474,20 @@ class IQData(object):
         :return:
         """
         return center + f
+
+    @staticmethod
+    def text_header_parser(str):
+        """
+        Parses key = value from the file header
+        :param str:
+        :return: dictionary
+        """
+        dic = {}
+        for line in str:
+            name, var = line.partition("=")[::2]
+            var = var.strip()
+            var = var.replace('m', 'e-3')
+            var = var.replace('k', 'e3')
+            var = var.replace('M', 'e6')
+            dic[name.strip()] = var
+        return dic
