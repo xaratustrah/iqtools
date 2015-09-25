@@ -37,3 +37,9 @@ pytz (2015.4)
 setuptools (2.1)
 six (1.9.0)
 
+** Compressing using UPX **
+
+Using [UPX](http://upx.sourceforge.net/) the size of the resulting compilation under windows can be reduced by the following command:
+
+	upx --best --lzma --compress-exports=0 --strip-relocs=0 *.pyd *.dll
+
