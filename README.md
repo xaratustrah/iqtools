@@ -1,9 +1,10 @@
 iq_suite
 ============
+Collection of code for working with IQ ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components)) time series data with numpy. 
 
 ![barion](https://raw.githubusercontent.com/xaratustrah/iq_suite/master/screenshot.png)
 
-Collection of code for working with IQ Time data or time series ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components)) with numpy. These data are usually results of measurement of quantities in physical experiments or other related fields in fundamental research.
+These data are usually results of measurement of quantities in physical experiments or other related fields in fundamental research. Supported file formats are [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats IQT and TIQ from different generations of real time spectrum analyzers.
 
 While the GUI program offers a limited graphical way to visually inspect the data, the advanced usage allows direct programing using the class file and tools within own scrips or iPython Notebook sessions. The suite offers a extendible structure for adding further methods e.g. in spectral analysis or non-linear time series analysis.
 
