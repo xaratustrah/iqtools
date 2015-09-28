@@ -1,14 +1,36 @@
 iq_suite
 ============
-Collection of code for working with IQ ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components)) time series data with numpy. 
+<img src="https://raw.githubusercontent.com/xaratustrah/iq_suite/master/icon.svg" width="128">
 
-![barion](https://raw.githubusercontent.com/xaratustrah/iq_suite/master/screenshot.png)
+Collection of code for working with offline complex valued time series data ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components) or IQ Data)  with numpy written in Python. 
 
-These data are usually results of measurement of quantities in physical experiments or other related fields in fundamental research. Supported file formats are [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats IQT and TIQ from different generations of real time spectrum analyzers.
+![iq_suite](https://raw.githubusercontent.com/xaratustrah/iq_suite/master/screenshot.png)
 
-While the GUI program offers a limited graphical way to visually inspect the data, the advanced usage allows direct programing using the class file and tools within own scrips or iPython Notebook sessions. The suite offers a extendible structure for adding further methods e.g. in spectral analysis or non-linear time series analysis.
+These data are usually results of measurements of quantities in physical experiments in fundamental research or other related fields in science and engineering. These data are usually a result of radio frequency data acquisition systems involving one of the many methods of analog or digital [Hilbert transformation](https://en.wikipedia.org/wiki/Hilbert_transform) for the creation of [analytic signals](https://en.wikipedia.org/wiki/Analytic_signal), which in turn are easily processed in further stages. Applications include particle and fundamental physics, astrophysics, [software defined radio](https://en.wikipedia.org/wiki/Software-defined_radio) and many more.
 
-## Components
+While the GUI program offers a limited graphical interface to visually inspect the data, the advanced usage allows direct programing using the class file and tools within own scrips or iPython Notebook sessions. The suite offers a extendible structure for adding further methods e.g. in spectral analysis or non-linear time series analysis.
+
+
+Supported file formats are:
+
+**[Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats *.IQT and *.TIQ**
+
+Data format from different generations of real time spectrum analyzers.
+
+**Audio file *.wav**
+
+This data format is mostly useful for software defined radio applications. Left and right channels are treated as real and imaginary components respectively, file duration and sampling rate are determined automatically. Please note that for this format, the whole file will be loaded in memory.
+
+**raw binary *.bin:**
+
+This is a file that begins with a 32-bit integer for sampling rate, followed by a 32-bit float for the center frequency. The rest of the file contains real and imaginary parts each as a 32-bit floats. File size is automatically calculated. All data are little endian.
+
+**ASCII text *.txt or *.csv:**
+
+Tab, space or comma separated values, real and imaginary on every line. Lines beginning with # are considered as comments and are ignored. Each line contains real and imaginary part. These data will later be treated as 32-bit floating point numbers.
+
+
+## Code Components
 
 ### IQData class
 This class covers all required parameters to handle time domain IQ data and their representation in frequency domain. Cuts, slices etc. are also available.
@@ -24,6 +46,8 @@ This is a GUI written using the Qt5 bindings for quick showing of the spectrogra
 ## Installation
 
 #### Usage under Linux and OSX
+
+Usage under Linux and OSX is pretty straight forward.
 
 #### Building GUI under windows
 
