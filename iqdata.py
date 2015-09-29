@@ -5,7 +5,7 @@ Xaratustrah Aug-2015
 
 """
 
-import os, re
+import os, time
 import numpy as np
 import xml.etree.ElementTree as et
 import logging as log
@@ -31,18 +31,26 @@ class IQData(object):
         self.fs = 0.0
         self.span = 0.0
         self.scale = 0.0
-        self.dictionary = {}
         self.header = None
         self.data_array = None
         self.lframes = 0
         self.nframes_tot = 0
         self.nframes = 0
-
         return
+
+    @property
+    def dictionary(self):
+        return {'center': self.center, 'number_samples': self.number_samples, 'fs': self.fs,
+                'nframes': self.nframes,
+                'lframes': self.lframes, 'data': self.data_array,
+                'nframes_tot': self.nframes_tot, 'DateTime': self.date_time, 'rf_att': self.rf_att,
+                'span': self.span,
+                'acq_bw': self.acq_bw,
+                'file_name': self.filename, 'rbw': self.rbw}
 
     def __str__(self):
         return \
-            '<font size="4" color="green">Record length:</font> {} <font size="4" color="green">[s]</font><br>'.format(
+            '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
                 self.number_samples / self.fs) + '\n' + \
             '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
             '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
@@ -62,6 +70,18 @@ class IQData(object):
 
         # todo: returns a dictionary containing info e.g. complex array (c16), sampling rate etc...
         return None
+
+    def read_wav(self, nframes=10, lframes=1024, sframes=1):
+        self.lframes = lframes
+        self.nframes = nframes
+
+        fs, data = wavfile.read(self.filename)
+
+        self.data_array = data.astype(np.float32).view(np.complex64)[:, 0]
+        self.fs = fs
+        self.center = 0
+        self.number_samples = len(self.data_array)
+        self.date_time = time.ctime(os.path.getctime(self.filename))
 
     def read_iqt(self, nframes=10, lframes=1024, sframes=1):
         # in iqt files, lframes is always fixed 1024 at the time of reading the file.
@@ -107,7 +127,7 @@ class IQData(object):
              'formats': [np.int16, np.int16, np.int16, np.int16, np.int16, np.int16, np.int16,
                          np.int16, np.int16, np.int16, np.int32]})
 
-        frame_data_type = np.dtype((np.int16, 2 * 1024)) # 2 byte integer for Q, 2 byte integer for I
+        frame_data_type = np.dtype((np.int16, 2 * 1024))  # 2 byte integer for Q, 2 byte integer for I
         frame_type = np.dtype({'names': ['header', 'data'],
                                'formats': [(frame_header_type, 1), (frame_data_type, 1)]})
 
@@ -130,18 +150,9 @@ class IQData(object):
             temp_array = temp_array.astype(np.float32)
             temp_array = temp_array.view(np.complex64)
             self.data_array[i * 1024:(i + 1) * 1024] = temp_array
-
+        # and finally scale the data
         self.data_array = self.data_array * self.scale
-
-        self.dictionary = {'center': self.center, 'number_samples': self.number_samples, 'fs': self.fs,
-                           'nframes': self.nframes,
-                           'lframes': self.lframes, 'data': self.data_array,
-                           'nframes_tot': self.nframes_tot, 'DateTime': self.date_time, 'rf_att': self.rf_att,
-                           'span': self.span,
-                           'acq_bw': self.acq_bw,
-                           'file_name': self.filename, 'rbw': self.rbw}
-
-        return self.dictionary, self.header
+        # todo: correction data block
 
     def read_tiq(self, nframes=10, lframes=1024, sframes=1):
         """Process the tiq input file.
@@ -227,15 +238,6 @@ class IQData(object):
 
         log.info("Output complex array has a size of {}.".format(self.data_array.size))
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
-        self.dictionary = {'center': self.center, 'number_samples': self.number_samples, 'fs': self.fs,
-                           'nframes': self.nframes,
-                           'lframes': self.lframes, 'data': self.data_array,
-                           'nframes_tot': self.nframes_tot, 'DateTime': self.date_time, 'rf_att': self.rf_att,
-                           'span': self.span,
-                           'acq_bw': self.acq_bw,
-                           'file_name': self.filename, 'rbw': self.rbw}
-
-        return self.dictionary, self.header
 
     def save_header(self):
         """Saves the header byte array into a txt tile."""

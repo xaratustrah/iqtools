@@ -26,6 +26,7 @@ from matplotlib.pyplot import colorbar
 
 from version import __version__
 
+
 class mainWindow(QMainWindow, Ui_MainWindow):
     """
     The main class for the GUI window
@@ -88,12 +89,17 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             return
 
         if self.loaded_file_type == 'tiq':
-            _, _ = self.iq_data.read_tiq(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
-                                     self.spinBox_sframes.value())
+            self.iq_data.read_tiq(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
+                                  self.spinBox_sframes.value())
 
         if self.loaded_file_type == 'iqt':
-            _, _ = self.iq_data.read_iqt(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
-                                     self.spinBox_sframes.value())
+            self.iq_data.read_iqt(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
+                                  self.spinBox_sframes.value())
+
+        if self.loaded_file_type == 'wav':
+            self.iq_data.read_wav(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
+                                  self.spinBox_sframes.value())
+
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
         xx, yy, zz = self.iq_data.get_spectrogram()
@@ -175,7 +181,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         :return:
         """
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose files...", '',
-                                                   "IQ Files (*.tiq *.iqt)")
+                                                   "IQ Files (*.tiq *.iqt);;Sound files (*.wav)")
 
         if not file_name:
             return
@@ -185,17 +191,20 @@ class mainWindow(QMainWindow, Ui_MainWindow):
 
         # make a dummy read to get the header
         if file_name.lower().endswith('tiq'):
-            _, _ = self.iq_data.read_tiq(1, 1, 1)
+            self.iq_data.read_tiq(1, 1, 1)
             self.loaded_file_type = 'tiq'
 
         if file_name.lower().endswith('iqt'):
-            _, _ = self.iq_data.read_iqt(1, 1, 1)
+            self.iq_data.read_iqt(1, 1, 1)
             self.loaded_file_type = 'iqt'
+
+        if file_name.lower().endswith('wav'):
+            self.iq_data.read_wav(1, 1, 1)
+            self.loaded_file_type = 'wav'
 
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
         self.on_sframes_changed()
-
 
     def on_sframes_changed(self):
         """

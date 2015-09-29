@@ -171,11 +171,15 @@ if __name__ == "__main__":
 
     if file_extension.lower() == '.iqt':
         log.info('This is an iqt file.')
-        _, _ = iq_data.read_iqt(args.nframes, args.lframes, args.sframes)
+        iq_data.read_iqt(args.nframes, args.lframes, args.sframes)
 
     if file_extension.lower() == '.tiq':
         log.info('This is a tiq file.')
-        _, _ = iq_data.read_tiq(args.nframes, args.lframes, args.sframes)
+        iq_data.read_tiq(args.nframes, args.lframes, args.sframes)
+
+    if file_extension.lower() == '.wav':
+        log.info('This is a wav file.')
+        iq_data.read_wav(args.nframes, args.lframes, args.sframes)
 
     if args.fft:
         log.info('Generating FFT plot.')
