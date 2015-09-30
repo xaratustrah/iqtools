@@ -1,6 +1,6 @@
 iq_suite
 ============
-<img src="https://raw.githubusercontent.com/xaratustrah/iq_suite/master/icon.svg" width="128">
+<img src="https://raw.githubusercontent.com/xaratustrah/iq_suite/master/icon.png" width="128">
 
 Collection of code for working with offline complex valued time series data ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components) or IQ Data)  with numpy written in Python. 
 
