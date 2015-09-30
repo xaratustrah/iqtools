@@ -19,7 +19,7 @@ Data format from different generations of real time spectrum analyzers.
 
 **Audio file *.wav**
 
-This data format is mostly useful for software defined radio applications. Left and right channels are treated as real and imaginary components respectively, file duration and sampling rate are determined automatically. Please note that for this format, the whole file will be loaded in memory.
+This data format is mostly useful for software defined radio applications. Left and right channels are treated as real and imaginary components respectively, file duration and sampling rate are determined automatically. Memory map is activated to avoid the whole file will be loaded in memory.
 
 **raw binary *.bin:**
 

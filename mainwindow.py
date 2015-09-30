@@ -76,8 +76,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.actionAbout.triggered.connect(self.showAboutDialog)
         self.actionQuit.triggered.connect(QCoreApplication.instance().quit)
 
-        self.spinBox_lframes.valueChanged.connect(self.on_sframes_changed)
-        self.verticalSlider_sframes.valueChanged.connect(self.on_sframes_changed)
+        self.spinBox_lframes.valueChanged.connect(self.on_spinBox_lframe_changed)
+        self.spinBox_nframes.valueChanged.connect(self.on_spinBox_nframe_changed)
+        self.spinBox_sframes.valueChanged.connect(self.on_spinBox_sframe_changed)
+        self.verticalSlider_sframes.valueChanged.connect(self.on_spinBox_sframe_changed)
 
     def plot(self):
         """
@@ -204,25 +206,50 @@ class mainWindow(QMainWindow, Ui_MainWindow):
 
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
-        self.on_sframes_changed()
 
-    def on_sframes_changed(self):
-        """
-        Take care of the changes in the frame size and set limits for GUI elements such as sliders
-        :return:
-        """
+        # set some initial values for the spin boxes
+        self.spinBox_nframes.setValue(10)
+        self.spinBox_lframes.setValue(1024)
+        self.spinBox_sframes.setValue(1)
+        # finally do an initial limit checking
+        self.on_spinBox_lframe_changed()
+        self.on_spinBox_nframe_changed()
+        self.on_spinBox_sframe_changed()
+
+    def on_spinBox_lframe_changed(self):
         if not self.loaded_file_type:
             return
         nf = self.spinBox_nframes.value()
         ns = self.iq_data.number_samples
+        st = self.spinBox_sframes.value()
+
+        self.spinBox_lframes.setMaximum(int(ns - st) / nf)
+        self.spinBox_lframes.setMinimum(1)
+
+    def on_spinBox_nframe_changed(self):
+        if not self.loaded_file_type:
+            return
         lf = self.spinBox_lframes.value()
-        start = self.spinBox_sframes.value()
-        self.spinBox_nframes.setMaximum(int(ns / lf))
-        # allow for scrolling up to the last frame
+        ns = self.iq_data.number_samples
+        st = self.spinBox_sframes.value()
+
+        self.spinBox_nframes.setMaximum(int(ns - st) / lf)
+        self.spinBox_nframes.setMinimum(1)
+
+    def on_spinBox_sframe_changed(self):
+        ns = self.iq_data.number_samples
+        nf = self.spinBox_nframes.value()
+        lf = self.spinBox_lframes.value()
+        st = self.spinBox_sframes.value()
+
         self.spinBox_sframes.setMaximum(int(ns / lf) - nf - 1)
+        self.spinBox_sframes.setMinimum(1)
+
         self.verticalSlider_sframes.setMaximum(int(ns / lf) - nf - 1)
+        self.verticalSlider_sframes.setMinimum(1)
         self.verticalSlider_sframes.setTickInterval(int(ns / lf / 10))
-        self.lcdNumber_sframes.display(start * self.spinBox_lframes.value() / self.iq_data.fs)
+
+        self.lcdNumber_sframes.display(st * self.spinBox_lframes.value() / self.iq_data.fs)
 
     def keyPressEvent(self, event):
         """

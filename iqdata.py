@@ -67,23 +67,43 @@ class IQData(object):
 
     def read_tdms(self, filename, meta_filename, nframes=0, lframes=0, sframes=0):
         """Some good friend will continue here"""
-
         # todo: returns a dictionary containing info e.g. complex array (c16), sampling rate etc...
-        return None
+        pass
 
     def read_wav(self, nframes=10, lframes=1024, sframes=1):
+        """
+        Read sound wave files.
+        :param nframes:
+        :param lframes:
+        :param sframes:
+        :return:
+        """
         self.lframes = lframes
         self.nframes = nframes
 
-        fs, data = wavfile.read(self.filename)
+        # activate memory map
+        fs, data = wavfile.read(self.filename, mmap=True)
 
-        self.data_array = data.astype(np.float32).view(np.complex64)[:, 0]
+        all_data = data.astype(np.float32).view(np.complex64)[:, 0]
         self.fs = fs
         self.center = 0
-        self.number_samples = len(self.data_array)
+        self.number_samples = len(all_data)
+        self.nframes_tot = int(len(all_data) / lframes)
         self.date_time = time.ctime(os.path.getctime(self.filename))
 
+        total_n_bytes = nframes * lframes
+        start_n_bytes = (sframes - 1) * lframes
+
+        self.data_array = all_data[start_n_bytes:start_n_bytes + total_n_bytes]
+
     def read_iqt(self, nframes=10, lframes=1024, sframes=1):
+        """
+        Read IQT Files
+        :param nframes:
+        :param lframes:
+        :param sframes:
+        :return:
+        """
         # in iqt files, lframes is always fixed 1024 at the time of reading the file.
         # At the usage time, the lframe can be changed from time data
 
