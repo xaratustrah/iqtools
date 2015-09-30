@@ -33,6 +33,14 @@ def make_test_signal(f, fs, length=1, nharm=0, noise=False):
     return t, x
 
 
+def write_signal_as_ascii(filename, x, fs, center):
+    # insert ascii header which looks like a complex number
+    x = np.insert(x, 0, complex(fs, center))
+    with open(filename, 'w') as f:
+        for i in range(len(x)):
+            f.write('{}\t{}\n'.format(np.real(x[i]), np.imag(x[i])))
+
+
 def make_analytical(x):
     """Make an analytical signal from the real signal"""
 
@@ -169,9 +177,17 @@ if __name__ == "__main__":
     iq_data = IQData(args.filename)
     _, file_extension = os.path.splitext(args.filename)
 
+    if file_extension.lower() == '.txt' or file_extension.lower() == '.csv':
+        log.info('This is an ASCII file.')
+        iq_data.read_ascii(args.nframes, args.lframes, args.sframes)
+
     if file_extension.lower() == '.iqt':
         log.info('This is an iqt file.')
         iq_data.read_iqt(args.nframes, args.lframes, args.sframes)
+
+    if file_extension.lower() == '.iq':
+        log.info('This is an iq file.')
+        iq_data.read_iq(args.nframes, args.lframes, args.sframes)
 
     if file_extension.lower() == '.tiq':
         log.info('This is a tiq file.')

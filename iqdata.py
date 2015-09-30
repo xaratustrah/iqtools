@@ -70,6 +70,24 @@ class IQData(object):
         # todo: returns a dictionary containing info e.g. complex array (c16), sampling rate etc...
         pass
 
+    def read_ascii(self, nframes=10, lframes=1024, sframes=1):
+        self.lframes = lframes
+        self.nframes = nframes
+
+        x = np.genfromtxt(self.filename, dtype=np.float32)
+        self.fs = x[0,0]
+        self.center = x[0,1]
+        all_data = x[1:,:]
+        all_data = all_data.view(np.complex64)[:, 0]
+        self.number_samples = len(all_data)
+        self.nframes_tot = int(self.number_samples / lframes)
+        self.date_time = time.ctime(os.path.getctime(self.filename))
+
+        total_n_bytes = nframes * lframes
+        start_n_bytes = (sframes - 1) * lframes
+
+        self.data_array = all_data[start_n_bytes:start_n_bytes + total_n_bytes]
+
     def read_wav(self, nframes=10, lframes=1024, sframes=1):
         """
         Read sound wave files.
@@ -95,6 +113,50 @@ class IQData(object):
         start_n_bytes = (sframes - 1) * lframes
 
         self.data_array = all_data[start_n_bytes:start_n_bytes + total_n_bytes]
+
+    def read_iq(self, nframes=10, lframes=1024, sframes=1):
+        """
+        Read Sony/Tektronix IQ Files
+        :param nframes:
+        :param lframes:
+        :param sframes:
+        :return:
+        """
+        # in iqt files, lframes is always fixed 1024 at the time of reading the file.
+        # At the usage time, the lframe can be changed from time data
+
+        self.lframes = lframes
+        self.nframes = nframes
+
+        data_offset = 0
+        with open(self.filename, 'rb') as f:
+            ba = f.read(1)
+            data_offset += 1
+            header_size_size = int(ba.decode('utf8'))
+            ba = f.read(header_size_size)
+            data_offset += header_size_size
+            header_size = int(ba.decode('utf8'))
+            ba = f.read(header_size)
+            data_offset += header_size
+
+        self.header = ba.decode('utf8').split('\n')
+        header_dic = IQData.text_header_parser(self.header)
+
+        fft_points = int(header_dic['FFTPoints'])
+        max_input_level = float(header_dic['MaxInputLevel'])
+        level_offset = float(header_dic['LevelOffset'])
+        frame_length = float(header_dic['FrameLength'])
+        gain_offset = float(header_dic['GainOffset'])
+        self.center = float(header_dic['CenterFrequency'])
+        self.span = float(header_dic['Span'])
+        self.nframes_tot = int(header_dic['ValidFrames'])
+        self.date_time = header_dic['DateTime']
+
+        self.number_samples = self.nframes_tot * fft_points
+        self.fs = fft_points / frame_length
+
+        # self.scale = np.sqrt(np.power(10, (gain_offset + max_input_level + level_offset) / 10) / 20 * 2)
+        # todo: IQ support not finished
 
     def read_iqt(self, nframes=10, lframes=1024, sframes=1):
         """
@@ -508,8 +570,11 @@ class IQData(object):
         for line in str:
             name, var = line.partition("=")[::2]
             var = var.strip()
-            var = var.replace('m', 'e-3')
             var = var.replace('k', 'e3')
-            var = var.replace('M', 'e6')
+            var = var.replace('m', 'e-3')
+            var = var.replace('u', 'e-6')
+            # sometimes there is a string indicating day time:
+            if 'PM' not in var and 'AM' not in var:
+                var = var.replace('M', 'e6')
             dic[name.strip()] = var
         return dic

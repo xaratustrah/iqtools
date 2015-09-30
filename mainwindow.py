@@ -102,6 +102,12 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             self.iq_data.read_wav(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                                   self.spinBox_sframes.value())
 
+        if self.loaded_file_type == 'ascii':
+            self.iq_data.read_ascii(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
+                                    self.spinBox_sframes.value())
+        else:
+            return
+
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
         xx, yy, zz = self.iq_data.get_spectrogram()
@@ -183,7 +189,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         :return:
         """
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose files...", '',
-                                                   "IQ Files (*.tiq *.iqt);;Sound files (*.wav)")
+                                                   "IQ Files (*.tiq *.iqt);;Sound files (*.wav);;ASCII files (*.txt)")
 
         if not file_name:
             return
@@ -199,6 +205,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if file_name.lower().endswith('iqt'):
             self.iq_data.read_iqt(1, 1, 1)
             self.loaded_file_type = 'iqt'
+
+        if file_name.lower().endswith('txt'):
+            self.iq_data.read_ascii(1, 1, 1)
+            self.loaded_file_type = 'ascii'
 
         if file_name.lower().endswith('wav'):
             self.iq_data.read_wav(1, 1, 1)
