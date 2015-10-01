@@ -105,6 +105,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if self.loaded_file_type == 'ascii':
             self.iq_data.read_ascii(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                                     self.spinBox_sframes.value())
+
+        if self.loaded_file_type == 'bin':
+            self.iq_data.read_bin(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
+                                  self.spinBox_sframes.value())
         else:
             return
 
@@ -189,7 +193,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         :return:
         """
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose files...", '',
-                                                   "IQ Files (*.tiq *.iqt);;Sound files (*.wav);;ASCII files (*.txt)")
+                                                   "IQ Files (*.tiq *.iqt);;Sound files (*.wav);;ASCII files (*.txt);;Raw binary files (*.bin)")
 
         if not file_name:
             return
@@ -209,6 +213,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if file_name.lower().endswith('txt'):
             self.iq_data.read_ascii(1, 1, 1)
             self.loaded_file_type = 'ascii'
+
+        if file_name.lower().endswith('bin'):
+            self.iq_data.read_bin(1, 1, 1)
+            self.loaded_file_type = 'bin'
 
         if file_name.lower().endswith('wav'):
             self.iq_data.read_wav(1, 1, 1)

@@ -33,6 +33,14 @@ def make_test_signal(f, fs, length=1, nharm=0, noise=False):
     return t, x
 
 
+def write_signal_as_binary(filename, x, fs, center):
+    # 32-bit little endian floats
+    # insert header
+    x = np.insert(x, 0, complex(fs, center))
+    x = x.astype(np.complex64)
+    x.tofile(filename)
+
+
 def write_signal_as_ascii(filename, x, fs, center):
     # insert ascii header which looks like a complex number
     x = np.insert(x, 0, complex(fs, center))
@@ -180,6 +188,10 @@ if __name__ == "__main__":
     if file_extension.lower() == '.txt' or file_extension.lower() == '.csv':
         log.info('This is an ASCII file.')
         iq_data.read_ascii(args.nframes, args.lframes, args.sframes)
+
+    if file_extension.lower() == '.bin':
+        log.info('This is a raw binary file.')
+        iq_data.read_bin(args.nframes, args.lframes, args.sframes)
 
     if file_extension.lower() == '.iqt':
         log.info('This is an iqt file.')
