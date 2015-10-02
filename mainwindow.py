@@ -90,23 +90,23 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             self.show_message('Please choose a valid file first.')
             return
 
-        if self.loaded_file_type == 'tiq':
+        elif self.loaded_file_type == 'tiq':
             self.iq_data.read_tiq(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                                   self.spinBox_sframes.value())
 
-        if self.loaded_file_type == 'iqt':
+        elif self.loaded_file_type == 'iqt':
             self.iq_data.read_iqt(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                                   self.spinBox_sframes.value())
 
-        if self.loaded_file_type == 'wav':
+        elif self.loaded_file_type == 'wav':
             self.iq_data.read_wav(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                                   self.spinBox_sframes.value())
 
-        if self.loaded_file_type == 'ascii':
+        elif self.loaded_file_type == 'ascii':
             self.iq_data.read_ascii(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                                     self.spinBox_sframes.value())
 
-        if self.loaded_file_type == 'bin':
+        elif self.loaded_file_type == 'bin':
             self.iq_data.read_bin(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                                   self.spinBox_sframes.value())
         else:
@@ -206,21 +206,23 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             self.iq_data.read_tiq(1, 1, 1)
             self.loaded_file_type = 'tiq'
 
-        if file_name.lower().endswith('iqt'):
+        elif file_name.lower().endswith('iqt'):
             self.iq_data.read_iqt(1, 1, 1)
             self.loaded_file_type = 'iqt'
 
-        if file_name.lower().endswith('txt'):
+        elif file_name.lower().endswith('txt'):
             self.iq_data.read_ascii(1, 1, 1)
             self.loaded_file_type = 'ascii'
 
-        if file_name.lower().endswith('bin'):
+        elif file_name.lower().endswith('bin'):
             self.iq_data.read_bin(1, 1, 1)
             self.loaded_file_type = 'bin'
 
-        if file_name.lower().endswith('wav'):
+        elif file_name.lower().endswith('wav'):
             self.iq_data.read_wav(1, 1, 1)
             self.loaded_file_type = 'wav'
+        else:
+            return
 
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
