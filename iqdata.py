@@ -403,12 +403,12 @@ class IQData(object):
         lframes = self.lframes
 
         # define an empty np-array for appending
-        pout = np.array([])
+        pout = np.zeros(nframes * lframes)
 
         # go through the data array section wise and create a results array
         for i in range(nframes):
             f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes])
-            pout = np.append(pout, p)
+            pout[i * lframes:(i + 1) * lframes] = p
 
         # create a mesh grid from 0 to nframes -1 in Y direction
         xx, yy = np.meshgrid(f, np.arange(nframes))
