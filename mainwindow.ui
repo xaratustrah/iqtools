@@ -42,6 +42,19 @@
            </property>
           </widget>
          </item>
+         <item row="5" column="1">
+          <widget class="QLCDNumber" name="lcdNumber_thld">
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
+           </property>
+           <property name="value" stdset="0">
+            <double>-200.000000000000000</double>
+           </property>
+          </widget>
+         </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_3">
            <property name="text">
@@ -49,20 +62,51 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_21">
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Color map:</string>
+            <string>Threshold [dBm]:</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
-          <widget class="QComboBox" name="comboBox_color"/>
+         <item row="7" column="1">
+          <widget class="QRadioButton" name="radioButton_fft">
+           <property name="text">
+            <string>FFT</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>No. of frames:</string>
+           </property>
+          </widget>
          </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label_20">
            <property name="text">
             <string>Points per frames:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QRadioButton" name="radioButton_welch">
+           <property name="text">
+            <string>Welch</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLCDNumber" name="lcdNumber_sframes">
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
            </property>
           </widget>
          </item>
@@ -86,23 +130,6 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <widget class="QLCDNumber" name="lcdNumber_sframes">
-           <property name="digitCount">
-            <number>7</number>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::Flat</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>No. of frames:</string>
-           </property>
-          </widget>
-         </item>
          <item row="3" column="0">
           <widget class="QLabel" name="label">
            <property name="text">
@@ -110,23 +137,27 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
-          <widget class="QLCDNumber" name="lcdNumber_thld">
-           <property name="digitCount">
-            <number>7</number>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::Flat</enum>
-           </property>
-           <property name="value" stdset="0">
-            <double>-200.000000000000000</double>
+         <item row="8" column="1">
+          <widget class="QRadioButton" name="radioButton_multitaper">
+           <property name="text">
+            <string>Multitaper</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_4">
+         <item row="9" column="0">
+          <widget class="QLabel" name="label_21">
            <property name="text">
-            <string>Threshold [dBm]:</string>
+            <string>Color map:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <widget class="QComboBox" name="comboBox_color"/>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Method:</string>
            </property>
           </widget>
          </item>
@@ -147,6 +178,9 @@
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <widget class="QPushButton" name="pushButton_choose_file">
+           <property name="toolTip">
+            <string>Open file [cmd] or [ct</string>
+           </property>
            <property name="text">
             <string>Choose file</string>
            </property>
@@ -154,6 +188,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_replot">
+           <property name="toolTip">
+            <string>Plot [return]</string>
+           </property>
            <property name="text">
             <string>Plot</string>
            </property>

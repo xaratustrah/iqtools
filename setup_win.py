@@ -31,7 +31,8 @@ includes = ['sip',
             'scipy.special._ufuncs_cxx',
             'scipy.linalg.cython_blas',
             'scipy.linalg.cython_lapack',
-            'scipy.sparse.csgraph._validation'
+            'scipy.sparse.csgraph._validation',
+            'spectrum'
             ]
 
 excludes = ['pkg_resources',

@@ -114,7 +114,14 @@ class mainWindow(QMainWindow, Ui_MainWindow):
 
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
-        xx, yy, zz = self.iq_data.get_spectrogram()
+        if self.radioButton_multitaper.isChecked():
+            method = 'multitaper'
+        elif self.radioButton_welch.isChecked():
+            method = 'welch'
+        else:
+            method = 'fft'
+
+        xx, yy, zz = self.iq_data.get_spectrogram(method=method)
 
         delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
         delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))

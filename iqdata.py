@@ -11,6 +11,7 @@ import xml.etree.ElementTree as et
 import logging as log
 from scipy.io import wavfile
 from scipy.signal import welch, find_peaks_cwt
+from spectrum import dpss, pmtm
 
 
 class IQData(object):
@@ -91,9 +92,9 @@ class IQData(object):
         self.nframes = nframes
 
         x = np.genfromtxt(self.filename, dtype=np.float32)
-        self.fs = x[0,0]
-        self.center = x[0,1]
-        all_data = x[1:,:]
+        self.fs = x[0, 0]
+        self.center = x[0, 1]
+        all_data = x[1:, :]
         all_data = all_data.view(np.complex64)[:, 0]
         self.number_samples = len(all_data)
         self.nframes_tot = int(self.number_samples / lframes)
@@ -351,6 +352,16 @@ class IQData(object):
         """ Save the singal as an audio wave """
         wavfile.write(self.filename_wo_ext + '.wav', afs, abs(self.data_array))
 
+    def get_fft_freqs_only(self, x=None):
+        if x is None:
+            data = self.data_array
+        else:
+            data = x
+        n = data.size
+        ts = 1.0 / self.fs
+        f = np.fft.fftfreq(n, ts)
+        return np.fft.fftshift(f)
+
     def get_fft(self, x=None):
         """ Get the FFT spectrum of a signal over a load of 50 ohm."""
         termination = 1  # in Ohms for termination resistor
@@ -376,10 +387,10 @@ class IQData(object):
             data = self.data_array
         else:
             data = x
-        f, p_avg = welch(data, self.fs, nperseg=self.lframes)
+        f, p_avg = welch(data, self.fs, nperseg=data.size)
         return np.fft.fftshift(f), np.fft.fftshift(p_avg)
 
-    def get_spectrogram(self):
+    def get_spectrogram(self, method='fft'):
         """
         Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh
         x, y and z are ndarrays and have the same shape. In order to access the contents use these kind of
@@ -405,10 +416,25 @@ class IQData(object):
         # define an empty np-array for appending
         pout = np.zeros(nframes * lframes)
 
-        # go through the data array section wise and create a results array
-        for i in range(nframes):
-            f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes])
-            pout[i * lframes:(i + 1) * lframes] = p
+        if method == 'fft':
+            # go through the data array section wise and create a results array
+            for i in range(nframes):
+                f, p, _ = self.get_fft(x[i * lframes:(i + 1) * lframes])
+                pout[i * lframes:(i + 1) * lframes] = p
+
+        elif method == 'welch':
+            # go through the data array section wise and create a results array
+            for i in range(nframes):
+                f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes])
+                pout[i * lframes:(i + 1) * lframes] = p
+
+        elif method == 'multitaper':
+            [tapers, eigen] = dpss(lframes, 3)
+            f = self.get_fft_freqs_only(x[0:lframes])
+            # go through the data array section wise and create a results array
+            for i in range(nframes):
+                p = pmtm(np.abs(x[i * lframes:(i + 1) * lframes]), e=tapers, v=eigen, show=False)[:, 0]
+                pout[i * lframes:(i + 1) * lframes] = np.fft.fftshift(p)
 
         # create a mesh grid from 0 to nframes -1 in Y direction
         xx, yy = np.meshgrid(f, np.arange(nframes))
