@@ -83,7 +83,7 @@
  </widget>
  <resources>
   <include location="gui.qrc"/>
-  <include location="rsrc/iq_suite.qrc"/>
+  <include location="gui.qrc"/>
  </resources>
  <connections>
   <connection>

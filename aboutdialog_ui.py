@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'rsrc/aboutdialog.ui'
 #
-# Created: Tue Oct  6 12:26:04 2015
+# Created: Tue Oct  6 12:28:37 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -56,4 +56,3 @@ class Ui_AbooutDialog(object):
         self.pushButton_ok.setText(_translate("AbooutDialog", "OK"))
 
 import gui_rc
-import iq_suite_rc

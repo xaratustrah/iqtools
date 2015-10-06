@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'rsrc/mainwindow.ui'
 #
-# Created: Tue Oct  6 12:26:14 2015
+# Created: Tue Oct  6 12:29:20 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
