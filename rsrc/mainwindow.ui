@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>iqgui</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="rsrc/iq_suite.qrc">
+    <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
@@ -363,7 +367,9 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="rsrc/iq_suite.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>spinBox_sframes</sender>

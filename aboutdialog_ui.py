@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'aboutdialog.ui'
 #
-# Created: Sun Sep 20 18:19:14 2015
+# Created: Tue Oct  6 12:09:36 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,9 +12,18 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_AbooutDialog(object):
     def setupUi(self, AbooutDialog):
         AbooutDialog.setObjectName("AbooutDialog")
-        AbooutDialog.resize(422, 313)
+        AbooutDialog.resize(422, 449)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/icons/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        AbooutDialog.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(AbooutDialog)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.label = QtWidgets.QLabel(AbooutDialog)
+        self.label.setText("")
+        self.label.setPixmap(QtGui.QPixmap(":/icons/icon_128x128.png"))
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setObjectName("label")
+        self.verticalLayout.addWidget(self.label)
         self.labelTitle = QtWidgets.QLabel(AbooutDialog)
         self.labelTitle.setObjectName("labelTitle")
         self.verticalLayout.addWidget(self.labelTitle)
@@ -46,3 +55,4 @@ class Ui_AbooutDialog(object):
         self.labelDescription.setText(_translate("AbooutDialog", "<html><head/><body><p align=\"center\">A visualizer for IQ Data in frequency domain.</p><p align=\"center\">This program is a part of the <span style=\" font-weight:600;\">iq_suite</span> for visualization of IQ data.</p><p align=\"center\"><br/></p><p align=\"center\">Copyright (c) Shahab Sanjari 2015.</p><p align=\"center\">License: GPL V.2.</p><p align=\"center\"><br/></p></body></html>"))
         self.pushButton_ok.setText(_translate("AbooutDialog", "OK"))
 
+import iq_suite_rc
