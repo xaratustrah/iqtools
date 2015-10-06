@@ -14,7 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="rsrc/iq_suite.qrc">
+   <iconset resource="gui.qrc">
     <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -24,7 +24,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="rsrc/iq_suite.qrc">:/icons/icon_128x128.png</pixmap>
+      <pixmap resource="gui.qrc">:/icons/icon_128x128.png</pixmap>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -82,6 +82,7 @@
   </layout>
  </widget>
  <resources>
+  <include location="gui.qrc"/>
   <include location="rsrc/iq_suite.qrc"/>
  </resources>
  <connections>

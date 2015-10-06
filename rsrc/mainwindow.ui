@@ -14,7 +14,7 @@
    <string>iqgui</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="rsrc/iq_suite.qrc">
+   <iconset resource="gui.qrc">
     <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -368,7 +368,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="rsrc/iq_suite.qrc"/>
+  <include location="gui.qrc"/>
  </resources>
  <connections>
   <connection>

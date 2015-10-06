@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'aboutdialog.ui'
+# Form implementation generated from reading ui file 'rsrc/aboutdialog.ui'
 #
-# Created: Tue Oct  6 12:09:36 2015
+# Created: Tue Oct  6 12:26:04 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -55,4 +55,5 @@ class Ui_AbooutDialog(object):
         self.labelDescription.setText(_translate("AbooutDialog", "<html><head/><body><p align=\"center\">A visualizer for IQ Data in frequency domain.</p><p align=\"center\">This program is a part of the <span style=\" font-weight:600;\">iq_suite</span> for visualization of IQ data.</p><p align=\"center\"><br/></p><p align=\"center\">Copyright (c) Shahab Sanjari 2015.</p><p align=\"center\">License: GPL V.2.</p><p align=\"center\"><br/></p></body></html>"))
         self.pushButton_ok.setText(_translate("AbooutDialog", "OK"))
 
+import gui_rc
 import iq_suite_rc
