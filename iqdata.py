@@ -12,6 +12,7 @@ import logging as log
 from scipy.io import wavfile
 from scipy.signal import welch, find_peaks_cwt
 from spectrum import dpss, pmtm
+from pyTDMS import *
 
 
 class IQData(object):
@@ -37,6 +38,7 @@ class IQData(object):
         self.lframes = 0
         self.nframes_tot = 0
         self.nframes = 0
+        self.whole_file_in_memory = None
         return
 
     @property
@@ -66,10 +68,42 @@ class IQData(object):
             '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
         # 'Scale factor: {}'.format(self.scale)
 
-    def read_tdms(self, filename, meta_filename, nframes=0, lframes=0, sframes=0):
-        """Some good friend will continue here"""
-        # todo: returns a dictionary containing info e.g. complex array (c16), sampling rate etc...
-        pass
+    def load_tdms(self):
+        self.whole_file_in_memory = read(self.filename)
+        log.info("Loaded TDMS file.")
+
+    def read_tdms(self, nframes=0, lframes=0, sframes=0):
+        """
+        Read from TDMS Files
+        :param filename:
+        :param meta_filename:
+        :param nframes:
+        :param lframes:
+        :param sframes:
+        :return:
+        """
+        self.lframes = lframes
+        self.nframes = nframes
+
+        total_n_bytes = nframes * lframes
+        start_n_bytes = (sframes - 1) * lframes
+
+        self.center = 0
+        self.fs = int(self.whole_file_in_memory[0][b"/'RecordData'/'I'"][2][2])
+        self.number_samples = len(self.whole_file_in_memory[1][b"/'RecordData'/'I'"])
+        self.nframes_tot = int(self.number_samples / lframes)
+        self.date_time = time.ctime(os.path.getctime(self.filename))
+
+        I = self.whole_file_in_memory[1][b"/'RecordData'/'I'"][start_n_bytes:start_n_bytes + total_n_bytes]
+        Q = self.whole_file_in_memory[1][b"/'RecordData'/'Q'"][start_n_bytes:start_n_bytes + total_n_bytes]
+
+        #Vectorize is slow
+        #self.data_array = np.vectorize(complex, otypes=[np.complex64])(I, Q)
+        self.data_array = np.zeros(2 * total_n_bytes, dtype=np.float32)
+        self.data_array[::2], self.data_array[1::2] = I, Q
+        self.data_array = self.data_array.view(np.complex64)
+
+        log.info("Read finished.")
 
     def read_bin(self, nframes=10, lframes=1024, sframes=1):
         self.lframes = lframes

@@ -209,6 +209,11 @@ if __name__ == "__main__":
         log.info('This is a wav file.')
         iq_data.read_wav(args.nframes, args.lframes, args.sframes)
 
+    if file_extension.lower() == '.tdms':
+        log.info('This is a TDMS file.')
+        iq_data.load_tdms()
+        iq_data.read_tdms(args.nframes, args.lframes, args.sframes)
+
     if args.fft:
         log.info('Generating FFT plot.')
         f1, v1, p1 = iq_data.get_fft_50_ohm()
