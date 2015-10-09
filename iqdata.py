@@ -39,7 +39,7 @@ class IQData(object):
         self.nframes_tot = 0
         self.nframes = 0
         self.tdms_rawdata = None
-        self.tdms_objects= None
+        self.tdms_objects = None
         return
 
     @property
@@ -90,22 +90,28 @@ class IQData(object):
         start_n_bytes = (sframes - 1) * lframes
 
         self.center = 0
-        #self.fs = int(self.whole_file_in_memory[0][b"/'RecordData'/'I'"][2][2])
+        # self.fs = int(self.whole_file_in_memory[0][b"/'RecordData'/'I'"][2][2])
         self.fs = float(self.tdms_objects[b'/'][3][b'IQRate'][1])
         self.number_samples = len(self.tdms_rawdata[b"/'RecordData'/'I'"])
         self.nframes_tot = int(self.number_samples / lframes)
         self.date_time = time.ctime(os.path.getctime(self.filename))
 
+        gain = np.frombuffer(self.tdms_rawdata[b"/'RecordHeader'/'gain'"], dtype=np.float64)
+        self.scale = gain[0]
+        self.rf_att = float(self.tdms_objects[b'/'][3][b'RFAttentuation'][1])
+        self.center = float(self.tdms_objects[b'/'][3][b'IQCarrierFrequency'][1])
         ii = self.tdms_rawdata[b"/'RecordData'/'I'"][start_n_bytes:start_n_bytes + total_n_bytes]
+        # convert array.array to np.array
         ii = np.frombuffer(ii, dtype=np.int16)
         qq = self.tdms_rawdata[b"/'RecordData'/'Q'"][start_n_bytes:start_n_bytes + total_n_bytes]
         qq = np.frombuffer(qq, dtype=np.int16)
 
-        #Vectorize is slow
-        #self.data_array = np.vectorize(complex, otypes=[np.complex64])(I, Q)
+        # Vectorize is slow
+        # self.data_array = np.vectorize(complex, otypes=[np.complex64])(I, Q)
         self.data_array = np.zeros(2 * total_n_bytes, dtype=np.float32)
         self.data_array[::2], self.data_array[1::2] = ii, qq
         self.data_array = self.data_array.view(np.complex64)
+        self.data_array = self.data_array * self.scale
 
         log.info("Read finished.")
 
