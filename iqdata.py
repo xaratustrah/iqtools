@@ -69,10 +69,6 @@ class IQData(object):
             '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
         # 'Scale factor: {}'.format(self.scale)
 
-    def load_tdms(self):
-        (self.tdms_objects, self.tdms_rawdata) = pyTDMS.read(self.filename)
-        log.info("Loaded TDMS file.")
-
     def read_tdms(self, nframes=0, lframes=0, sframes=0):
         """
         Read from TDMS Files
@@ -83,31 +79,80 @@ class IQData(object):
         :param sframes:
         :return:
         """
+
         self.lframes = lframes
         self.nframes = nframes
 
         total_n_bytes = nframes * lframes
         start_n_bytes = (sframes - 1) * lframes
 
-        self.center = 0
-        # self.fs = int(self.whole_file_in_memory[0][b"/'RecordData'/'I'"][2][2])
-        self.fs = float(self.tdms_objects[b'/'][3][b'IQRate'][1])
-        self.number_samples = len(self.tdms_rawdata[b"/'RecordData'/'I'"])
+        # Then we read the data from a file, and return that
+        f = open(self.filename, "rb")  # Open in binary mode for portability
+
+        # start at the beginning of
+        start_segment = 1
+        # read how many?
+        n_segments = 1
+
+        # reading frist segment is necessary
+        # loop must go on an on to build each segment
+        FIRST_SEG_SIZE = 264950
+        OTHER_SEG_SIZE = 262576
+
+        # instead of real file size find out where to stop
+        if start_segment == 1 and n_segments == 1:
+            # first segment is bigger than others
+            size = FIRST_SEG_SIZE
+        else:
+            # plus one is to make sure goes to the end
+            size = FIRST_SEG_SIZE + (n_segments + 1) * OTHER_SEG_SIZE
+
+        # We start with empty data
+        objects = {}
+        raw_data = {}
+
+        # While there's still something left to read
+        while f.tell() < size:
+            # loop until first segment is filled up
+            if f.tell() == FIRST_SEG_SIZE:
+                # reached the end of first segment, now do the jump
+                f.seek(f.tell() + (start_segment - 2) * OTHER_SEG_SIZE)
+            # Now we read segment by segment
+            (objects, raw_data) = pyTDMS.readSegment(f, size, (objects, raw_data))
+            if b"/'RecordData'/'I'" in raw_data:
+                log.info("@position: {}".format(f.tell()))
+                log.info("last: {}".format(raw_data[b"/'RecordData'/'I'"][-1]))
+                log.info("len: {}\n".format(len(raw_data[b"/'RecordData'/'I'"])))
+
+        # ok, now close the file
+        f.close()
+
+        self.fs = float(objects[b'/'][3][b'IQRate'][1])
+        self.number_samples = len(raw_data[b"/'RecordData'/'I'"])
+        gain = np.frombuffer(raw_data[b"/'RecordHeader'/'gain'"], dtype=np.float64)
+        self.scale = gain[0]
+        self.rf_att = float(objects[b'/'][3][b'RFAttentuation'][1])
+        self.center = float(objects[b'/'][3][b'IQCarrierFrequency'][1])
         self.nframes_tot = int(self.number_samples / lframes)
         self.date_time = time.ctime(os.path.getctime(self.filename))
+        nSamplesPerRecord = int(objects[b'/'][3][b'NSamplesPerRecord'][1])
+        nRecordsPerFile = int(objects[b'/'][3][b'NRecordsPerFile'][1])
 
-        gain = np.frombuffer(self.tdms_rawdata[b"/'RecordHeader'/'gain'"], dtype=np.float64)
-        self.scale = gain[0]
-        self.rf_att = float(self.tdms_objects[b'/'][3][b'RFAttentuation'][1])
-        self.center = float(self.tdms_objects[b'/'][3][b'IQCarrierFrequency'][1])
-        ii = self.tdms_rawdata[b"/'RecordData'/'I'"][start_n_bytes:start_n_bytes + total_n_bytes]
+        log.info(nSamplesPerRecord)
+        log.info(nRecordsPerFile)
+
+        ii = raw_data[b"/'RecordData'/'I'"][start_n_bytes:start_n_bytes + total_n_bytes]
         # convert array.array to np.array
         ii = np.frombuffer(ii, dtype=np.int16)
-        qq = self.tdms_rawdata[b"/'RecordData'/'Q'"][start_n_bytes:start_n_bytes + total_n_bytes]
+        qq = raw_data[b"/'RecordData'/'Q'"][start_n_bytes:start_n_bytes + total_n_bytes]
         qq = np.frombuffer(qq, dtype=np.int16)
 
-        # Vectorize is slow
-        # self.data_array = np.vectorize(complex, otypes=[np.complex64])(I, Q)
+        # get rid of duplicates at the begining
+        if start_segment > 1:
+            ii = ii[nSamplesPerRecord:]
+            qq = qq[nSamplesPerRecord:]
+
+        # Vectorize is slow, so do interleaved copy instead
         self.data_array = np.zeros(2 * total_n_bytes, dtype=np.float32)
         self.data_array[::2], self.data_array[1::2] = ii, qq
         self.data_array = self.data_array.view(np.complex64)

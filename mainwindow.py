@@ -111,7 +111,6 @@ class mainWindow(QMainWindow, Ui_MainWindow):
                                   self.spinBox_sframes.value())
 
         elif self.loaded_file_type == 'tdms':
-            self.iq_data.load_tdms()
             self.iq_data.read_tdms(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                                   self.spinBox_sframes.value())
         else:
@@ -235,7 +234,6 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             self.loaded_file_type = 'wav'
 
         elif file_name.lower().endswith('tdms'):
-            self.iq_data.load_tdms()
             self.iq_data.read_tdms(1, 1, 1)
             self.loaded_file_type = 'tdms'
         else:
