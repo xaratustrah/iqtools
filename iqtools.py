@@ -211,6 +211,7 @@ if __name__ == "__main__":
 
     if file_extension.lower() == '.tdms':
         log.info('This is a TDMS file.')
+        iq_data.read_tdms_header(args.lframes)
         iq_data.read_tdms(args.nframes, args.lframes, args.sframes)
 
     if args.fft:

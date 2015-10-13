@@ -234,7 +234,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             self.loaded_file_type = 'wav'
 
         elif file_name.lower().endswith('tdms'):
-            self.iq_data.read_tdms(1, 1, 1)
+            self.iq_data.read_tdms_header(1)
             self.loaded_file_type = 'tdms'
         else:
             return
