@@ -95,8 +95,6 @@ class IQData(object):
         Read from TDMS Files: Check the amount needed corresponds to how many segments. Then read those segments only
         and from them return only the desired amount. This way the memory footprint is smallest passible and it is
         also fast.
-        :param filename:
-        :param meta_filename:
         :param nframes:
         :param lframes:
         :param sframes:
@@ -112,14 +110,12 @@ class IQData(object):
         # let's see this amount corresponds to which start segment
         # start at the beginning of
         start_segment = int(start_n_bytes / self.tdms_nSamplesPerRecord) + 1
-        # read how many should we read?
-        n_segments = int(total_n_bytes / self.tdms_nSamplesPerRecord) + 1
-
         starting_sample_within_start_segment = start_n_bytes % self.tdms_nSamplesPerRecord
 
-        # reading frist segment is necessary
-        # loop must go on an on to build each segment
-        # FIRST_SEG_SIZE = 264950
+        # read how many should we read, considering also the half-way started segment?
+        n_segments = int((starting_sample_within_start_segment + total_n_bytes) / self.tdms_nSamplesPerRecord) + 1
+
+        # Segment sizes
         FIRST_SEG_SIZE = 264640
         OTHER_SEG_SIZE = 262576
 
@@ -171,8 +167,6 @@ class IQData(object):
 
         ii = ii[starting_sample_within_start_segment:starting_sample_within_start_segment + total_n_bytes]
         qq = qq[starting_sample_within_start_segment:starting_sample_within_start_segment + total_n_bytes]
-
-        print('length: {}'.format(len(ii)))
 
         # Vectorize is slow, so do interleaved copy instead
         self.data_array = np.zeros(2 * total_n_bytes, dtype=np.float32)
