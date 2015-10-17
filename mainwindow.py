@@ -234,7 +234,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             self.loaded_file_type = 'wav'
 
         elif file_name.lower().endswith('tdms'):
-            self.iq_data.read_tdms_header(1)
+            self.iq_data.read_tdms_information(1)
             self.loaded_file_type = 'tdms'
         else:
             return
@@ -272,6 +272,8 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.spinBox_nframes.setMinimum(1)
 
     def on_spinBox_sframe_changed(self):
+        if not self.loaded_file_type:
+            return
         ns = self.iq_data.number_samples
         nf = self.spinBox_nframes.value()
         lf = self.spinBox_lframes.value()

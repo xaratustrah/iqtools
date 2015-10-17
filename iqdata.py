@@ -39,6 +39,7 @@ class IQData(object):
         self.nframes_tot = 0
         self.nframes = 0
         self.tdms_nSamplesPerRecord = 0
+        self.tdms_nRecordsPerFile = 0
         return
 
     @property
@@ -68,7 +69,7 @@ class IQData(object):
             '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
         # 'Scale factor: {}'.format(self.scale)
 
-    def read_tdms_header(self, lframes=1):
+    def read_tdms_information(self, lframes=1):
         """
         Performs one read on the file in order to get the values
         :param lframes:
@@ -85,8 +86,8 @@ class IQData(object):
         self.center = float(objects[b'/'][3][b'IQCarrierFrequency'][1])
         self.date_time = time.ctime(os.path.getctime(self.filename))
         self.tdms_nSamplesPerRecord = int(objects[b'/'][3][b'NSamplesPerRecord'][1])
-        nRecordsPerFile = int(objects[b'/'][3][b'NRecordsPerFile'][1])
-        self.number_samples = self.tdms_nSamplesPerRecord * nRecordsPerFile
+        self.tdms_nRecordsPerFile = int(objects[b'/'][3][b'NRecordsPerFile'][1])
+        self.number_samples = self.tdms_nSamplesPerRecord * self.tdms_nRecordsPerFile
         # self.number_samples = len(raw_data[b"/'RecordData'/'I'"])
         self.nframes_tot = int(self.number_samples / lframes)
 
@@ -115,6 +116,9 @@ class IQData(object):
         # read how many should we read, considering also the half-way started segment?
         n_segments = int((starting_sample_within_start_segment + total_n_bytes) / self.tdms_nSamplesPerRecord) + 1
 
+        if start_segment + n_segments > self.tdms_nRecordsPerFile:
+            return
+
         # Segment sizes
         FIRST_SEG_SIZE = 264640
         OTHER_SEG_SIZE = 262576
@@ -142,11 +146,12 @@ class IQData(object):
                 # reached the end of first segment, now do the jump
                 f.seek(f.tell() + (start_segment - 2) * OTHER_SEG_SIZE)
             # Now we read segment by segment
-            (objects, raw_data) = pyTDMS.readSegment(f, absolute_size, (objects, raw_data))
+            objects, raw_data = pyTDMS.readSegment(f, absolute_size, (objects, raw_data))
             if b"/'RecordData'/'I'" in raw_data:
+                log.info(raw_data.keys())
                 log.info("File@position: {}".format(f.tell()))
                 log.info("Last I value: {}".format(raw_data[b"/'RecordData'/'I'"][-1]))
-                log.info("length of I array: {}\n".format(len(raw_data[b"/'RecordData'/'I'"])))
+                log.info("Length of I array: {}\n".format(len(raw_data[b"/'RecordData'/'I'"])))
 
         # ok, now close the file
         f.close()
@@ -158,17 +163,15 @@ class IQData(object):
         ii = np.frombuffer(raw_data[b"/'RecordData'/'I'"], dtype=np.int16)
         qq = np.frombuffer(raw_data[b"/'RecordData'/'Q'"], dtype=np.int16)
 
-        # get rid of duplicates at the begining if start segment is larger than one
+        # get rid of duplicates at the beginning if start segment is larger than one
         if start_segment > 1:
             ii = ii[self.tdms_nSamplesPerRecord:]
             qq = qq[self.tdms_nSamplesPerRecord:]
 
-        # todo: here is a probelm. array overflow happens
-
         ii = ii[starting_sample_within_start_segment:starting_sample_within_start_segment + total_n_bytes]
         qq = qq[starting_sample_within_start_segment:starting_sample_within_start_segment + total_n_bytes]
 
-        # Vectorize is slow, so do interleaved copy instead
+        # Vectorized is slow, so do interleaved copy instead
         self.data_array = np.zeros(2 * total_n_bytes, dtype=np.float32)
         self.data_array[::2], self.data_array[1::2] = ii, qq
         self.data_array = self.data_array.view(np.complex64)
