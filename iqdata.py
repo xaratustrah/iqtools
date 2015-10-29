@@ -40,6 +40,8 @@ class IQData(object):
         self.nframes = 0
         self.tdms_nSamplesPerRecord = 0
         self.tdms_nRecordsPerFile = 0
+        self.tdms_first_rec_size = 0
+        self.tdms_other_rec_size = 0
         return
 
     @property
@@ -77,9 +79,36 @@ class IQData(object):
         """
         # we need lframes here in order to calculate nframes_tot
         self.lframes = lframes
+
+        # size does not matter much, because we only read 2 records, but anyway should be large enough.
         sz = os.path.getsize(self.filename)
-        with open(self.filename, 'rb') as f:
-            objects, _ = pyTDMS.readSegment(f, sz, ({}, {}))
+        how_many = 0
+        last_i_ff = 0
+        last_q_ff = 0
+        # We start with empty data
+        objects = {}
+        raw_data = {}
+
+        # Read just 2 records in order to estimate the record sizes
+        f = open(self.filename, "rb")
+        while f.tell() < sz:
+            objects, raw_data = pyTDMS.readSegment(f, sz, (objects, raw_data))
+
+            if b"/'RecordData'/'I'" in raw_data and b"/'RecordData'/'Q'" in raw_data:
+                # This record has both I and Q
+                last_i = raw_data[b"/'RecordData'/'I'"][-1]
+                last_q = raw_data[b"/'RecordData'/'Q'"][-1]
+                offset = f.tell()
+
+                if last_i_ff != last_i and last_q_ff != last_q:
+                    how_many += 1
+                    last_i_ff = last_i
+                    last_q_ff = last_q
+                    if how_many == 1:
+                        self.tdms_first_rec_size = offset
+                    if how_many == 2:
+                        self.tdms_other_rec_size = offset - self.tdms_first_rec_size
+                        break
 
         self.fs = float(objects[b'/'][3][b'IQRate'][1])
         self.rf_att = float(objects[b'/'][3][b'RFAttentuation'][1])
@@ -88,12 +117,11 @@ class IQData(object):
         self.tdms_nSamplesPerRecord = int(objects[b'/'][3][b'NSamplesPerRecord'][1])
         self.tdms_nRecordsPerFile = int(objects[b'/'][3][b'NRecordsPerFile'][1])
         self.number_samples = self.tdms_nSamplesPerRecord * self.tdms_nRecordsPerFile
-        # self.number_samples = len(raw_data[b"/'RecordData'/'I'"])
         self.nframes_tot = int(self.number_samples / lframes)
 
     def read_tdms(self, nframes=1, lframes=1, sframes=1):
         """
-        Read from TDMS Files: Check the amount needed corresponds to how many segments. Then read those segments only
+        Read from TDMS Files: Check the amount needed corresponds to how many records. Then read those records only
         and from them return only the desired amount. This way the memory footprint is smallest passible and it is
         also fast.
         :param nframes:
@@ -108,68 +136,56 @@ class IQData(object):
         total_n_bytes = nframes * lframes
         start_n_bytes = (sframes - 1) * lframes
 
-        # let's see this amount corresponds to which start segment
+        # let's see this amount corresponds to which start record
         # start at the beginning of
-        start_segment = int(start_n_bytes / self.tdms_nSamplesPerRecord) + 1
-        starting_sample_within_start_segment = start_n_bytes % self.tdms_nSamplesPerRecord
+        start_record = int(start_n_bytes / self.tdms_nSamplesPerRecord) + 1
+        starting_sample_within_start_record = start_n_bytes % self.tdms_nSamplesPerRecord
 
-        # read how many should we read, considering also the half-way started segment?
-        n_segments = int((starting_sample_within_start_segment + total_n_bytes) / self.tdms_nSamplesPerRecord) + 1
+        # read how many records should we read, considering also the half-way started record?
+        n_records = int((starting_sample_within_start_record + total_n_bytes) / self.tdms_nSamplesPerRecord) + 1
 
-        if start_segment + n_segments > self.tdms_nRecordsPerFile:
+        if start_record + n_records > self.tdms_nRecordsPerFile:
             return
 
-        # Segment sizes
-        FIRST_SEG_SIZE = 264640
-        OTHER_SEG_SIZE = 262576
-
         # instead of real file size find out where to stop
-        # this is the total size include the jumps
-        # first segment is bigger than others needs special treatment
-        absolute_size = FIRST_SEG_SIZE + (start_segment + n_segments - 2) * OTHER_SEG_SIZE
+        absolute_size = self.tdms_first_rec_size + (start_record + n_records - 2) * self.tdms_other_rec_size
 
         # We start with empty data
         objects = {}
         raw_data = {}
 
-        # Then we read the data from a file, and return that
         f = open(self.filename, "rb")  # Open in binary mode for portability
 
-        ftell = 0
         # While there's still something left to read
         while f.tell() < absolute_size:
-            ftell = f.tell()
-            # loop until first segment is filled up
-            # we always need to read the first segment.
-            # dont jump if start segment is 1, just go on reading
-            if start_segment > 1 and f.tell() == FIRST_SEG_SIZE:
-                # reached the end of first segment, now do the jump
-                f.seek(f.tell() + (start_segment - 2) * OTHER_SEG_SIZE)
-            # Now we read segment by segment
+            # loop until first record is filled up
+            # we always need to read the first record.
+            # don't jump if start record is 1, just go on reading
+            if start_record > 1 and f.tell() == self.tdms_first_rec_size:
+                # reached the end of first record, now do the jump
+                f.seek(f.tell() + (start_record - 2) * self.tdms_other_rec_size)
+            if f.tell() == self.tdms_first_rec_size:
+                log.info('Reached end of first record.')
+            # Now we read record by record
             objects, raw_data = pyTDMS.readSegment(f, absolute_size, (objects, raw_data))
-            if b"/'RecordData'/'I'" in raw_data:
-                log.info(raw_data.keys())
-                log.info("File@position: {}".format(f.tell()))
-                log.info("Last I value: {}".format(raw_data[b"/'RecordData'/'I'"][-1]))
-                log.info("Length of I array: {}\n".format(len(raw_data[b"/'RecordData'/'I'"])))
 
         # ok, now close the file
         f.close()
 
-        # up to now, we have read only the amount of needed segments times number of samples per segment
+        # up to now, we have read only the amount of needed records times number of samples per record
         # this is of course more than what we actually need.
 
         # convert array.array to np.array
         ii = np.frombuffer(raw_data[b"/'RecordData'/'I'"], dtype=np.int16)
         qq = np.frombuffer(raw_data[b"/'RecordData'/'Q'"], dtype=np.int16)
 
-        # get rid of duplicates at the beginning if start segment is larger than one
-        if start_segment > 1:
+        # get rid of duplicates at the beginning if start record is larger than one
+        if start_record > 1:
             ii = ii[self.tdms_nSamplesPerRecord:]
             qq = qq[self.tdms_nSamplesPerRecord:]
 
-        ii = ii[starting_sample_within_start_segment:starting_sample_within_start_segment + total_n_bytes]
-        qq = qq[starting_sample_within_start_segment:starting_sample_within_start_segment + total_n_bytes]
+        ii = ii[starting_sample_within_start_record:starting_sample_within_start_record + total_n_bytes]
+        qq = qq[starting_sample_within_start_record:starting_sample_within_start_record + total_n_bytes]
 
         # Vectorized is slow, so do interleaved copy instead
         self.data_array = np.zeros(2 * total_n_bytes, dtype=np.float32)
