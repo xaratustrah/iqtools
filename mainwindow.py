@@ -74,10 +74,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         :return:
         """
         self.pushButton_choose_file.clicked.connect(self.open_file_dialog)
-        self.pushButton_replot.clicked.connect(self.plot)
+        self.pushButton_replot.clicked.connect(self.on_pushButton_replot_clicked)
 
         self.actionChoose_file.triggered.connect(self.open_file_dialog)
-        self.actionReplot.triggered.connect(self.plot)
+        self.actionReplot.triggered.connect(self.on_pushButton_replot_clicked)
         self.actionAbout.triggered.connect(self.showAboutDialog)
         self.actionQuit.triggered.connect(QCoreApplication.instance().quit)
 
@@ -212,6 +212,9 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         Open file dialog
         :return:
         """
+        # not sure if it is needed to delete the memory before.
+        self.iq_data = None
+
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose files...", '',
                                                    "IQ Files (*.tiq *.iqt);;TDMS files(*.tdms);;Sound files (*.wav);;ASCII files (*.txt);;Raw binary files (*.bin)")
 
@@ -307,6 +310,9 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             return
         self.plot(replot=False)
 
+    def on_pushButton_replot_clicked(self):
+        self.plot(replot=True)
+
     def keyPressEvent(self, event):
         """
         Keypress event handler
@@ -315,7 +321,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if type(event) == QKeyEvent:
             # here accept the event and do something
             if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:  # code enter key
-                self.plot()
+                self.plot(replot=True)
                 event.accept()
             if event.key() == Qt.Key_Up:
                 event.accept()
