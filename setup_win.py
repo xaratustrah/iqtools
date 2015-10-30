@@ -31,7 +31,7 @@ includes = ['sip',
             'scipy.linalg.cython_lapack',
             'scipy.sparse.csgraph._validation',
             'pyTDMS',
-            'spectrum'
+            'spectrum',
             ]
 
 excludes = ['pkg_resources',
@@ -60,7 +60,8 @@ datafiles = matplotlib.get_py2exe_datafiles() + \
              ("", [r"C:\Python34\Lib\site-packages\numpy\core\libiomp5md.dll"]),
              ("", [r"C:\Python34\Lib\site-packages\numpy\core\svml_dispmd.dll"]),
              ("", [r"C:\Python34\Lib\site-packages\numpy\core\libiompstubs5md.dll"]),
-             ("", [r"C:\Python34\Lib\site-packages\numpy\core\libmmd.dll"])
+             ("", [r"C:\Python34\Lib\site-packages\numpy\core\libmmd.dll"]),
+			 ("", [r"C:\Python34\Lib\site-packages\spectrum\mydpss.pyd"])
              ]
 
 setup(
@@ -68,7 +69,7 @@ setup(
     version=__version__,
     url='https://github.com/xaratustrah/iq_suite',
     license='GPL V 2.0',
-    # zipfile=None,
+    zipfile=None,
     data_files=datafiles,
     windows=[{
         'script': 'iqgui.py',
