@@ -8,8 +8,8 @@ AUG 2015 Xaratustrah
 
 """
 
-import py2exe
 from distutils.core import setup
+import py2exe
 import matplotlib
 from version import __version__
 
@@ -45,7 +45,7 @@ excludes = ['pkg_resources',
             'tkinter']
 
 options = {'bundle_files': 3,
-           'optimize': 2,
+           #'optimize': 2,
            'compressed': True,
            'includes': includes,
            'excludes': excludes,
@@ -68,11 +68,11 @@ setup(
     version=__version__,
     url='https://github.com/xaratustrah/iq_suite',
     license='GPL V 2.0',
-    zipfile=None,
+    #zipfile=None,
     data_files=datafiles,
     windows=[{
         'script': 'iqgui.py',
-        'icon_resources': [(1, 'icon.ico')],
+        'icon_resources': [(1, 'rsrc/icon.ico')],
         'dest_base': 'iqgui'
     }],
     options={'py2exe': options}
