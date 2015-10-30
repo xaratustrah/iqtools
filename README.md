@@ -11,25 +11,25 @@ These data are usually results of measurements of quantities in physical experim
 While the GUI program offers a limited graphical interface to visually inspect the data, the advanced usage allows direct programing using the class file and tools within own scrips or iPython Notebook sessions. The suite offers a extendible structure for adding further methods e.g. in spectral analysis or non-linear time series analysis.
 
 
-Supported file formats are:
+### Supported file formats
 
-**[Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats *.IQT and *.TIQ**
+#### [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats *.IQT and *.TIQ
 
 Data format from different generations of real time spectrum analyzers.
 
-** [National Instruments<sup>&trade;</sup>](http://www.ni.com) *.TDMS **
+#### [National Instruments<sup>&trade;</sup>](http://www.ni.com) *.TDMS
 
 Data format used in NI's [LabView<sup>&trade;</sup>](http://www.ni.com/labview/). Based on the python library [pyTDMS](http://sourceforge.net/projects/pytdms/) by [Floris van Vugt](http://www.florisvanvugt.com).
 
-**Audio file *.wav**
+#### Audio file *.wav
 
 This data format is mostly useful for software defined radio applications. Left and right channels are treated as real and imaginary components respectively, file duration and sampling rate are determined automatically. Memory map is activated to avoid the whole file will be loaded in memory.
 
-**raw binary *.bin:**
+#### raw binary *.bin
 
 This is a file that begins with a 32-bit integer for sampling rate, followed by a 32-bit float for the center frequency. The rest of the file contains real and imaginary parts each as a 32-bit floats. File size is automatically calculated. All data are little endian.
 
-**ASCII text *.txt or *.csv:**
+#### ASCII text *.txt or *.csv
 
 Tab, space or comma separated values, real and imaginary on every line. Lines beginning with # are considered as comments and are ignored. Each line contains real and imaginary part. These data will later be treated as 32-bit floating point numbers.
 
@@ -65,14 +65,12 @@ Python 3.4.0 and PyQt5.5.0 both x64 versions, directly from their respective off
 
 Following packages where installed using **pip**:
 
-    cycler (0.9.0)
     pip (1.5.4)
     py2exe (0.9.2.2)
-    pyparsing (2.0.3)
-    python-dateutil (2.4.2)
-    pytz (2015.4)
     setuptools (2.1)
-    six (1.9.0)
+    spectrum (0.6.1)
+
+For the pyTDMS, the [package](https://pypi.python.org/pypi/pyTDMS/0.0.2) in PyPI is **not** used, because it refers to an old version. Instead it is provided as a single file here in the repository.
 
 **Compressing using UPX**
 
