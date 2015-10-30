@@ -48,6 +48,11 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         # fill combo box with names
         self.comboBox_color.addItems(['Jet', 'Blues', 'Cool', 'Copper', 'Hot', 'Gray'])
 
+        self.colormesh_xx = None
+        self.colormesh_yy = None
+        self.colormesh_zz = None
+        self.colormesh_zz_dbm = None
+
         # UI related stuff
         self.connect_signals()
 
@@ -81,7 +86,9 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.spinBox_sframes.valueChanged.connect(self.on_spinBox_sframe_changed)
         self.verticalSlider_sframes.valueChanged.connect(self.on_spinBox_sframe_changed)
 
-    def plot(self):
+        self.comboBox_color.currentIndexChanged.connect(self.on_comboBox_color_currentIndexChanged)
+
+    def plot(self, replot=True):
         """
         Main plot function
         :return:
@@ -112,7 +119,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
 
         elif self.loaded_file_type == 'tdms':
             self.iq_data.read_tdms(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
-                                  self.spinBox_sframes.value())
+                                   self.spinBox_sframes.value())
         else:
             return
 
@@ -125,10 +132,12 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         else:
             method = 'fft'
 
-        xx, yy, zz = self.iq_data.get_spectrogram(method=method)
+        # if you only like to change the color, don't calculate the spectrum again
+        if replot:
+            self.colormesh_xx, self.colormesh_yy, self.colormesh_zz = self.iq_data.get_spectrogram(method=method)
 
-        delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
-        delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
+        delta_f = np.abs(np.abs(self.colormesh_xx[0, 1]) - np.abs(self.colormesh_xx[0, 0]))
+        delta_t = np.abs(np.abs(self.colormesh_yy[1, 0]) - np.abs(self.colormesh_yy[0, 0]))
 
         self.mplWidget.canvas.ax.clear()
 
@@ -145,13 +154,13 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if self.comboBox_color.currentText() == 'Gray':
             cmap = cm.gray
 
-        zz_dbm = IQData.get_dbm(zz)
+        self.colormesh_zz_dbm = IQData.get_dbm(self.colormesh_zz)
 
         # Apply threshold
-        zz_dbm[zz_dbm < self.verticalSlider_thld.value()] = 0
+        self.colormesh_zz_dbm[self.colormesh_zz_dbm < self.verticalSlider_thld.value()] = 0
 
         # find the correct object in the matplotlib widget and plot on it
-        sp = self.mplWidget.canvas.ax.pcolormesh(xx, yy, zz_dbm, cmap=cmap)
+        sp = self.mplWidget.canvas.ax.pcolormesh(self.colormesh_xx, self.colormesh_yy, self.colormesh_zz_dbm, cmap=cmap)
         cb = colorbar(sp)
         cb.set_label('Power Spectral Density [dBm/Hz]')
         # TODO: Colorbar doesn't show here.
@@ -287,6 +296,16 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.verticalSlider_sframes.setTickInterval(int(ns / lf / 10))
 
         self.lcdNumber_sframes.display(st * self.spinBox_lframes.value() / self.iq_data.fs)
+
+    def on_comboBox_color_currentIndexChanged(self):
+        """
+        This is the event listener for the combo box change
+        :return:
+        """
+        if not self.loaded_file_type:
+            self.show_message('Please choose a valid file first.')
+            return
+        self.plot(replot=False)
 
     def keyPressEvent(self, event):
         """
