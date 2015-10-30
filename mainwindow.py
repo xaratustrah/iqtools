@@ -212,14 +212,14 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         Open file dialog
         :return:
         """
-        # not sure if it is needed to delete the memory before.
-        self.iq_data = None
-
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose files...", '',
                                                    "IQ Files (*.tiq *.iqt);;TDMS files(*.tdms);;Sound files (*.wav);;ASCII files (*.txt);;Raw binary files (*.bin)")
 
         if not file_name:
             return
+
+        # not sure if it is needed to delete the memory before.
+        self.iq_data = None
 
         self.iq_data = IQData(file_name)
         self.show_message('Loaded file: {}'.format(self.iq_data.file_basename))
