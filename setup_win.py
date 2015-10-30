@@ -8,16 +8,14 @@ AUG 2015 Xaratustrah
 
 """
 
-from distutils.core import setup
 import py2exe
+from distutils.core import setup
 import matplotlib
 from version import __version__
 
 name = 'iqgui'
 
 pkgs = []
-
-# zipfile = "shared.lib"
 
 includes = ['sip',
             'PyQt5',
@@ -32,7 +30,8 @@ includes = ['sip',
             'scipy.linalg.cython_blas',
             'scipy.linalg.cython_lapack',
             'scipy.sparse.csgraph._validation',
-            'spectrum'
+			'pyTDMS',
+			'spectrum'
             ]
 
 excludes = ['pkg_resources',
@@ -69,7 +68,7 @@ setup(
     version=__version__,
     url='https://github.com/xaratustrah/iq_suite',
     license='GPL V 2.0',
-    # zipfile=zipfile,
+    zipfile=None,
     data_files=datafiles,
     windows=[{
         'script': 'iqgui.py',
