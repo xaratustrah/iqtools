@@ -93,6 +93,8 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         Main plot function
         :return:
         """
+        assert self.loaded_file_type in ['tiq', 'iqt', 'wav', 'ascii', 'bin', 'tdms']
+
         if not self.loaded_file_type:
             self.show_message('Please choose a valid file first.')
             return

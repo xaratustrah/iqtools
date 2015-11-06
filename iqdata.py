@@ -533,6 +533,9 @@ class IQData(object):
 
         :return: frequency, time and power for XYZ plot,
         """
+
+        assert method in ['fft', 'welch', 'multitaper']
+
         x = self.data_array
         fs = self.fs
         nframes = self.nframes
@@ -554,12 +557,12 @@ class IQData(object):
                 pout[i * lframes:(i + 1) * lframes] = p
 
         elif method == 'multitaper':
-            [tapers, eigen] = dpss(lframes, 3)
+            [tapers, eigen] = dpss(lframes, NW=2)
             f = self.get_fft_freqs_only(x[0:lframes])
             # go through the data array section wise and create a results array
             for i in range(nframes):
-                p = pmtm(np.abs(x[i * lframes:(i + 1) * lframes]), e=tapers, v=eigen, show=False)[:, 0]
-                pout[i * lframes:(i + 1) * lframes] = np.fft.fftshift(p)
+                p = pmtm(x[i * lframes:(i + 1) * lframes], e=tapers, v=eigen, method='adapt', show=False)
+                pout[i * lframes:(i + 1) * lframes] = np.fft.fftshift(p[:,0])
 
         # create a mesh grid from 0 to nframes -1 in Y direction
         xx, yy = np.meshgrid(f, np.arange(nframes))
