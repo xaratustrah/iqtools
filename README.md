@@ -11,25 +11,25 @@ These data are usually results of measurements of quantities in physical experim
 While the GUI program offers a limited graphical interface to visually inspect the data, the advanced usage allows direct programing using the class file and tools within own scrips or iPython Notebook sessions. The suite offers a extendible structure for adding further methods e.g. in spectral analysis or non-linear time series analysis.
 
 
-Supported file formats are:
+### Supported file formats
 
-**[Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats *.IQT and *.TIQ**
+#### [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats *.IQT and *.TIQ
 
 Data format from different generations of real time spectrum analyzers.
 
-** [National Instruments<sup>&trade;</sup>](http://www.ni.com) *.TDMS **
+#### [National Instruments<sup>&trade;</sup>](http://www.ni.com) *.TDMS
 
 Data format used in NI's [LabView<sup>&trade;</sup>](http://www.ni.com/labview/). Based on the python library [pyTDMS](http://sourceforge.net/projects/pytdms/) by [Floris van Vugt](http://www.florisvanvugt.com).
 
-**Audio file *.wav**
+#### Audio file *.wav
 
 This data format is mostly useful for software defined radio applications. Left and right channels are treated as real and imaginary components respectively, file duration and sampling rate are determined automatically. Memory map is activated to avoid the whole file will be loaded in memory.
 
-**raw binary *.bin:**
+#### raw binary *.bin
 
 This is a file that begins with a 32-bit integer for sampling rate, followed by a 32-bit float for the center frequency. The rest of the file contains real and imaginary parts each as a 32-bit floats. File size is automatically calculated. All data are little endian.
 
-**ASCII text *.txt or *.csv:**
+#### ASCII text *.txt or *.csv
 
 Tab, space or comma separated values, real and imaginary on every line. Lines beginning with # are considered as comments and are ignored. Each line contains real and imaginary part. These data will later be treated as 32-bit floating point numbers.
 
@@ -65,14 +65,41 @@ Python 3.4.0 and PyQt5.5.0 both x64 versions, directly from their respective off
 
 Following packages where installed using **pip**:
 
-    cycler (0.9.0)
     pip (1.5.4)
     py2exe (0.9.2.2)
-    pyparsing (2.0.3)
-    python-dateutil (2.4.2)
-    pytz (2015.4)
     setuptools (2.1)
-    six (1.9.0)
+    spectrum (0.6.1)
+
+For the pyTDMS, the [package](https://pypi.python.org/pypi/pyTDMS/0.0.2) in PyPI is **not** used, because it refers to an old version. Instead it is provided as a single file here in the repository.
+
+The spectrum package needs a compiler to build. Usually one needs MS Visual ot GCC. I use [mingwpy](https://anaconda.org/carlkl/mingwpy) by [carlkl](https://github.com/carlkl). You can go to the file list, and choose the one wheel file that you need, donwload and install locally. If during the compilation you get the error message
+
+	cannot find vcvarsal.bat
+
+then you still need to tell the system that your compiler is `gcc`. For that you need to find out where is your home directory in your `msys` or other shell you are using. For that type
+
+	cd
+	pwd
+
+Then you should see your home directory. Then you should create a file there with the name: `pydistutils.cfg` with the following content:
+
+	[build]
+	compiler = mingw32
+	[build_ext]
+	compiler = mingw32
+
+After that the compiliation should work like a charm. Note that in the current version of the spectrum, the mtm.py needs a patch. Replace the following line:
+
+	p = os.path.abspath(os.path.dirname(__file__))
+
+with:
+
+	if hasattr(sys, 'frozen'):
+		p = os.path.abspath(os.path.dirname(sys.executable))
+	else:
+		p = os.path.abspath(os.path.dirname(__file__))
+	
+then perform the compilation. Note there is also a ready made package for spectrum that can be found [here](https://anaconda.org/carlkl/spectrum).
 
 **Compressing using UPX**
 
