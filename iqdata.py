@@ -489,7 +489,7 @@ class IQData(object):
 
     def get_fft(self, x=None):
         """ Get the FFT spectrum of a signal over a load of 50 ohm."""
-        termination = 1  # in Ohms for termination resistor
+        termination = 50  # in Ohms for termination resistor
         if x is None:
             data = self.data_array
         else:
@@ -562,7 +562,7 @@ class IQData(object):
             # go through the data array section wise and create a results array
             for i in range(nframes):
                 p = pmtm(x[i * lframes:(i + 1) * lframes], e=tapers, v=eigen, method='adapt', show=False)
-                pout[i * lframes:(i + 1) * lframes] = np.fft.fftshift(p[:,0])
+                pout[i * lframes:(i + 1) * lframes] = np.fft.fftshift(p[:, 0])
 
         # create a mesh grid from 0 to nframes -1 in Y direction
         xx, yy = np.meshgrid(f, np.arange(nframes))
@@ -608,6 +608,22 @@ class IQData(object):
 
         # Flatten array for 2D plot
         return yy[:, 0], frame_power
+
+    def get_time_average_vs_frequency(self, xx, yy, zz):
+        """
+        Returns the time average for each frequency bin
+        :param xx:
+        :param yy:
+        :param zz:
+        :return:
+        """
+        # Slices parallel to time axis (second dimension of xx is needed)
+        n_frequency_frames = np.shape(xx)[1]
+        f_slice_average = np.zeros(n_frequency_frames)
+        for i in range(n_frequency_frames):
+            f_slice_average[i] = np.average(zz[:, i])
+        # Flatten array fro 2D plot (second dimension of xx is needed)
+        return xx[0, :], f_slice_average
 
     @staticmethod
     def get_fwhm(f, p, skip=None):
@@ -687,12 +703,24 @@ class IQData(object):
         """
         return 10 ** (np.array(dbm) / 10) / 1000
 
-    @staticmethod
-    def get_channel_power(f, p):
+    # @staticmethod
+    # def get_channel_power(f, p):
+    #     """ Return total power in band in Watts
+    #     Input: average power in Watts
+    #     """
+    #     return np.trapz(p, x=f)
+
+    def get_channel_power(self, f, p):
         """ Return total power in band in Watts
         Input: average power in Watts
         """
-        return np.trapz(p, x=f)
+        summ = 0
+        bw = f[-1] - f[0]
+        NBW = 1526
+        for i in range(np.size(p)):
+            summ += p[i]
+        final = summ / (np.size(p) - 1) * bw / NBW
+        return final
 
     @staticmethod
     def zoom_in_freq(f, p, center=0, span=1000):

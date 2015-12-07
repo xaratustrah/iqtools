@@ -93,6 +93,18 @@ def read_data_csv(filename):
     data = np.ravel(data).view(dtype='c16')  # has one dimension more, should use ravel
     return data
 
+def parse_filename(filename):
+    """
+    Parses filenames of experimental data in the following format:
+    58Ni26+_374MeVu_250uA_pos_0_0.tiq
+    :param filename:
+    :return:
+    """
+    filename = filename.split('_')
+    descr = filename[0]
+    energy = float(filename[1].replace('MeVu', 'e6'))
+    current = float(filename[2].replace('uA', 'e-6'))
+    return descr, energy, current
 
 # ------------ PLOTTERS ----------------------------
 
