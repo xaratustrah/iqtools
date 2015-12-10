@@ -715,11 +715,12 @@ class IQData(object):
         Input: average power in Watts
         """
         summ = 0
-        bw = f[-1] - f[0]
-        NBW = 1526
+        nbw = self.rbw * 5
         for i in range(np.size(p)):
             summ += p[i]
-        final = summ / (np.size(p) - 1) * bw / NBW
+        # ACQ bandwidth here is a better measure.
+        # correct formula uses NBW
+        final = summ / np.size(p) * self.acq_bw / nbw
         return final
 
     @staticmethod

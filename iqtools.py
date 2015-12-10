@@ -10,13 +10,14 @@ xaratustrah oct-2014
 
 import argparse, os
 from pprint import pprint
-
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 import logging as log
 from scipy.signal import hilbert
 from iqdata import IQData
+import xml.etree.ElementTree as et
+
 
 # ------------ TOOLS ----------------------------
 
@@ -81,6 +82,33 @@ def read_result_csv(filename):
     return f, p
 
 
+def read_result_xml(filename):
+    """
+    Read the resulting saved trace file SpecAn from the RSA5000 series
+    :param filename:
+    :return:
+    """
+    with open(filename, 'rb') as f:
+        ba = f.read()
+    xml_tree_root = et.fromstring(ba)
+    for elem in xml_tree_root.iter(tag='Count'):
+        count = int(elem.text)
+    for elem in xml_tree_root.iter(tag='XStart'):
+        start = float(elem.text)
+    for elem in xml_tree_root.iter(tag='XStop'):
+        stop = float(elem.text)
+    for elem in xml_tree_root.iter(tag='y'):
+        pwr = float(elem.text)
+    p = np.zeros(count)
+    i = 0
+    for elem in xml_tree_root.iter(tag='y'):
+        p[i] = float(elem.text)
+        i += 1
+    f = np.linspace(start, stop, count)
+    # return watts for compatibility
+    return f, IQData.get_watt(p)
+
+
 def read_data_csv(filename):
     """
     Read special format CSV data file from RSA5100 series output.
@@ -92,6 +120,7 @@ def read_data_csv(filename):
     data = np.genfromtxt(filename, skip_header=10, delimiter=",")
     data = np.ravel(data).view(dtype='c16')  # has one dimension more, should use ravel
     return data
+
 
 def parse_filename(filename):
     """
@@ -105,6 +134,7 @@ def parse_filename(filename):
     energy = float(filename[1].replace('MeVu', 'e6'))
     current = float(filename[2].replace('uA', 'e-6'))
     return descr, energy, current
+
 
 # ------------ PLOTTERS ----------------------------
 
@@ -165,6 +195,7 @@ def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
     plt.grid(True)
     if to_file:
         plt.savefig(filename + '.pdf')
+
 
 # ------------ MAIN ----------------------------
 
