@@ -498,7 +498,7 @@ class IQData(object):
             scalers = f.read(64)
 
         # self.header = header
-        #self.parse_tcap_header(header)
+        # self.parse_tcap_header(header)
         self.date_time = self.parse_tcap_tfp(tfp)
 
         self.tcap_pio = pio
@@ -510,7 +510,6 @@ class IQData(object):
         self.nframes_tot = int(15625 * 32768 / nframes)
         self.number_samples = 15625 * 32768
         self.span = 312500
-
 
         total_n_bytes = 4 * nframes * lframes  # 4 comes from 2 times 2 byte integer for I and Q
         start_n_bytes = 4 * (sframes - 1) * lframes
@@ -571,26 +570,28 @@ class IQData(object):
         """
         tfp = list(ba)
 
-        dh = (tfp[3] >> 0) & 0x17
+        dh = (tfp[3] >> 0) & 0x0f
 
-        dt = (tfp[4] >> 4) & 0x17
-        du = (tfp[4] >> 0) & 0x17
-        ht = (tfp[5] >> 4) & 0x17
-        hu = (tfp[5] >> 0) & 0x17
+        dt = (tfp[4] >> 4) & 0x0f
+        du = (tfp[4] >> 0) & 0x0f
 
-        mt = (tfp[6] >> 4) & 0x17
-        mu = (tfp[6] >> 0) & 0x17
-        st = (tfp[7] >> 4) & 0x17
-        su = (tfp[7] >> 0) & 0x17
+        ht = (tfp[5] >> 4) & 0x0f
+        hu = (tfp[5] >> 0) & 0x0f
 
-        sem1 = (tfp[8] >> 4) & 0x17
-        sem2 = (tfp[8] >> 0) & 0x17
-        sem3 = (tfp[9] >> 4) & 0x17
-        sem4 = (tfp[9] >> 0) & 0x17
+        mt = (tfp[6] >> 4) & 0x0f
+        mu = (tfp[6] >> 0) & 0x0f
 
-        sem5 = (tfp[10] >> 4) & 0x17
-        sem6 = (tfp[10] >> 0) & 0x17
-        sem7 = (tfp[11] >> 4) & 0x17
+        st = (tfp[7] >> 4) & 0x0f
+        su = (tfp[7] >> 0) & 0x0f
+
+        sem1 = (tfp[8] >> 4) & 0x0f
+        sem2 = (tfp[8] >> 0) & 0x0f
+        sem3 = (tfp[9] >> 4) & 0x0f
+        sem4 = (tfp[9] >> 0) & 0x0f
+
+        sem5 = (tfp[10] >> 4) & 0x0f
+        sem6 = (tfp[10] >> 0) & 0x0f
+        sem7 = (tfp[11] >> 4) & 0x0f
 
         days = dh * 100 + dt * 10 + du
         hours = ht * 10 + hu
