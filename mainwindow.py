@@ -93,7 +93,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         Main plot function
         :return:
         """
-        assert self.loaded_file_type in ['tiq', 'iqt', 'wav', 'ascii', 'bin', 'tdms']
+        assert self.loaded_file_type in ['tiq', 'iqt', 'wav', 'ascii', 'bin', 'tdms', 'tcap']
 
         if not self.loaded_file_type:
             self.show_message('Please choose a valid file first.')
@@ -122,6 +122,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         elif self.loaded_file_type == 'tdms':
             self.iq_data.read_tdms(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                                    self.spinBox_sframes.value())
+
+        elif self.loaded_file_type == 'tcap':
+            self.iq_data.read_tcap(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
+                                  self.spinBox_sframes.value())
         else:
             return
 
@@ -215,7 +219,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         :return:
         """
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose files...", '',
-                                                   "IQ Files (*.tiq *.iqt);;TDMS files(*.tdms);;Sound files (*.wav);;ASCII files (*.txt);;Raw binary files (*.bin)")
+                                                   "IQ Files (*.tiq *.iqt);;TDMS files(*.tdms);;TCAP files (*.dat);;Sound files (*.wav);;ASCII files (*.txt);;Raw binary files (*.bin)")
 
         if not file_name:
             return
@@ -250,6 +254,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         elif file_name.lower().endswith('tdms'):
             self.iq_data.read_tdms_information(1)
             self.loaded_file_type = 'tdms'
+
+        elif file_name.lower().endswith('dat'):
+            self.iq_data.read_tcap(1, 1, 1)
+            self.loaded_file_type = 'tcap'
         else:
             return
 

@@ -5,7 +5,7 @@ Xaratustrah Aug-2015
 
 """
 
-import os, time
+import os, time, datetime, struct
 import numpy as np
 import xml.etree.ElementTree as et
 import logging as log
@@ -42,6 +42,8 @@ class IQData(object):
         self.tdms_nRecordsPerFile = 0
         self.tdms_first_rec_size = 0
         self.tdms_other_rec_size = 0
+        self.tcap_scalers = None
+        self.tcap_pio = None
         return
 
     @property
@@ -141,9 +143,10 @@ class IQData(object):
         start_record = int(start_n_bytes / self.tdms_nSamplesPerRecord) + 1
         starting_sample_within_start_record = start_n_bytes % self.tdms_nSamplesPerRecord
 
-        # read how many records should we read, considering also the half-way started record?
+        # See how many records should we read, considering also the half-way started record?
         n_records = int((starting_sample_within_start_record + total_n_bytes) / self.tdms_nSamplesPerRecord) + 1
 
+        # that would be too much
         if start_record + n_records > self.tdms_nRecordsPerFile:
             return
 
@@ -463,13 +466,143 @@ class IQData(object):
         log.info("Output complex array has a size of {}.".format(self.data_array.size))
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
 
+    def read_tcap(self, nframes=10, lframes=1024, sframes=1):
+        """
+        Read TCAP fiels *.dat
+        :param nframes:
+        :param lframes:
+        :param sframes:
+        :return:
+        """
+
+        BLOCK_HEADER_SIZE = 88
+        BLOCK_DATA_SIZE = 2 ** 17
+        BLOCK_SIZE = BLOCK_HEADER_SIZE + BLOCK_DATA_SIZE
+
+        self.lframes = lframes
+        self.nframes = nframes
+        filesize = os.path.getsize(self.filename)
+        if not filesize == 15625 * BLOCK_SIZE:
+            log.info("File size does not match block sizes times total number of blocks. Aborting...")
+            return
+
+        # read header section
+        with open(self.filename, 'rb') as f:
+            tfp = f.read(12)
+            pio = f.read(12)
+            scalers = f.read(64)
+
+        # self.header = header
+        #self.parse_tcap_header(header)
+        self.date_time = self.parse_tcap_tfp(tfp)
+
+        self.tcap_pio = pio
+        self.tcap_scalers = scalers
+
+        self.fs = 312500
+        self.center = 1.6e5
+        self.scale = 6.25e-2
+        self.nframes_tot = int(15625 * 32768 / nframes)
+        self.number_samples = 15625 * 32768
+        self.span = 312500
+
+
+        total_n_bytes = 4 * nframes * lframes  # 4 comes from 2 times 2 byte integer for I and Q
+        start_n_bytes = 4 * (sframes - 1) * lframes
+
+        ba = b''
+        with open(self.filename, 'rb') as f:
+            f.seek(BLOCK_HEADER_SIZE + start_n_bytes)
+            for i in range(total_n_bytes):
+                if not f.tell() % 131160:
+                    log.info('File pointer before jump: {}'.format(f.tell()))
+                    log.info(
+                        "Reached end of block {}. Now skipoing header of block {}!".format(int(f.tell() / BLOCK_SIZE),
+                                                                                           int(
+                                                                                               f.tell() / BLOCK_SIZE) + 1))
+                    f.seek(88, 1)
+                    log.info('File pointer after jump: {}'.format(f.tell()))
+                ba += f.read(1)  # very poor performance. faster is with bytearray objects
+
+        log.info('Total bytes read: {}'.format(len(ba)))
+
+        self.data_array = np.fromstring(ba, '>i2')  # big endian 16 bit for I and 16 bit for Q
+        self.data_array = self.data_array.astype(np.float32)
+        self.data_array = self.data_array * self.scale
+        self.data_array = self.data_array.view(np.complex64)
+
+    def parse_tcap_header(self, ba):
+        version = ba[0:8]
+        center_freq_np = np.fromstring(ba[8:16], dtype='>f8')[0]
+        center_freq = struct.unpack('>d', ba[8:16])[0]
+        adc_range = struct.unpack('>d', ba[16:24])[0]
+        data_scale = struct.unpack('>d', ba[24:32])[0]
+        block_count = struct.unpack('>Q', ba[32:40])[0]
+        block_size = struct.unpack('>I', ba[40:44])[0]
+        frame_size = struct.unpack('>I', ba[44:48])[0]
+        decimation = struct.unpack('>H', ba[48:50])[0]
+        config_flags = struct.unpack('>H', ba[50:52])[0]
+        trigger_time = ba[500:512]
+        # self.fs = 10**7 / 2 ** decimation
+
+    def parse_tcap_tfp(self, ba):
+        """
+        Parses the TFP Header of TCAP DAT Files. This information is coded in BCD. The
+        following table was taken form the original TCAP processing files in C.
+         * +------------+---------------+---------------+---------------+---------------+
+         * | bit #      | 15 - 12       | 11 - 8        | 7 - 4         | 3 - 0         |
+         * +------------+---------------+---------------+---------------+---------------+
+         * | timereg[0] | not defined   | not defined   | status        | days hundreds |
+         * | timereg[1] | days tens     | days units    | hours tens    | hours units   |
+         * | timereg[2] | minutes tens  | minutes units | seconds tens  | seconds units |
+         * | timereg[3] | 1E-1 seconds  | 1E-2 seconds  | 1E-3 seconds  | 1E-4 seconds  |
+         * | timereg[4] | 1E-5 seconds  | 1E-6 seconds  | 1E-7 seconds  | not defined   |
+         * +------------+---------------+---------------+---------------+---------------+
+
+         here we read the first 12 bytes ( 24 nibbles ) in the tfp byte array list. First 2 bytes
+         should be ignored.
+
+        :return:
+        """
+        tfp = list(ba)
+
+        dh = (tfp[3] >> 0) & 0x17
+
+        dt = (tfp[4] >> 4) & 0x17
+        du = (tfp[4] >> 0) & 0x17
+        ht = (tfp[5] >> 4) & 0x17
+        hu = (tfp[5] >> 0) & 0x17
+
+        mt = (tfp[6] >> 4) & 0x17
+        mu = (tfp[6] >> 0) & 0x17
+        st = (tfp[7] >> 4) & 0x17
+        su = (tfp[7] >> 0) & 0x17
+
+        sem1 = (tfp[8] >> 4) & 0x17
+        sem2 = (tfp[8] >> 0) & 0x17
+        sem3 = (tfp[9] >> 4) & 0x17
+        sem4 = (tfp[9] >> 0) & 0x17
+
+        sem5 = (tfp[10] >> 4) & 0x17
+        sem6 = (tfp[10] >> 0) & 0x17
+        sem7 = (tfp[11] >> 4) & 0x17
+
+        days = dh * 100 + dt * 10 + du
+        hours = ht * 10 + hu
+        minutes = mt * 10 + mu
+        seconds = st * 10 + su + sem1 * 1e-1 + sem2 * 1e-2 + sem3 * 1e-3 + sem4 * 1e-4 + sem5 * 1e-5 + sem6 * 1e-6 + sem7 * 1e-7
+
+        ts_epoch = seconds + 60 * (minutes + 60 * (hours + 24 * days))
+        ts = datetime.datetime.fromtimestamp(ts_epoch).strftime('%Y-%m-%d %H:%M:%S')
+        return ts
+
     def save_header(self):
         """Saves the header byte array into a txt tile."""
         with open(self.filename_wo_ext + '.xml', 'wb') as f3:
             f3.write(self.header)
         log.info("Header saved in an xml file.")
 
-    def save_data(self):
+    def save_npy(self):
         """Saves the dictionary to a numpy file."""
         np.save(self.filename_wo_ext + '.npy', self.dictionary)
 

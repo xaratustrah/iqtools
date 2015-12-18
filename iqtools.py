@@ -257,6 +257,10 @@ if __name__ == "__main__":
         iq_data.read_tdms_information(args.lframes)
         iq_data.read_tdms(args.nframes, args.lframes, args.sframes)
 
+    if file_extension.lower() == '.dat':
+        log.info('This is a TCAP file.')
+        iq_data.read_tcap(args.nframes, args.lframes, args.sframes)
+
     if args.fft:
         log.info('Generating FFT plot.')
         f1, v1, p1 = iq_data.get_fft_50_ohm()
@@ -279,7 +283,7 @@ if __name__ == "__main__":
 
     if args.npy:
         log.info('Saving data dictionary in numpy format.')
-        iq_data.save_data()
+        iq_data.save_npy()
 
     if args.dic:
         log.info('Printing dictionary on the screen.')
