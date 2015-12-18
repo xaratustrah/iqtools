@@ -5,13 +5,18 @@ Xaratustrah Aug-2015
 
 """
 
-import os, time, datetime, struct
-import numpy as np
-import xml.etree.ElementTree as et
+import datetime
 import logging as log
+import os
+import struct
+import time
+import xml.etree.ElementTree as et
+
+import numpy as np
 from scipy.io import wavfile
 from scipy.signal import welch, find_peaks_cwt
 from spectrum import dpss, pmtm
+
 import pyTDMS
 
 
@@ -510,7 +515,7 @@ class IQData(object):
         total_n_bytes = 4 * nframes * lframes  # 4 comes from 2 times 2 byte integer for I and Q
         start_n_bytes = 4 * (sframes - 1) * lframes
 
-        ba = b''
+        ba = bytearray()
         with open(self.filename, 'rb') as f:
             f.seek(BLOCK_HEADER_SIZE + start_n_bytes)
             for i in range(total_n_bytes):
@@ -522,11 +527,11 @@ class IQData(object):
                                                                                                f.tell() / BLOCK_SIZE) + 1))
                     f.seek(88, 1)
                     log.info('File pointer after jump: {}'.format(f.tell()))
-                ba += f.read(1)  # very poor performance. faster is with bytearray objects
+                ba.extend(f.read(1))  # using bytearray.extend is much faster than using +=
 
         log.info('Total bytes read: {}'.format(len(ba)))
 
-        self.data_array = np.fromstring(ba, '>i2')  # big endian 16 bit for I and 16 bit for Q
+        self.data_array = np.frombuffer(ba, '>i2')  # big endian 16 bit for I and 16 bit for Q
         self.data_array = self.data_array.astype(np.float32)
         self.data_array = self.data_array * self.scale
         self.data_array = self.data_array.view(np.complex64)
