@@ -14,7 +14,7 @@ import numpy as np
 
 from mainwindow_ui import Ui_MainWindow
 from aboutdialog_ui import Ui_AbooutDialog
-from iqdata import IQData
+from iqbase import IQBase
 
 # force Matplotlib to use PyQt5 backend, call before importing pyplot and backends!
 from matplotlib import use
@@ -160,7 +160,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if self.comboBox_color.currentText() == 'Gray':
             cmap = cm.gray
 
-        self.colormesh_zz_dbm = IQData.get_dbm(self.colormesh_zz)
+        self.colormesh_zz_dbm = IQBase.get_dbm(self.colormesh_zz)
 
         # Apply threshold
         self.colormesh_zz_dbm[self.colormesh_zz_dbm < self.verticalSlider_thld.value()] = 0
@@ -227,7 +227,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         # not sure if it is needed to delete the memory before.
         self.iq_data = None
 
-        self.iq_data = IQData(file_name)
+        self.iq_data = IQBase(file_name)
         self.show_message('Loaded file: {}'.format(self.iq_data.file_basename))
 
         # make a dummy read to get the header

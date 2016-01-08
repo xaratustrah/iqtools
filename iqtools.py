@@ -15,8 +15,11 @@ import matplotlib.cm as cm
 import numpy as np
 import logging as log
 from scipy.signal import hilbert
-from iqdata import IQData
 import xml.etree.ElementTree as et
+from tcapdata import TCAPData
+from rawdata import RAWData
+from iqtdata import IQTData
+from tiqdata import TIQData
 
 
 # ------------ TOOLS ----------------------------
@@ -106,7 +109,7 @@ def read_result_xml(filename):
         i += 1
     f = np.linspace(start, stop, count)
     # return watts for compatibility
-    return f, IQData.get_watt(p)
+    return f, IQBase.get_watt(p)
 
 
 def read_data_csv(filename):
@@ -154,7 +157,7 @@ def plot_frame_power(yy, frame_power):
     :param frame_power:
     :return:
     """
-    plt.plot(yy[:, 0], IQData.get_dbm(frame_power))
+    plt.plot(yy[:, 0], IQBase.get_dbm(frame_power))
     plt.ylabel('Power [dBm]')
     plt.xlabel('Time [sec]')
     plt.title('Frame power')
@@ -171,7 +174,7 @@ def plot_spectrogram_dbm(xx, yy, zz, cen=0.0, filename='', to_file=False):
     """
     delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
     delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
-    sp = plt.pcolormesh(xx, yy, IQData.get_dbm(zz), cmap=cm.jet)
+    sp = plt.pcolormesh(xx, yy, IQBase.get_dbm(zz), cmap=cm.jet)
     cb = plt.colorbar(sp)
     plt.xlabel("Delta f [Hz] @ {} [Hz] (resolution = {:.2e} [Hz])".format(cen, delta_f))
     plt.ylabel('Time [sec] (resolution = {:.2e} [s])'.format(delta_t))
@@ -225,40 +228,47 @@ if __name__ == "__main__":
 
     log.info("File {} passed for processing.".format(args.filename))
 
-    iq_data = IQData(args.filename)
     _, file_extension = os.path.splitext(args.filename)
 
     if file_extension.lower() == '.txt' or file_extension.lower() == '.csv':
         log.info('This is an ASCII file.')
+        iq_data = RAWData(args.filename)
         iq_data.read_ascii(args.nframes, args.lframes, args.sframes)
 
     if file_extension.lower() == '.bin':
         log.info('This is a raw binary file.')
+        iq_data = RAWData(args.filename)
         iq_data.read_bin(args.nframes, args.lframes, args.sframes)
+
+    if file_extension.lower() == '.wav':
+        log.info('This is a wav file.')
+        iq_data = RAWData(args.filename)
+        iq_data.read_wav(args.nframes, args.lframes, args.sframes)
 
     if file_extension.lower() == '.iqt':
         log.info('This is an iqt file.')
+        iq_data = IQTData(args.filename)
         iq_data.read_iqt(args.nframes, args.lframes, args.sframes)
 
     if file_extension.lower() == '.iq':
         log.info('This is an iq file.')
+        iq_data = IQTData(args.filename)
         iq_data.read_iq(args.nframes, args.lframes, args.sframes)
 
     if file_extension.lower() == '.tiq':
         log.info('This is a tiq file.')
+        iq_data = TIQData(args.filename)
         iq_data.read_tiq(args.nframes, args.lframes, args.sframes)
-
-    if file_extension.lower() == '.wav':
-        log.info('This is a wav file.')
-        iq_data.read_wav(args.nframes, args.lframes, args.sframes)
 
     if file_extension.lower() == '.tdms':
         log.info('This is a TDMS file.')
+        iq_data = TDMSData(args.filename)
         iq_data.read_tdms_information(args.lframes)
         iq_data.read_tdms(args.nframes, args.lframes, args.sframes)
 
     if file_extension.lower() == '.dat':
         log.info('This is a TCAP file.')
+        iq_data = TCAPData(args.filename)
         iq_data.read_tcap(args.nframes, args.lframes, args.sframes)
 
     if args.fft:
