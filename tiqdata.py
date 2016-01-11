@@ -13,9 +13,8 @@ import xml.etree.ElementTree as et
 from iqbase import IQBase
 
 
-
 class TIQData(IQBase):
-    def read_tiq(self, nframes=10, lframes=1024, sframes=1):
+    def read(self, nframes=10, lframes=1024, sframes=1):
 
         """Process the tiq input file.
         Following information are extracted, except Data offset, all other are stored in the dic. Data needs to be normalized over 50 ohm.

@@ -11,12 +11,14 @@ import numpy as np
 from scipy.io import wavfile
 from scipy.signal import welch, find_peaks_cwt
 from spectrum import dpss, pmtm
+from abc import ABCMeta, abstractmethod
 
 
 class IQBase(object):
     """
     The main class definition
     """
+    __metaclass__ = ABCMeta
 
     def __init__(self, filename):
         self.filename = filename
@@ -65,6 +67,10 @@ class IQBase(object):
             '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
         # 'Scale factor: {}'.format(self.scale)
 
+    @abstractmethod
+    def read(self, nframes, lframes, sframes):
+        pass
+    
     def save_header(self):
         """Saves the header byte array into a txt tile."""
         with open(self.filename_wo_ext + '.xml', 'wb') as f3:

@@ -11,7 +11,6 @@ import numpy as np
 from iqbase import IQBase
 
 
-
 class IQTData(IQBase):
     def read_iqt(self, nframes=10, lframes=1024, sframes=1):
         """
@@ -91,7 +90,7 @@ class IQTData(IQBase):
         self.data_array = self.data_array * self.scale
         # todo: correction data block
 
-    def read_iq(self, nframes=10, lframes=1024, sframes=1):
+    def read(self, nframes=10, lframes=1024, sframes=1):
         """
         Read Sony/Tektronix IQ Files
         :param nframes:
@@ -134,4 +133,3 @@ class IQTData(IQBase):
 
         # self.scale = np.sqrt(np.power(10, (gain_offset + max_input_level + level_offset) / 10) / 20 * 2)
         # todo: IQ support not finished
-

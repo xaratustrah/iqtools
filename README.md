@@ -13,23 +13,26 @@ While the GUI program offers a limited graphical interface to visually inspect t
 
 ### Supported file formats
 
-#### [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats *.IQT and *.TIQ
+#### [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats \*.IQT and \*.TIQ
 
 Data format from different generations of real time spectrum analyzers.
 
-#### [National Instruments<sup>&trade;</sup>](http://www.ni.com) *.TDMS
+#### [National Instruments<sup>&trade;</sup>](http://www.ni.com) \*.TDMS
 
 Data format used in NI's [LabView<sup>&trade;</sup>](http://www.ni.com/labview/). Based on the python library [pyTDMS](http://sourceforge.net/projects/pytdms/) by [Floris van Vugt](http://www.florisvanvugt.com).
 
-#### Audio file *.wav
+#### TCAP \*.DAT files
+TCAP file format form the older HP E1430A systems. In this case, the header information is stored in a TXT file, while the data file is stored in blocks of 2GB sequentially. More information can be found in [this PhD thesis](http://www.worldcat.org/oclc/76566695).
+
+#### Audio file \*.WAV
 
 This data format is mostly useful for software defined radio applications. Left and right channels are treated as real and imaginary components respectively, file duration and sampling rate are determined automatically. Memory map is activated to avoid the whole file will be loaded in memory.
 
-#### raw binary *.bin
+#### raw binary \*.BIN
 
 This is a file that begins with a 32-bit integer for sampling rate, followed by a 32-bit float for the center frequency. The rest of the file contains real and imaginary parts each as a 32-bit floats. File size is automatically calculated. All data are little endian.
 
-#### ASCII text *.txt or *.csv
+#### ASCII text \*.TXT or \*.CSV
 
 Tab, space or comma separated values, real and imaginary on every line. Lines beginning with # are considered as comments and are ignored. Each line contains real and imaginary part. These data will later be treated as 32-bit floating point numbers.
 

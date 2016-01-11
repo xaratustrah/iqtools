@@ -10,8 +10,8 @@ import os
 import logging as log
 import numpy as np
 from iqbase import IQBase
-
 import pyTDMS
+import time
 
 
 class TDMSData(IQBase):
@@ -21,6 +21,7 @@ class TDMSData(IQBase):
         self.tdms_other_rec_size = 0
         self.tdms_nSamplesPerRecord = 0
         self.tdms_nRecordsPerFile = 0
+        self.information_read = False
 
     def read_tdms_information(self, lframes=1):
         """
@@ -43,7 +44,11 @@ class TDMSData(IQBase):
         # Read just 2 records in order to estimate the record sizes
         f = open(self.filename, "rb")
         while f.tell() < sz:
-            objects, raw_data = pyTDMS.readSegment(f, sz, (objects, raw_data))
+            try:
+                objects, raw_data = pyTDMS.readSegment(f, sz, (objects, raw_data))
+            except:
+                log.error('TDMS file seems to end here!')
+                return
 
             if b"/'RecordData'/'I'" in raw_data and b"/'RecordData'/'Q'" in raw_data:
                 # This record has both I and Q
@@ -70,7 +75,7 @@ class TDMSData(IQBase):
         self.number_samples = self.tdms_nSamplesPerRecord * self.tdms_nRecordsPerFile
         self.nframes_tot = int(self.number_samples / lframes)
 
-    def read_tdms(self, nframes=1, lframes=1, sframes=1):
+    def read(self, nframes=1, lframes=1, sframes=1):
         """
         Read from TDMS Files: Check the amount needed corresponds to how many records. Then read those records only
         and from them return only the desired amount. This way the memory footprint is smallest passible and it is
@@ -80,6 +85,9 @@ class TDMSData(IQBase):
         :param sframes:
         :return:
         """
+
+        if not self.information_read:
+            self.read_tdms_information(lframes)
 
         self.lframes = lframes
         self.nframes = nframes
@@ -119,8 +127,11 @@ class TDMSData(IQBase):
             if f.tell() == self.tdms_first_rec_size:
                 log.info('Reached end of first record.')
             # Now we read record by record
-            objects, raw_data = pyTDMS.readSegment(f, absolute_size, (objects, raw_data))
-
+            try:
+                objects, raw_data = pyTDMS.readSegment(f, absolute_size, (objects, raw_data))
+            except:
+                log.error('TDMS file seems to end here!')
+                return
         # ok, now close the file
         f.close()
 

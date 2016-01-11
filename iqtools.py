@@ -8,7 +8,7 @@ xaratustrah oct-2014
             aug-2015
 """
 
-import argparse, os
+import argparse, os, sys
 from pprint import pprint
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -16,10 +16,15 @@ import numpy as np
 import logging as log
 from scipy.signal import hilbert
 import xml.etree.ElementTree as et
+
 from tcapdata import TCAPData
+from tdmsdata import TDMSData
 from rawdata import RAWData
 from iqtdata import IQTData
 from tiqdata import TIQData
+from csvdata import CSVData
+from wavdata import WAVData
+from version import __version__
 
 
 # ------------ TOOLS ----------------------------
@@ -200,11 +205,61 @@ def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
         plt.savefig(filename + '.pdf')
 
 
+def get_iq_object(filename):
+    """
+    Return suitable object accorting to extension.
+
+    Parameters
+    ----------
+    filename
+
+    Returns
+    -------
+
+    """
+    # Object generation
+    _, file_extension = os.path.splitext(filename)
+
+    iq_data = None
+
+    if file_extension.lower() == '.txt' or file_extension.lower() == '.csv':
+        log.info('This is an ASCII file.')
+        iq_data = CSVData(filename)
+
+    if file_extension.lower() == '.bin':
+        log.info('This is a raw binary file.')
+        iq_data = RAWData(filename)
+
+    if file_extension.lower() == '.wav':
+        log.info('This is a wav file.')
+        iq_data = WAVData(filename)
+
+    if file_extension.lower() == '.iqt':
+        log.info('This is an iqt file.')
+        iq_data = IQTData(filename)
+
+    if file_extension.lower() == '.iq':
+        log.info('This is an iq file.')
+        iq_data = IQTData(filename)
+
+    if file_extension.lower() == '.tiq':
+        log.info('This is a tiq file.')
+        iq_data = TIQData(filename)
+
+    if file_extension.lower() == '.tdms':
+        log.info('This is a TDMS file.')
+        iq_data = TDMSData(filename)
+
+    if file_extension.lower() == '.dat':
+        log.info('This is a TCAP file.')
+        iq_data = TCAPData(filename)
+    return iq_data
+
+
 # ------------ MAIN ----------------------------
 
-verbose = False
-
-if __name__ == "__main__":
+def main():
+    scriptname = 'iq_suite'
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", type=str, help="Name of the input file.")
     parser.add_argument("-l", "--lframes", nargs='?', type=int, const=1024, default=1024,
@@ -222,54 +277,19 @@ if __name__ == "__main__":
     parser.add_argument("-y", "--npy", help="Write dic to NPY file.", action="store_true")
 
     args = parser.parse_args()
+
+    print('{} {}'.format(scriptname, __version__))
+
     if args.verbose:
         log.basicConfig(level=log.DEBUG)
-        verbose = True
+
+    # here we go:
 
     log.info("File {} passed for processing.".format(args.filename))
+    iq_data = get_iq_object(args.filename)
+    iq_data.read(args.nframes, args.lframes, args.sframes)
 
-    _, file_extension = os.path.splitext(args.filename)
-
-    if file_extension.lower() == '.txt' or file_extension.lower() == '.csv':
-        log.info('This is an ASCII file.')
-        iq_data = RAWData(args.filename)
-        iq_data.read_ascii(args.nframes, args.lframes, args.sframes)
-
-    if file_extension.lower() == '.bin':
-        log.info('This is a raw binary file.')
-        iq_data = RAWData(args.filename)
-        iq_data.read_bin(args.nframes, args.lframes, args.sframes)
-
-    if file_extension.lower() == '.wav':
-        log.info('This is a wav file.')
-        iq_data = RAWData(args.filename)
-        iq_data.read_wav(args.nframes, args.lframes, args.sframes)
-
-    if file_extension.lower() == '.iqt':
-        log.info('This is an iqt file.')
-        iq_data = IQTData(args.filename)
-        iq_data.read_iqt(args.nframes, args.lframes, args.sframes)
-
-    if file_extension.lower() == '.iq':
-        log.info('This is an iq file.')
-        iq_data = IQTData(args.filename)
-        iq_data.read_iq(args.nframes, args.lframes, args.sframes)
-
-    if file_extension.lower() == '.tiq':
-        log.info('This is a tiq file.')
-        iq_data = TIQData(args.filename)
-        iq_data.read_tiq(args.nframes, args.lframes, args.sframes)
-
-    if file_extension.lower() == '.tdms':
-        log.info('This is a TDMS file.')
-        iq_data = TDMSData(args.filename)
-        iq_data.read_tdms_information(args.lframes)
-        iq_data.read_tdms(args.nframes, args.lframes, args.sframes)
-
-    if file_extension.lower() == '.dat':
-        log.info('This is a TCAP file.')
-        iq_data = TCAPData(args.filename)
-        iq_data.read_tcap(args.nframes, args.lframes, args.sframes)
+    # Other command line arguments
 
     if args.fft:
         log.info('Generating FFT plot.')
@@ -283,7 +303,6 @@ if __name__ == "__main__":
 
     if args.spec:
         log.info('Generating spectrogram plot.')
-        f2, p2 = iq_data.get_pwelch()
         x, y, z = iq_data.get_spectrogram()
         plot_spectrogram_dbm(x, y, z, iq_data.center, iq_data.filename_wo_ext + '_spectrogram', True)
 
@@ -298,3 +317,9 @@ if __name__ == "__main__":
     if args.dic:
         log.info('Printing dictionary on the screen.')
         pprint(iq_data.dictionary)
+
+
+# ----------------------------------------
+
+if __name__ == "__main__":
+    main()

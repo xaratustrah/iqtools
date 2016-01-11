@@ -20,7 +20,7 @@ class TCAPData(IQBase):
         self.tcap_scalers = None
         self.tcap_pio = None
 
-    def read_tcap(self, nframes=10, lframes=1024, sframes=1):
+    def read(self, nframes=10, lframes=1024, sframes=1):
         """
         Read TCAP fiels *.dat
         :param nframes:

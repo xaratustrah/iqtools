@@ -11,11 +11,10 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QDialog
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtCore import Qt, QCoreApplication
 import numpy as np
-
 from mainwindow_ui import Ui_MainWindow
 from aboutdialog_ui import Ui_AbooutDialog
 from iqbase import IQBase
-
+from iqtools import get_iq_object
 # force Matplotlib to use PyQt5 backend, call before importing pyplot and backends!
 from matplotlib import use
 
@@ -23,7 +22,6 @@ use("Qt5Agg")
 import matplotlib.cm as cm
 from matplotlib.ticker import FormatStrFormatter
 from matplotlib.pyplot import colorbar
-
 from version import __version__
 
 
@@ -43,7 +41,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
 
         # instance of data
         self.iq_data = None
-        self.loaded_file_type = None
+        self.loaded_file_type = False
 
         # fill combo box with names
         self.comboBox_color.addItems(['Jet', 'Blues', 'Cool', 'Copper', 'Hot', 'Gray'])
@@ -93,41 +91,16 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         Main plot function
         :return:
         """
-        assert self.loaded_file_type in ['tiq', 'iqt', 'wav', 'ascii', 'bin', 'tdms', 'tcap']
+        #assert self.loaded_file_type in ['tiq', 'iqt', 'wav', 'ascii', 'bin', 'tdms', 'tcap']
 
         if not self.loaded_file_type:
             self.show_message('Please choose a valid file first.')
             return
 
-        elif self.loaded_file_type == 'tiq':
-            self.iq_data.read_tiq(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
-                                  self.spinBox_sframes.value())
+        # do the actual read
 
-        elif self.loaded_file_type == 'iqt':
-            self.iq_data.read_iqt(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
-                                  self.spinBox_sframes.value())
-
-        elif self.loaded_file_type == 'wav':
-            self.iq_data.read_wav(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
-                                  self.spinBox_sframes.value())
-
-        elif self.loaded_file_type == 'ascii':
-            self.iq_data.read_ascii(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
-                                    self.spinBox_sframes.value())
-
-        elif self.loaded_file_type == 'bin':
-            self.iq_data.read_bin(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
-                                  self.spinBox_sframes.value())
-
-        elif self.loaded_file_type == 'tdms':
-            self.iq_data.read_tdms(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
-                                   self.spinBox_sframes.value())
-
-        elif self.loaded_file_type == 'tcap':
-            self.iq_data.read_tcap(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
-                                  self.spinBox_sframes.value())
-        else:
-            return
+        self.iq_data.read(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
+                          self.spinBox_sframes.value())
 
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
@@ -138,7 +111,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         else:
             method = 'fft'
 
-        # if you only like to change the color, don't calculate the spectrum again
+        # if you only like to change the color, don't calculate the spectrum again, just replot
         if replot:
             self.colormesh_xx, self.colormesh_yy, self.colormesh_zz = self.iq_data.get_spectrogram(method=method)
 
@@ -227,40 +200,13 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         # not sure if it is needed to delete the memory before.
         self.iq_data = None
 
-        self.iq_data = IQBase(file_name)
+        self.iq_data = get_iq_object(file_name)
         self.show_message('Loaded file: {}'.format(self.iq_data.file_basename))
 
         # make a dummy read to get the header
-        if file_name.lower().endswith('tiq'):
-            self.iq_data.read_tiq(1, 1, 1)
-            self.loaded_file_type = 'tiq'
+        self.iq_data.read(1, 1, 1)
 
-        elif file_name.lower().endswith('iqt'):
-            self.iq_data.read_iqt(1, 1, 1)
-            self.loaded_file_type = 'iqt'
-
-        elif file_name.lower().endswith('txt'):
-            self.iq_data.read_ascii(1, 1, 1)
-            self.loaded_file_type = 'ascii'
-
-        elif file_name.lower().endswith('bin'):
-            self.iq_data.read_bin(1, 1, 1)
-            self.loaded_file_type = 'bin'
-
-        elif file_name.lower().endswith('wav'):
-            self.iq_data.read_wav(1, 1, 1)
-            self.loaded_file_type = 'wav'
-
-        elif file_name.lower().endswith('tdms'):
-            self.iq_data.read_tdms_information(1)
-            self.loaded_file_type = 'tdms'
-
-        elif file_name.lower().endswith('dat'):
-            self.iq_data.read_tcap(1, 1, 1)
-            self.loaded_file_type = 'tcap'
-        else:
-            return
-
+        self.loaded_file_type = True
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
 
