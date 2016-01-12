@@ -30,7 +30,7 @@ class IQBase(object):
         self.lframes = 0
         self.nframes = 0
         self.nframes_tot = 0
-        self.number_samples = 0
+        self.nsamples = 0
         self.data_array = None
         self.fs = 0.0
         self.center = 0.0

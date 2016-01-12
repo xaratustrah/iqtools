@@ -26,7 +26,7 @@ class TCAPData(IQBase):
     @property
     def dictionary(self):
         return {'center': self.center,
-                'number_samples': self.number_samples,
+                'nsamples': self.nsamples,
                 'fs': self.fs,
                 'nframes': self.nframes,
                 'lframes': self.lframes,
@@ -38,8 +38,8 @@ class TCAPData(IQBase):
     def __str__(self):
         return \
             '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.number_samples / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
+                self.nsamples / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples) + '\n' + \
             '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
@@ -95,7 +95,7 @@ class TCAPData(IQBase):
         self.center = 1.6e5
         self.scale = 6.25e-2
         self.nframes_tot = int(15625 * 32768 / nframes)
-        self.number_samples = 15625 * 32768
+        self.nsamples = 15625 * 32768
 
         total_n_bytes = 4 * nframes * lframes  # 4 comes from 2 times 2 byte integer for I and Q
         start_n_bytes = 4 * (sframes - 1) * lframes

@@ -28,7 +28,7 @@ class TIQData(IQBase):
     @property
     def dictionary(self):
         return {'center': self.center,
-                'number_samples': self.number_samples,
+                'nsamples': self.nsamples,
                 'fs': self.fs,
                 'nframes': self.nframes,
                 'lframes': self.lframes,
@@ -44,8 +44,8 @@ class TIQData(IQBase):
     def __str__(self):
         return \
             '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.number_samples / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
+                self.nsamples / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples) + '\n' + \
             '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
@@ -98,7 +98,7 @@ class TIQData(IQBase):
         for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}DateTime'):
             self.date_time = str(elem.text)
         for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}NumberSamples'):
-            self.number_samples = int(elem.text)  # this entry matches (filesize - data_offset) / 8) well
+            self.nsamples = int(elem.text)  # this entry matches (filesize - data_offset) / 8) well
         for elem in xml_tree_root.iter('NumericParameter'):
             if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'rbw':
                 self.rbw = float(elem.find('Value').text)
@@ -117,10 +117,10 @@ class TIQData(IQBase):
         log.info("Header size {} bytes.".format(data_offset))
 
         log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
-        log.info('Total number of samples: {}'.format(self.number_samples))
+        log.info('Total number of samples: {}'.format(self.nsamples))
         log.info("Frame length: {0} data points = {1}s".format(lframes, lframes / self.fs))
-        self.nframes_tot = int(self.number_samples / lframes)
-        log.info("Total number of frames: {0} = {1}s".format(self.nframes_tot, self.number_samples / self.fs))
+        self.nframes_tot = int(self.nsamples / lframes)
+        log.info("Total number of frames: {0} = {1}s".format(self.nframes_tot, self.nsamples / self.fs))
         log.info("Start reading at offset: {0} = {1}s".format(sframes, sframes * lframes / self.fs))
         log.info("Reading {0} frames = {1}s.".format(nframes, nframes * lframes / self.fs))
 

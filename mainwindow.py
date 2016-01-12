@@ -223,7 +223,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if not self.loaded_file_type:
             return
         nf = self.spinBox_nframes.value()
-        ns = self.iq_data.number_samples
+        ns = self.iq_data.nsamples
         st = self.spinBox_sframes.value()
 
         self.spinBox_lframes.setMaximum(int(ns - st) / nf)
@@ -233,7 +233,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         if not self.loaded_file_type:
             return
         lf = self.spinBox_lframes.value()
-        ns = self.iq_data.number_samples
+        ns = self.iq_data.nsamples
         st = self.spinBox_sframes.value()
 
         self.spinBox_nframes.setMaximum(int(ns - st) / lf)
@@ -242,7 +242,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
     def on_spinBox_sframe_changed(self):
         if not self.loaded_file_type:
             return
-        ns = self.iq_data.number_samples
+        ns = self.iq_data.nsamples
         nf = self.spinBox_nframes.value()
         lf = self.spinBox_lframes.value()
         st = self.spinBox_sframes.value()

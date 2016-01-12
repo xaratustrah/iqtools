@@ -18,7 +18,7 @@ class RAWData(IQBase):
     @property
     def dictionary(self):
         return {'center': self.center,
-                'number_samples': self.number_samples,
+                'nsamples': self.nsamples,
                 'fs': self.fs,
                 'nframes': self.nframes,
                 'lframes': self.lframes,
@@ -30,8 +30,8 @@ class RAWData(IQBase):
     def __str__(self):
         return \
             '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.number_samples / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
+                self.nsamples / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples) + '\n' + \
             '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
@@ -47,8 +47,8 @@ class RAWData(IQBase):
         self.fs = float(np.real(x[0]))
         self.center = float(np.imag(x[0]))
         all_data = x[1:]
-        self.number_samples = len(all_data)
-        self.nframes_tot = int(self.number_samples / lframes)
+        self.nsamples = len(all_data)
+        self.nframes_tot = int(self.nsamples / lframes)
         self.date_time = time.ctime(os.path.getctime(self.filename))
 
         total_n_bytes = nframes * lframes

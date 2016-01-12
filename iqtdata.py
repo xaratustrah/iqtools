@@ -28,7 +28,7 @@ class IQTData(IQBase):
     @property
     def dictionary(self):
         return {'center': self.center,
-                'number_samples': self.number_samples,
+                'nsamples': self.nsamples,
                 'fs': self.fs,
                 'nframes': self.nframes,
                 'lframes': self.lframes,
@@ -43,8 +43,8 @@ class IQTData(IQBase):
     def __str__(self):
         return \
             '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.number_samples / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
+                self.nsamples / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples) + '\n' + \
             '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
@@ -95,7 +95,7 @@ class IQTData(IQBase):
         self.nframes_tot = int(header_dic['ValidFrames'])
         self.date_time = header_dic['DateTime']
 
-        self.number_samples = self.nframes_tot * self.fft_points
+        self.nsamples = self.nframes_tot * self.fft_points
         self.fs = self.fft_points / self.frame_length
 
         self.scale = np.sqrt(np.power(10, (self.gain_offset + self.max_input_level + self.level_offset) / 10) / 20 * 2)
@@ -177,7 +177,7 @@ class IQTData(IQBase):
     #     self.nframes_tot = int(header_dic['ValidFrames'])
     #     self.date_time = header_dic['DateTime']
     #
-    #     self.number_samples = self.nframes_tot * fft_points
+    #     self.nsamples = self.nframes_tot * fft_points
     #     self.fs = fft_points / frame_length
     #
     #     # self.scale = np.sqrt(np.power(10, (gain_offset + max_input_level + level_offset) / 10) / 20 * 2)
