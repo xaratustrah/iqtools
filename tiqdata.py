@@ -14,6 +14,49 @@ from iqbase import IQBase
 
 
 class TIQData(IQBase):
+    def __init__(self, filename):
+        super().__init__(filename)
+
+        # Additional fields in this subclass
+        self.acq_bw = 0.0
+        self.rbw = 0.0
+        self.rf_att = 0.0
+        self.span = 0.0
+        self.scale = 0.0
+        self.header = ''
+
+    @property
+    def dictionary(self):
+        return {'center': self.center,
+                'number_samples': self.number_samples,
+                'fs': self.fs,
+                'nframes': self.nframes,
+                'lframes': self.lframes,
+                'data': self.data_array,
+                'nframes_tot': self.nframes_tot,
+                'DateTime': self.date_time,
+                'rf_att': self.rf_att,
+                'span': self.span,
+                'acq_bw': self.acq_bw,
+                'file_name': self.filename,
+                'rbw': self.rbw}
+
+    def __str__(self):
+        return \
+            '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
+                self.number_samples / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
+            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
+                self.fs) + '\n' + \
+            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
+                self.center) + '\n' + \
+            '<font size="4" color="green">Span:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
+                self.span) + '\n' + \
+            '<font size="4" color="green">Acq. BW.:</font> {} <br>'.format(self.acq_bw) + '\n' + \
+            '<font size="4" color="green">RBW:</font> {} <br>'.format(self.rbw) + '\n' + \
+            '<font size="4" color="green">RF Att.:</font> {} <br>'.format(self.rf_att) + '\n' + \
+            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
+
     def read(self, nframes=10, lframes=1024, sframes=1):
 
         """Process the tiq input file.
@@ -86,9 +129,13 @@ class TIQData(IQBase):
         total_n_bytes = 8 * nframes * lframes  # 8 comes from 2 times 4 byte integer for I and Q
         start_n_bytes = 8 * (sframes - 1) * lframes
 
-        with open(self.filename, 'rb') as f:
-            f.seek(data_offset + start_n_bytes)
-            ba = f.read(total_n_bytes)
+        try:
+            with open(self.filename, 'rb') as f:
+                f.seek(data_offset + start_n_bytes)
+                ba = f.read(total_n_bytes)
+        except:
+            log.error('File seems to end here!')
+            return
 
         # return a numpy array of little endian 8 byte floats (known as doubles)
         self.data_array = np.fromstring(ba, dtype='<i4')  # little endian 4 byte ints.
@@ -99,3 +146,9 @@ class TIQData(IQBase):
 
         log.info("Output complex array has a size of {}.".format(self.data_array.size))
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
+
+    def save_header(self):
+        """Saves the header byte array into a txt tile."""
+        with open(self.filename_wo_ext + '.xml', 'wb') as f3:
+            f3.write(self.header)
+        log.info("Header saved in an xml file.")

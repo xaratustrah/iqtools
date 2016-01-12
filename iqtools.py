@@ -8,7 +8,7 @@ xaratustrah oct-2014
             aug-2015
 """
 
-import argparse, os, sys
+import argparse, os
 from pprint import pprint
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm

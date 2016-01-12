@@ -13,6 +13,32 @@ from iqbase import IQBase
 
 
 class WAVData(IQBase):
+    def __init__(self, filename):
+        super().__init__(filename)
+
+    @property
+    def dictionary(self):
+        return {'center': self.center,
+                'number_samples': self.number_samples,
+                'fs': self.fs,
+                'nframes': self.nframes,
+                'lframes': self.lframes,
+                'data': self.data_array,
+                'nframes_tot': self.nframes_tot,
+                'DateTime': self.date_time,
+                'file_name': self.filename}
+
+    def __str__(self):
+        return \
+            '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
+                self.number_samples / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
+            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
+                self.fs) + '\n' + \
+            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
+                self.center) + '\n' + \
+            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
+
     def read(self, nframes=10, lframes=1024, sframes=1):
         """
         Read sound wave files.
@@ -28,7 +54,7 @@ class WAVData(IQBase):
         try:
             fs, data = wavfile.read(self.filename, mmap=True)
         except:
-            log.error('TDMS file seems to end here!')
+            log.error('File seems to end here!')
             return
 
         all_data = data.astype(np.float32).view(np.complex64)[:, 0]

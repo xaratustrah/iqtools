@@ -6,9 +6,10 @@ Xaratustrah Aug-2015
 
 """
 
-import datetime, os
-import logging as log
+import datetime
+import os
 import struct
+import logging as log
 import numpy as np
 from iqbase import IQBase
 
@@ -17,8 +18,42 @@ class TCAPData(IQBase):
     def __init__(self, filename):
         super().__init__(filename)
 
+        # Additional fields in this subclass
         self.tcap_scalers = None
         self.tcap_pio = None
+        self.information_read = False
+
+    @property
+    def dictionary(self):
+        return {'center': self.center,
+                'number_samples': self.number_samples,
+                'fs': self.fs,
+                'nframes': self.nframes,
+                'lframes': self.lframes,
+                'data': self.data_array,
+                'nframes_tot': self.nframes_tot,
+                'DateTime': self.date_time,
+                'file_name': self.filename}
+
+    def __str__(self):
+        return \
+            '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
+                self.number_samples / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
+            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
+                self.fs) + '\n' + \
+            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
+                self.center) + '\n' + \
+            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
+
+    def read_tcap_information(self, header_filename):
+        """
+        Read tcap information from separate filename
+        Returns
+        -------
+
+        """
+        self.information_read = True
 
     def read(self, nframes=10, lframes=1024, sframes=1):
         """
@@ -28,6 +63,9 @@ class TCAPData(IQBase):
         :param sframes:
         :return:
         """
+
+        if not self.information_read:
+            self.read_tcap_information(lframes)
 
         BLOCK_HEADER_SIZE = 88
         BLOCK_DATA_SIZE = 2 ** 17
@@ -58,24 +96,28 @@ class TCAPData(IQBase):
         self.scale = 6.25e-2
         self.nframes_tot = int(15625 * 32768 / nframes)
         self.number_samples = 15625 * 32768
-        self.span = 312500
 
         total_n_bytes = 4 * nframes * lframes  # 4 comes from 2 times 2 byte integer for I and Q
         start_n_bytes = 4 * (sframes - 1) * lframes
 
         ba = bytearray()
-        with open(self.filename, 'rb') as f:
-            f.seek(BLOCK_HEADER_SIZE + start_n_bytes)
-            for i in range(total_n_bytes):
-                if not f.tell() % 131160:
-                    log.info('File pointer before jump: {}'.format(f.tell()))
-                    log.info(
-                        "Reached end of block {}. Now skipoing header of block {}!".format(int(f.tell() / BLOCK_SIZE),
-                                                                                           int(
-                                                                                               f.tell() / BLOCK_SIZE) + 1))
-                    f.seek(88, 1)
-                    log.info('File pointer after jump: {}'.format(f.tell()))
-                ba.extend(f.read(1))  # using bytearray.extend is much faster than using +=
+        try:
+            with open(self.filename, 'rb') as f:
+                f.seek(BLOCK_HEADER_SIZE + start_n_bytes)
+                for i in range(total_n_bytes):
+                    if not f.tell() % 131160:
+                        log.info('File pointer before jump: {}'.format(f.tell()))
+                        log.info(
+                            "Reached end of block {}. Now skipoing header of block {}!".format(
+                                int(f.tell() / BLOCK_SIZE),
+                                int(
+                                    f.tell() / BLOCK_SIZE) + 1))
+                        f.seek(88, 1)
+                        log.info('File pointer after jump: {}'.format(f.tell()))
+                    ba.extend(f.read(1))  # using bytearray.extend is much faster than using +=
+        except:
+            log.error('File seems to end here!')
+            return
 
         log.info('Total bytes read: {}'.format(len(ba)))
 
@@ -84,7 +126,7 @@ class TCAPData(IQBase):
         self.data_array = self.data_array * self.scale
         self.data_array = self.data_array.view(np.complex64)
 
-    def parse_tcap_header(self, ba):
+    def parse_binary_tcap_header(self, ba):
         version = ba[0:8]
         center_freq_np = np.fromstring(ba[8:16], dtype='>f8')[0]
         center_freq = struct.unpack('>d', ba[8:16])[0]

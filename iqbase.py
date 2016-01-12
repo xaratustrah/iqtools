@@ -21,61 +21,23 @@ class IQBase(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, filename):
+        # fields required in all subclasses
+
         self.filename = filename
         self.file_basename = os.path.basename(filename)
         self.filename_wo_ext = os.path.splitext(filename)[0]
-        self.acq_bw = 0.0
-        self.center = 0.0
         self.date_time = ''
-        self.number_samples = 0
-        self.rbw = 0.0
-        self.rf_att = 0.0
-        self.fs = 0.0
-        self.span = 0.0
-        self.scale = 0.0
-        self.header = None
-        self.data_array = None
         self.lframes = 0
-        self.nframes_tot = 0
         self.nframes = 0
-        return
-
-    @property
-    def dictionary(self):
-        return {'center': self.center, 'number_samples': self.number_samples, 'fs': self.fs,
-                'nframes': self.nframes,
-                'lframes': self.lframes, 'data': self.data_array,
-                'nframes_tot': self.nframes_tot, 'DateTime': self.date_time, 'rf_att': self.rf_att,
-                'span': self.span,
-                'acq_bw': self.acq_bw,
-                'file_name': self.filename, 'rbw': self.rbw}
-
-    def __str__(self):
-        return \
-            '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.number_samples / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
-            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
-                self.fs) + '\n' + \
-            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
-                self.center) + '\n' + \
-            '<font size="4" color="green">Span:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
-                self.span) + '\n' + \
-            '<font size="4" color="green">Acq. BW.:</font> {} <br>'.format(self.acq_bw) + '\n' + \
-            '<font size="4" color="green">RBW:</font> {} <br>'.format(self.rbw) + '\n' + \
-            '<font size="4" color="green">RF Att.:</font> {} <br>'.format(self.rf_att) + '\n' + \
-            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
-        # 'Scale factor: {}'.format(self.scale)
+        self.nframes_tot = 0
+        self.number_samples = 0
+        self.data_array = None
+        self.fs = 0.0
+        self.center = 0.0
 
     @abstractmethod
     def read(self, nframes, lframes, sframes):
         pass
-    
-    def save_header(self):
-        """Saves the header byte array into a txt tile."""
-        with open(self.filename_wo_ext + '.xml', 'wb') as f3:
-            f3.write(self.header)
-        log.info("Header saved in an xml file.")
 
     def save_npy(self):
         """Saves the dictionary to a numpy file."""
@@ -365,23 +327,3 @@ class IQBase(object):
         :return:
         """
         return center + f
-
-    @staticmethod
-    def text_header_parser(str):
-        """
-        Parses key = value from the file header
-        :param str:
-        :return: dictionary
-        """
-        dic = {}
-        for line in str:
-            name, var = line.partition("=")[::2]
-            var = var.strip()
-            var = var.replace('k', 'e3')
-            var = var.replace('m', 'e-3')
-            var = var.replace('u', 'e-6')
-            # sometimes there is a string indicating day time:
-            if 'PM' not in var and 'AM' not in var:
-                var = var.replace('M', 'e6')
-            dic[name.strip()] = var
-        return dic

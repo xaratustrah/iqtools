@@ -7,21 +7,52 @@ Xaratustrah Aug-2015
 """
 
 import os
+import time
 import logging as log
 import numpy as np
 from iqbase import IQBase
 import pyTDMS
-import time
 
 
 class TDMSData(IQBase):
     def __init__(self, filename):
         super().__init__(filename)
+
+        # Additional fields in this subclass
         self.tdms_first_rec_size = 0
         self.tdms_other_rec_size = 0
         self.tdms_nSamplesPerRecord = 0
         self.tdms_nRecordsPerFile = 0
         self.information_read = False
+
+        self.rf_att = 0.0
+        self.scale = 0.0
+
+    @property
+    def dictionary(self):
+        return {'center': self.center,
+                'number_samples': self.number_samples,
+                'fs': self.fs,
+                'nframes': self.nframes,
+                'lframes': self.lframes,
+                'data': self.data_array,
+                'nframes_tot': self.nframes_tot,
+                'DateTime': self.date_time,
+                'rf_att': self.rf_att,
+                'file_name': self.filename}
+
+    def __str__(self):
+        return \
+            '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
+                self.number_samples / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.number_samples) + '\n' + \
+            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
+                self.fs) + '\n' + \
+            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
+                self.center) + '\n' + \
+            '<font size="4" color="green">RF Att.:</font> {} <br>'.format(self.rf_att) + '\n' + \
+            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
+
 
     def read_tdms_information(self, lframes=1):
         """
@@ -32,7 +63,7 @@ class TDMSData(IQBase):
         # we need lframes here in order to calculate nframes_tot
         self.lframes = lframes
 
-        # size does not matter much, because we only read 2 records, but anyway should be large enough.
+        # Usually size matters, but not in this case! because we only read 2 records, but anyway should be large enough.
         sz = os.path.getsize(self.filename)
         how_many = 0
         last_i_ff = 0
@@ -74,6 +105,8 @@ class TDMSData(IQBase):
         self.tdms_nRecordsPerFile = int(objects[b'/'][3][b'NRecordsPerFile'][1])
         self.number_samples = self.tdms_nSamplesPerRecord * self.tdms_nRecordsPerFile
         self.nframes_tot = int(self.number_samples / lframes)
+
+        self.information_read = True
 
     def read(self, nframes=1, lframes=1, sframes=1):
         """
@@ -130,7 +163,7 @@ class TDMSData(IQBase):
             try:
                 objects, raw_data = pyTDMS.readSegment(f, absolute_size, (objects, raw_data))
             except:
-                log.error('TDMS file seems to end here!')
+                log.error('File seems to end here!')
                 return
         # ok, now close the file
         f.close()
