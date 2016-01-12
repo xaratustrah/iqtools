@@ -9,6 +9,7 @@ Xaratustrah Aug-2015
 import numpy as np
 import time, os
 from scipy.io import wavfile
+from logging import log
 from iqbase import IQBase
 
 

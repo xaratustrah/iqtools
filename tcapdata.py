@@ -15,13 +15,28 @@ from iqbase import IQBase
 
 
 class TCAPData(IQBase):
-    def __init__(self, filename):
+    def __init__(self, filename, header_filename):
         super().__init__(filename)
+
+        if not header_filename:
+            log.info('No TCAP header filename provided.')
+
+        self.header_filename = header_filename
 
         # Additional fields in this subclass
         self.tcap_scalers = None
         self.tcap_pio = None
-        self.information_read = False
+
+        self.version = ''
+        self.adc_range = 0
+        self.block_count = 0
+        self.block_size = 0
+        self.frame_size = 0
+        self.decimation = 0
+        self.trigger_time = 0
+        self.segment_blocks = 0
+
+        self.text_header_parser()
 
     @property
     def dictionary(self):
@@ -46,15 +61,6 @@ class TCAPData(IQBase):
                 self.center) + '\n' + \
             '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
 
-    def read_tcap_information(self, header_filename):
-        """
-        Read tcap information from separate filename
-        Returns
-        -------
-
-        """
-        self.information_read = True
-
     def read(self, nframes=10, lframes=1024, sframes=1):
         """
         Read TCAP fiels *.dat
@@ -63,9 +69,6 @@ class TCAPData(IQBase):
         :param sframes:
         :return:
         """
-
-        if not self.information_read:
-            self.read_tcap_information(lframes)
 
         BLOCK_HEADER_SIZE = 88
         BLOCK_DATA_SIZE = 2 ** 17
@@ -91,11 +94,13 @@ class TCAPData(IQBase):
         self.tcap_pio = pio
         self.tcap_scalers = scalers
 
-        self.fs = 312500
-        self.center = 1.6e5
-        self.scale = 6.25e-2
-        self.nframes_tot = int(15625 * 32768 / nframes)
-        self.nsamples = 15625 * 32768
+        self.fs = 10e6 / (2 ** self.decimation)  # usually 312500
+        # center is usually 1.6e5
+
+        data_section_size = self.frame_size - 88
+        n_iq_samples = data_section_size / 2 / 2  # two bytes for I and two bytes for Q
+        self.nframes_tot = int(self.segment_blocks * n_iq_samples / nframes)
+        self.nsamples = self.segment_blocks * n_iq_samples
 
         total_n_bytes = 4 * nframes * lframes  # 4 comes from 2 times 2 byte integer for I and Q
         start_n_bytes = 4 * (sframes - 1) * lframes
@@ -192,3 +197,21 @@ class TCAPData(IQBase):
         ts_epoch = seconds + 60 * (minutes + 60 * (hours + 24 * days))
         ts = datetime.datetime.fromtimestamp(ts_epoch).strftime('%Y-%m-%d %H:%M:%S')
         return ts
+
+    def text_header_parser(self):
+        dic = {}
+        with open(self.header_filename) as f:
+            for line in f:
+                name, var = line.split()
+                dic[name.strip()] = var
+        self.version = dic['version']
+        self.center = float(dic['center_freq'])
+        self.adc_range = float(dic['adc_range'])
+        self.scale = float(dic['data_scale'])
+        self.block_count = int(dic['block_count'])
+        self.block_size = int(dic['block_size'])
+        self.frame_size = int(dic['frame_size'])
+        self.decimation = int(dic['decimation'])
+        self.trigger_time = float(dic['trigger_time'])
+        self.segment_blocks = int(dic['segment_blocks'])
+        return dic

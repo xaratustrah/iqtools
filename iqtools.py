@@ -6,9 +6,10 @@ format and extracts the data in numpy format
 xaratustrah oct-2014
             mar-2015
             aug-2015
+            jan-2016
 """
 
-import argparse, os
+import argparse, os, sys
 from pprint import pprint
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -17,6 +18,7 @@ import logging as log
 from scipy.signal import hilbert
 import xml.etree.ElementTree as et
 
+from iqbase import IQBase
 from tcapdata import TCAPData
 from tdmsdata import TDMSData
 from rawdata import RAWData
@@ -205,7 +207,7 @@ def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
         plt.savefig(filename + '.pdf')
 
 
-def get_iq_object(filename):
+def get_iq_object(filename, header_filename):
     """
     Return suitable object accorting to extension.
 
@@ -252,7 +254,11 @@ def get_iq_object(filename):
 
     if file_extension.lower() == '.dat':
         log.info('This is a TCAP file.')
-        iq_data = TCAPData(filename)
+        if not header_filename:
+            print('TCAP files need a text header file as well. Aborting....')
+            sys.exit()
+        else:
+            iq_data = TCAPData(filename, header_filename)
     return iq_data
 
 
@@ -262,6 +268,8 @@ def main():
     scriptname = 'iq_suite'
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", type=str, help="Name of the input file.")
+    parser.add_argument("-hdr", "--header-filename", nargs='?', type=str, default=None,
+                        help="Name of header file.")
     parser.add_argument("-l", "--lframes", nargs='?', type=int, const=1024, default=1024,
                         help="Length of frames, default is 1024.")
     parser.add_argument("-n", "--nframes", nargs='?', type=int, const=10, default=10,
@@ -286,7 +294,7 @@ def main():
     # here we go:
 
     log.info("File {} passed for processing.".format(args.filename))
-    iq_data = get_iq_object(args.filename)
+    iq_data = get_iq_object(args.filename, args.header_filename)
     iq_data.read(args.nframes, args.lframes, args.sframes)
 
     # Other command line arguments

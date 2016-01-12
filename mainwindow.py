@@ -91,7 +91,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         Main plot function
         :return:
         """
-        #assert self.loaded_file_type in ['tiq', 'iqt', 'wav', 'ascii', 'bin', 'tdms', 'tcap']
+        # assert self.loaded_file_type in ['tiq', 'iqt', 'wav', 'ascii', 'bin', 'tdms', 'tcap']
 
         if not self.loaded_file_type:
             self.show_message('Please choose a valid file first.')
@@ -200,7 +200,15 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         # not sure if it is needed to delete the memory before.
         self.iq_data = None
 
-        self.iq_data = get_iq_object(file_name)
+        # special case of TCAP files which need an extra header file
+        header_file_name = None
+        if file_name.lower().endswith('*.dat'):
+            header_file_name, _ = QFileDialog.getOpenFileName(self, "Choose a header file...", '',
+                                                              "TCAP Header file (*.txt)")
+            if not header_file_name:
+                return
+
+        self.iq_data = get_iq_object(file_name, header_file_name)
         self.show_message('Loaded file: {}'.format(self.iq_data.file_basename))
 
         # make a dummy read to get the header
