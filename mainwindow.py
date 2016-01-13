@@ -192,23 +192,31 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         :return:
         """
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose files...", '',
-                                                   "IQ Files (*.tiq *.iqt);;TDMS files(*.tdms);;TCAP files (*.dat);;Sound files (*.wav);;ASCII files (*.txt);;Raw binary files (*.bin)")
+                                                   "IQ Files (*.tiq *.iqt);;TDMS files(*.tdms);;TCAP files (*.dat);;Sound files (*.wav);;ASCII files (*.csv *.txt);;Raw binary files (*.bin)")
 
         if not file_name:
+            self.show_message('User cancelled the dialog box.')
             return
-
-        # not sure if it is needed to delete the memory before.
-        self.iq_data = None
 
         # special case of TCAP files which need an extra header file
         header_file_name = None
-        if file_name.lower().endswith('*.dat'):
-            header_file_name, _ = QFileDialog.getOpenFileName(self, "Choose a header file...", '',
+        if file_name.lower().endswith('.dat'):
+            self.show_message('Please choose a header file for this datafile.')
+            header_file_name, _ = QFileDialog.getOpenFileName(self, "Please choose a header file...", '',
                                                               "TCAP Header file (*.txt)")
             if not header_file_name:
+                self.show_message('User cancelled the dialog box.')
                 return
 
+        if not get_iq_object(file_name, header_file_name):
+            self.show_message('Datafile needs an additional header file which was not specified. Nothing to do.')
+            return
+
+        # Now all the above has succeeded, we can finally create the object.
+        # not sure if it is needed to delete the memory before. But anyway do it after all dialog boxes are done.
+        self.iq_data = None
         self.iq_data = get_iq_object(file_name, header_file_name)
+
         self.show_message('Loaded file: {}'.format(self.iq_data.file_basename))
 
         # make a dummy read to get the header

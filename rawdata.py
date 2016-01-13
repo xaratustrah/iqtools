@@ -36,8 +36,6 @@ class RAWData(IQBase):
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
                 self.center) + '\n' + \
-            '<font size="4" color="green">Span:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
-                self.span) + '\n' + \
             '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
 
     def read(self, nframes=10, lframes=1024, sframes=1):

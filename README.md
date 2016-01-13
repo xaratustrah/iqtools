@@ -10,8 +10,19 @@ These data are usually results of measurements of quantities in physical experim
 
 While the GUI program offers a limited graphical interface to visually inspect the data, the advanced usage allows direct programing using the class file and tools within own scrips or iPython Notebook sessions. The suite offers a extendible structure for adding further methods e.g. in spectral analysis or non-linear time series analysis.
 
+## Code Components
 
-### Supported file formats
+### IQBase class
+This class covers all required parameters to handle time domain IQ data and their representation in frequency domain. Cuts, slices etc. are also available.
+
+### iqtools
+Is a collection of commandline tools and additional functions that uses the IQBase class as main data type but additionally offers tools for plotting and accessing the data. Stand alone operation is also possible using
+command line arguments.
+
+### iqgui
+This is a GUI written using the Qt5 bindings for quick showing of the spectrogram plots for visual analysis or inspection.
+
+## Supported file formats
 
 #### [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats \*.IQT and \*.TIQ
 
@@ -28,27 +39,21 @@ TCAP file format form the older HP E1430A systems. In this case, the header info
 
 This data format is mostly useful for software defined radio applications. Left and right channels are treated as real and imaginary components respectively, file duration and sampling rate are determined automatically. Memory map is activated to avoid the whole file will be loaded in memory.
 
-#### raw binary \*.BIN
+#### raw binary \*.BIN, ASCII \*.CSV and \*.TXT 
 
-This is a file that begins with a 32-bit integer for sampling rate, followed by a 32-bit float for the center frequency. The rest of the file contains real and imaginary parts each as a 32-bit floats. File size is automatically calculated. All data are little endian.
+The binary files begin with a 32-bit integer for sampling rate, followed by a 32-bit float for the center frequency. The rest of the file contains real and imaginary parts each as a 32-bit floats. File size is automatically calculated. All data are little endian. The ASCII files are tab or space separated values with real and imaginary on every line. These data will later be treated as 32-bit floating point numbers. Lines beginning with # are considered as comments and are ignored. Here also the first line contains the a 32-bit integer for sampling rate, followed by a 32-bit float for the center frequency. Such files are used as a result of synthesis signals. For example you can create a synthetic signal like the following: 
 
-#### ASCII text \*.TXT or \*.CSV
+    from iqtools import *
+    freq = 400 # in Hz
+    center = 0 # in Hz
+    fs = 10000 # samples per second
+    duration = 3 # seconds
+    t, x = make_test_signal(freq, fs, duration, nharm=3, noise=False)
+    xbar, phase = make_analytical(x)
+    write_signal_as_binary('test_signal.bin', xbar, fs, center)
+    write_signal_as_ascii('test_signal.bin', xbar, fs, center)
 
-Tab, space or comma separated values, real and imaginary on every line. Lines beginning with # are considered as comments and are ignored. Each line contains real and imaginary part. These data will later be treated as 32-bit floating point numbers.
-
-
-## Code Components
-
-### IQBase class
-This class covers all required parameters to handle time domain IQ data and their representation in frequency domain. Cuts, slices etc. are also available.
-
-### iqtools
-Is a collection that uses the IQBase class as main data type but additionally offers tools for plotting and accessing the data. Stand alone operation is also possible using
-command line arguments.
-
-### iqgui
-This is a GUI written using the Qt5 bindings for quick showing of the spectrogram plots for visual analysis or inspection.
-
+The resulting file can be read by library, or by using **iqgui**.
 
 ## Installation
 

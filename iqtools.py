@@ -24,7 +24,7 @@ from tdmsdata import TDMSData
 from rawdata import RAWData
 from iqtdata import IQTData
 from tiqdata import TIQData
-from csvdata import CSVData
+from asciidata import ASCIIData
 from wavdata import WAVData
 from version import __version__
 
@@ -226,7 +226,7 @@ def get_iq_object(filename, header_filename):
 
     if file_extension.lower() == '.txt' or file_extension.lower() == '.csv':
         log.info('This is an ASCII file.')
-        iq_data = CSVData(filename)
+        iq_data = ASCIIData(filename)
 
     if file_extension.lower() == '.bin':
         log.info('This is a raw binary file.')
@@ -255,8 +255,8 @@ def get_iq_object(filename, header_filename):
     if file_extension.lower() == '.dat':
         log.info('This is a TCAP file.')
         if not header_filename:
-            print('TCAP files need a text header file as well. Aborting....')
-            sys.exit()
+            log.info('TCAP files need a text header file as well. Aborting....')
+            return None
         else:
             iq_data = TCAPData(filename, header_filename)
     return iq_data
@@ -281,7 +281,6 @@ def main():
     parser.add_argument("-p", "--psd", help="Plot PSD to file.", action="store_true")
     parser.add_argument("-g", "--spec", help="Plot spectrogram to file.", action="store_true")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
-    parser.add_argument("-x", "--xml", help="Write XML header to file.", action="store_true")
     parser.add_argument("-y", "--npy", help="Write dic to NPY file.", action="store_true")
 
     args = parser.parse_args()
@@ -295,6 +294,10 @@ def main():
 
     log.info("File {} passed for processing.".format(args.filename))
     iq_data = get_iq_object(args.filename, args.header_filename)
+    if not iq_data:
+        print('Datafile needs an additional header file which was not specified. Nothing to do. Aborting...')
+        sys.exit()
+
     iq_data.read(args.nframes, args.lframes, args.sframes)
 
     # Other command line arguments
@@ -313,10 +316,6 @@ def main():
         log.info('Generating spectrogram plot.')
         x, y, z = iq_data.get_spectrogram()
         plot_spectrogram_dbm(x, y, z, iq_data.center, iq_data.filename_wo_ext + '_spectrogram', True)
-
-    if args.xml:
-        log.info('Saving header into xml file.')
-        iq_data.save_header()
 
     if args.npy:
         log.info('Saving data dictionary in numpy format.')

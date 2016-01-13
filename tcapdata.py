@@ -199,6 +199,12 @@ class TCAPData(IQBase):
         return ts
 
     def text_header_parser(self):
+        """
+        Parse text headers
+        Returns
+        -------
+
+        """
         dic = {}
         with open(self.header_filename) as f:
             for line in f:
