@@ -108,49 +108,77 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             method = 'multitaper'
         elif self.radioButton_welch.isChecked():
             method = 'welch'
-        else:
+        elif self.radioButton_fft.isChecked():
             method = 'fft'
+        elif self.radioButton_fft_1d.isChecked():
+            method = 'fft_1d'
+        else:
+            method = 'welch_1d'
 
-        # if you only like to change the color, don't calculate the spectrum again, just replot
-        if replot:
-            self.colormesh_xx, self.colormesh_yy, self.colormesh_zz = self.iq_data.get_spectrogram(method=method)
+        if method in ['multitaper', 'welch', 'fft']:
+            # if you only like to change the color, don't calculate the spectrum again, just replot
+            if replot:
+                self.colormesh_xx, self.colormesh_yy, self.colormesh_zz = self.iq_data.get_spectrogram(method=method)
 
-        delta_f = np.abs(np.abs(self.colormesh_xx[0, 1]) - np.abs(self.colormesh_xx[0, 0]))
-        delta_t = np.abs(np.abs(self.colormesh_yy[1, 0]) - np.abs(self.colormesh_yy[0, 0]))
+            delta_f = np.abs(np.abs(self.colormesh_xx[0, 1]) - np.abs(self.colormesh_xx[0, 0]))
+            delta_t = np.abs(np.abs(self.colormesh_yy[1, 0]) - np.abs(self.colormesh_yy[0, 0]))
 
-        self.mplWidget.canvas.ax.clear()
+            self.mplWidget.canvas.ax.clear()
 
-        if self.comboBox_color.currentText() == 'Jet':
-            cmap = cm.jet
-        if self.comboBox_color.currentText() == 'Blues':
-            cmap = cm.Blues
-        if self.comboBox_color.currentText() == 'Hot':
-            cmap = cm.hot
-        if self.comboBox_color.currentText() == 'Cool':
-            cmap = cm.cool
-        if self.comboBox_color.currentText() == 'Copper':
-            cmap = cm.copper
-        if self.comboBox_color.currentText() == 'Gray':
-            cmap = cm.gray
+            if self.comboBox_color.currentText() == 'Jet':
+                cmap = cm.jet
+            if self.comboBox_color.currentText() == 'Blues':
+                cmap = cm.Blues
+            if self.comboBox_color.currentText() == 'Hot':
+                cmap = cm.hot
+            if self.comboBox_color.currentText() == 'Cool':
+                cmap = cm.cool
+            if self.comboBox_color.currentText() == 'Copper':
+                cmap = cm.copper
+            if self.comboBox_color.currentText() == 'Gray':
+                cmap = cm.gray
 
-        self.colormesh_zz_dbm = IQBase.get_dbm(self.colormesh_zz)
+            self.colormesh_zz_dbm = IQBase.get_dbm(self.colormesh_zz)
 
-        # Apply threshold
-        self.colormesh_zz_dbm[self.colormesh_zz_dbm < self.verticalSlider_thld.value()] = 0
+            # Apply threshold
+            self.colormesh_zz_dbm[self.colormesh_zz_dbm < self.verticalSlider_thld.value()] = 0
 
-        # find the correct object in the matplotlib widget and plot on it
-        sp = self.mplWidget.canvas.ax.pcolormesh(self.colormesh_xx, self.colormesh_yy, self.colormesh_zz_dbm, cmap=cmap)
-        cb = colorbar(sp)
-        cb.set_label('Power Spectral Density [dBm/Hz]')
-        # TODO: Colorbar doesn't show here.
+            # find the correct object in the matplotlib widget and plot on it
+            sp = self.mplWidget.canvas.ax.pcolormesh(self.colormesh_xx, self.colormesh_yy, self.colormesh_zz_dbm,
+                                                     cmap=cmap)
+            cb = colorbar(sp)
+            cb.set_label('Power Spectral Density [dBm/Hz]')
+            # TODO: Colorbar doesn't show here.
 
-        # Change frequency axis formatting
-        self.mplWidget.canvas.ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))
-        self.mplWidget.canvas.ax.set_xlabel(
-            "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
-        self.mplWidget.canvas.ax.set_ylabel('Time [sec] (resolution = {:.2e} [s])'.format(delta_t))
-        self.mplWidget.canvas.ax.set_title('Spectrogram')
-        self.mplWidget.canvas.draw()
+            # Change frequency axis formatting
+            self.mplWidget.canvas.ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))
+            self.mplWidget.canvas.ax.set_xlabel(
+                "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
+            self.mplWidget.canvas.ax.set_ylabel('Time [sec] (resolution = {:.2e} [s])'.format(delta_t))
+            self.mplWidget.canvas.ax.set_title('Spectrogram')
+            self.mplWidget.canvas.draw()
+        elif method == 'fft_1d':
+            ff, pp, _ = self.iq_data.get_fft()
+            delta_f = ff[1] - ff[0]
+            self.mplWidget.canvas.ax.clear()
+            self.mplWidget.canvas.ax.plot(ff, 10 * np.log10(pp * 1000))
+            self.mplWidget.canvas.ax.set_title('Spectrum')
+            self.mplWidget.canvas.ax.set_xlabel(
+                "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
+            self.mplWidget.canvas.ax.set_ylabel("Power Spectral Density [dBm/Hz]")
+            self.mplWidget.canvas.ax.grid(True)
+            self.mplWidget.canvas.draw()
+        else:
+            ff, pp = self.iq_data.get_pwelch()
+            delta_f = ff[1] - ff[0]
+            self.mplWidget.canvas.ax.clear()
+            self.mplWidget.canvas.ax.plot(ff, 10 * np.log10(pp * 1000))
+            self.mplWidget.canvas.ax.set_title('Spectrum')
+            self.mplWidget.canvas.ax.set_xlabel(
+                "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
+            self.mplWidget.canvas.ax.set_ylabel("Power Spectral Density [dBm/Hz]")
+            self.mplWidget.canvas.ax.grid(True)
+            self.mplWidget.canvas.draw()
 
     def addmpl(self, fig):
         """
