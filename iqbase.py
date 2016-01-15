@@ -5,7 +5,6 @@ Xaratustrah Aug-2015
 
 """
 
-import logging as log
 import os
 import numpy as np
 from scipy.io import wavfile

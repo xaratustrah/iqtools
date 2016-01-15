@@ -83,7 +83,7 @@ class IQTData(IQBase):
             data_offset += header_size
 
         self.header = ba.decode('utf8').split('\n')
-        header_dic = IQBase.text_header_parser(self.header)
+        header_dic = self.text_header_parser(self.header)
 
         self.fft_points = int(header_dic['FFTPoints'])
         self.max_input_level = float(header_dic['MaxInputLevel'])

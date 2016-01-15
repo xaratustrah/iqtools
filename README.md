@@ -116,4 +116,5 @@ Using [UPX](http://upx.sourceforge.net/) the size of the resulting compilation u
 	upx --best --lzma --compress-exports=0 --strip-relocs=0 *.pyd *.dll
 
 ## Acknowledgements
-I am thankful to [carlkl](https://github.com/carlkl) for his valuable help in making a stand alone binary under MS Windows.
+I am thankful to [carlkl](https://github.com/carlkl) for his valuable help in making a stand alone binary under MS Windows and also for fruitful discussions and suggestions.
+
