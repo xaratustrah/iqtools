@@ -41,6 +41,7 @@ class ASCIIData(IQBase):
     def read(self, nframes=10, lframes=1024, sframes=1):
         self.lframes = lframes
         self.nframes = nframes
+        self.sframes = sframes
 
         x = np.genfromtxt(self.filename, dtype=np.float32)
         self.fs = x[0, 0]

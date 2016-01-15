@@ -28,6 +28,7 @@ class IQBase(object):
         self.date_time = ''
         self.lframes = 0
         self.nframes = 0
+        self.sframes = 0
         self.nframes_tot = 0
         self.nsamples = 0
         self.data_array = None
@@ -262,6 +263,7 @@ class IQBase(object):
         :param watt: value in Watt
         :return: value in dBm
         """
+        watt[watt <= 0] = 10**-30
         return 10 * np.log10(np.array(watt) * 1000)
 
     @staticmethod

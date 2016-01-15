@@ -76,6 +76,8 @@ class TCAPData(IQBase):
 
         self.lframes = lframes
         self.nframes = nframes
+        self.sframes = sframes
+
         filesize = os.path.getsize(self.filename)
         if not filesize == 15625 * BLOCK_SIZE:
             log.info("File size does not match block sizes times total number of blocks. Aborting...")

@@ -50,6 +50,7 @@ class WAVData(IQBase):
         """
         self.lframes = lframes
         self.nframes = nframes
+        self.sframes = sframes
 
         # activate memory map
         try:

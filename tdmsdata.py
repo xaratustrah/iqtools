@@ -124,6 +124,7 @@ class TDMSData(IQBase):
 
         self.lframes = lframes
         self.nframes = nframes
+        self.sframes = sframes
 
         total_n_bytes = nframes * lframes
         start_n_bytes = (sframes - 1) * lframes

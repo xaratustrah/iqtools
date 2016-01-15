@@ -41,6 +41,8 @@ class RAWData(IQBase):
     def read(self, nframes=10, lframes=1024, sframes=1):
         self.lframes = lframes
         self.nframes = nframes
+        self.sframes = sframes
+
         x = np.fromfile(self.filename, dtype=np.complex64)
         self.fs = float(np.real(x[0]))
         self.center = float(np.imag(x[0]))

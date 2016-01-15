@@ -70,6 +70,7 @@ class IQTData(IQBase):
 
         self.lframes = lframes
         self.nframes = nframes
+        self.sframes = sframes
 
         data_offset = 0
         with open(self.filename, 'rb') as f:

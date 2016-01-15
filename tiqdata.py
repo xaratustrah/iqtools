@@ -78,6 +78,7 @@ class TIQData(IQBase):
 
         self.lframes = lframes
         self.nframes = nframes
+        self.sframes = sframes
 
         filesize = os.path.getsize(self.filename)
         log.info("File size is {} bytes.".format(filesize))
