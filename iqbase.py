@@ -48,6 +48,9 @@ class IQBase(object):
         wavfile.write(self.filename_wo_ext + '.wav', afs, abs(self.data_array))
 
     def get_fft_freqs_only(self, x=None):
+        """
+        Deliver the FFT frequencies only
+        """
         if x is None:
             data = self.data_array
         else:
@@ -229,7 +232,7 @@ class IQBase(object):
                 break
         fwhm = f_p3db - f_m3db
         # return watt values not dbm
-        return fwhm, f_peak, [f_m3db, f_p3db], [p_m3db, p_p3db]
+        return fwhm, f_peak, np.array([f_m3db, f_p3db]), np.array([p_m3db, p_p3db])
 
     @staticmethod
     def get_narrow_peaks_dbm(f, p, accuracy=50):
@@ -244,7 +247,7 @@ class IQBase(object):
         p_dbm = IQBase.get_dbm(p)
         peak_ind = find_peaks_cwt(p_dbm, np.arange(1, accuracy))
         # return the watt value, not dbm
-        return f[peak_ind], p[peak_ind]
+        return np.array(f[peak_ind]), np.array(p[peak_ind])
 
     @staticmethod
     def get_broad_peak_dbm(f, p):
@@ -255,7 +258,7 @@ class IQBase(object):
         :return:
         """
         # return as an array for compatibility
-        return [f[p.argmax()]], [p.max()]
+        return np.array([f[p.argmax()]]), np.array([p.max()])
 
     @staticmethod
     def get_dbm(watt):

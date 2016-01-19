@@ -17,7 +17,6 @@ import numpy as np
 import logging as log
 from scipy.signal import hilbert
 import xml.etree.ElementTree as et
-
 from iqbase import IQBase
 from tcapdata import TCAPData
 from tdmsdata import TDMSData
@@ -170,7 +169,7 @@ def plot_frame_power(yy, frame_power):
     plt.title('Frame power')
 
 
-def plot_spectrogram_dbm(xx, yy, zz, cen=0.0, filename='', to_file=False):
+def plot_spectrogram_dbm(xx, yy, zz, cen=0.0, filename='', to_file=False, cmap=cm.jet):
     """
     Plot the calculated spectrogram
     :param xx:
@@ -181,7 +180,7 @@ def plot_spectrogram_dbm(xx, yy, zz, cen=0.0, filename='', to_file=False):
     """
     delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
     delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
-    sp = plt.pcolormesh(xx, yy, IQBase.get_dbm(zz), cmap=cm.jet)
+    sp = plt.pcolormesh(xx, yy, IQBase.get_dbm(zz), cmap=cmap)
     cb = plt.colorbar(sp)
     plt.xlabel("Delta f [Hz] @ {} [Hz] (resolution = {:.2e} [Hz])".format(cen, delta_f))
     plt.ylabel('Time [sec] (resolution = {:.2e} [s])'.format(delta_t))
@@ -198,7 +197,8 @@ def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
         mask = (f != 0) | (f == 0)
     else:
         mask = (f <= span / 2) & (f >= -span / 2)
-    plt.plot(f[mask], 10 * np.log10(p[mask] * 1000))
+
+    plt.plot(f[mask], 10 * IQBase.get_dbm(p[mask]))
     plt.xlabel("Delta f [Hz] @ {} [Hz]".format(cen))
     plt.title(filename)
     plt.ylabel("Power Spectral Density [dBm/Hz]")
