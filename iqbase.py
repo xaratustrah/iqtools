@@ -266,7 +266,8 @@ class IQBase(object):
         :param watt: value in Watt
         :return: value in dBm
         """
-        watt[watt <= 0] = 10**-30
+        if isinstance(watt, np.ndarray):
+            watt[watt <= 0] = 10**-30
         return 10 * np.log10(np.array(watt) * 1000)
 
     @staticmethod
