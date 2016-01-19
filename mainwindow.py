@@ -44,7 +44,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.loaded_file_type = False
 
         # fill combo box with names
-        self.comboBox_color.addItems(['Jet', 'Blues', 'Cool', 'Copper', 'Hot', 'Gray'])
+        self.comboBox_color.addItems(['Viridis', 'Jet', 'Blues', 'Cool', 'Copper', 'Hot', 'Gray'])
 
         self.colormesh_xx = None
         self.colormesh_yy = None
@@ -123,6 +123,8 @@ class mainWindow(QMainWindow, Ui_MainWindow):
 
             self.mplWidget.canvas.ax.clear()
 
+            if self.comboBox_color.currentText() == 'Viridis':
+                cmap = cm.viridis
             if self.comboBox_color.currentText() == 'Jet':
                 cmap = cm.jet
             if self.comboBox_color.currentText() == 'Blues':
