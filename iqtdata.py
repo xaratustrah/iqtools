@@ -35,10 +35,7 @@ class IQTData(IQBase):
                 'data': self.data_array,
                 'nframes_tot': self.nframes_tot,
                 'DateTime': self.date_time,
-                'rf_att': self.rf_att,
-                'span': self.span,
-                'acq_bw': self.acq_bw,
-                'file_name': self.filename, 'rbw': self.rbw}
+                'span': self.span}
 
     def __str__(self):
         return \
@@ -51,9 +48,6 @@ class IQTData(IQBase):
                 self.center) + '\n' + \
             '<font size="4" color="green">Span:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
                 self.span) + '\n' + \
-            '<font size="4" color="green">Acq. BW.:</font> {} <br>'.format(self.acq_bw) + '\n' + \
-            '<font size="4" color="green">RBW:</font> {} <br>'.format(self.rbw) + '\n' + \
-            '<font size="4" color="green">RF Att.:</font> {} <br>'.format(self.rf_att) + '\n' + \
             '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
 
 

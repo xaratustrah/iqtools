@@ -148,7 +148,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             cb.set_label('Power Spectral Density [dBm/Hz]')
             # TODO: Colorbar doesn't show here.
 
-            info = 'lframes = {}, lframes = {}, sframes = {}, method = {}'.format(self.iq_data.nframes,
+            info = 'nframes = {}, lframes = {}, sframes = {}, method = {}'.format(self.iq_data.nframes,
                                                                                   self.iq_data.lframes,
                                                                                   self.iq_data.sframes,
                                                                                   method)
@@ -158,9 +158,9 @@ class mainWindow(QMainWindow, Ui_MainWindow):
                 "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
             self.mplWidget.canvas.ax.set_ylabel('Time [sec] (resolution = {:.2e} [s])'.format(delta_t))
             self.mplWidget.canvas.ax.set_title('Spectrogram (File: {})'.format(self.iq_data.file_basename))
-            self.mplWidget.canvas.ax.text(0.5, 0.005, info,
+            self.mplWidget.canvas.ax.text(0.5, 0.995, info,
                                           horizontalalignment='center',
-                                          verticalalignment='bottom',
+                                          verticalalignment='top',
                                           fontsize=11,
                                           transform=self.mplWidget.canvas.ax.transAxes)
             self.mplWidget.canvas.draw()
@@ -169,7 +169,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         elif method == 'fft_1d':
             ff, pp, _ = self.iq_data.get_fft()
             delta_f = ff[1] - ff[0]
-            info = 'lframes = {}, lframes = {}, sframes = {}, method = {}'.format(self.iq_data.nframes,
+            info = 'nframes = {}, lframes = {}, sframes = {}, method = {}'.format(self.iq_data.nframes,
                                                                                   self.iq_data.lframes,
                                                                                   self.iq_data.sframes,
                                                                                   method)
@@ -181,9 +181,9 @@ class mainWindow(QMainWindow, Ui_MainWindow):
                 "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
             self.mplWidget.canvas.ax.set_ylabel("Power Spectral Density [dBm/Hz]")
             self.mplWidget.canvas.ax.grid(True)
-            self.mplWidget.canvas.ax.text(0.5, 0.005, info,
+            self.mplWidget.canvas.ax.text(0.5, 0.995, info,
                                           horizontalalignment='center',
-                                          verticalalignment='bottom',
+                                          verticalalignment='top',
                                           fontsize=11,
                                           transform=self.mplWidget.canvas.ax.transAxes)
             self.mplWidget.canvas.draw()
@@ -192,7 +192,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         else:
             ff, pp = self.iq_data.get_pwelch()
             delta_f = ff[1] - ff[0]
-            info = 'lframes = {}, lframes = {}, sframes = {}, method = {}'.format(self.iq_data.nframes,
+            info = 'nframes = {}, lframes = {}, sframes = {}, method = {}'.format(self.iq_data.nframes,
                                                                                   self.iq_data.lframes,
                                                                                   self.iq_data.sframes,
                                                                                   method)
@@ -203,10 +203,10 @@ class mainWindow(QMainWindow, Ui_MainWindow):
                 "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
             self.mplWidget.canvas.ax.set_ylabel("Power Spectral Density [dBm/Hz]")
             self.mplWidget.canvas.ax.grid(True)
-            self.mplWidget.canvas.ax.text(0.5, 0.005, info,
+            self.mplWidget.canvas.ax.text(0.5, 0.995, info,
                                           horizontalalignment='center',
-                                          verticalalignment='bottom',
-                                          fontsize=11,
+                                          verticalalignment='top',
+                                          fontsize=12,
                                           transform=self.mplWidget.canvas.ax.transAxes)
             self.mplWidget.canvas.draw()
             self.mplWidget.canvas.show()
