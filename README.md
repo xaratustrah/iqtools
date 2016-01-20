@@ -2,7 +2,7 @@ iq_suite
 ============
 <img src="https://raw.githubusercontent.com/xaratustrah/iq_suite/master/rsrc/icon.png" width="128">
 
-Collection of code for working with offline complex valued time series data ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components) or IQ Data)  with numpy written in Python. 
+Collection of code for working with offline complex valued time series data ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components) or IQ Data) with numpy written in Python. 
 
 ![iq_suite](https://raw.githubusercontent.com/xaratustrah/iq_suite/master/rsrc/screenshot.png)
 
@@ -13,7 +13,7 @@ While the GUI program offers a limited graphical interface to visually inspect t
 ## Code Components
 
 ### IQBase class
-This class covers all required parameters to handle time domain IQ data and their representation in frequency domain. Cuts, slices etc. are also available.
+This class covers all required parameters to handle time domain IQ data and their representation in frequency domain. Cuts, slices etc. are also available. Also a set of windowing functions are available.
 
 ### iqtools
 Is a collection of commandline tools and additional functions that uses the IQBase class as main data type but additionally offers tools for plotting and accessing the data. Stand alone operation is also possible using
@@ -114,6 +114,8 @@ then perform the compilation. Note there is also a ready made package for spectr
 Using [UPX](http://upx.sourceforge.net/) the size of the resulting compilation under windows can be reduced by the following command:
 
 	upx --best --lzma --compress-exports=0 --strip-relocs=0 *.pyd *.dll
+
+`--lzma` can be removed if desired.
 
 ## Acknowledgements
 I am thankful to [carlkl](https://github.com/carlkl) for his valuable help in making a stand alone binary under MS Windows and also for fruitful discussions and suggestions.

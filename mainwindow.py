@@ -130,6 +130,9 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         Main plot function
         :return:
         """
+        # Empty status bar message
+        self.show_message('')
+
         if not self.loaded_file_type:
             self.show_message('Please choose a valid file first.')
             return
@@ -177,7 +180,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
             self.mplWidget.canvas.ax.set_title('Spectrogram (File: {})'.format(self.iq_data.file_basename))
 
         elif self.method == 'tfr-2D':
-            self.show_message('Waiting for carlkl@GitHUB to import libtfr to Python 3.4 :-)')
+            self.show_message('Waiting for carlkl@GitHUB to port libtfr to Python 3 :-)')
             return
 
         elif self.method == 'welch-1D':

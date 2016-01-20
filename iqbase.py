@@ -139,13 +139,13 @@ class IQBase(object):
         if self.method == 'fft':
             # go through the data array section wise and create a results array
             for i in range(nframes):
-                f, p, _ = self.get_fft(x[i * lframes:(i + 1) * lframes] * self.get_window())
+                f, p, _ = self.get_fft(x[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
                 pout[i * lframes:(i + 1) * lframes] = p
 
         elif self.method == 'welch':
             # go through the data array section wise and create a results array
             for i in range(nframes):
-                f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes] * self.get_window())
+                f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
                 pout[i * lframes:(i + 1) * lframes] = p
 
         elif self.method == 'mtm':
@@ -153,7 +153,7 @@ class IQBase(object):
             f = self.get_fft_freqs_only(x[0:lframes])
             # go through the data array section wise and create a results array
             for i in range(nframes):
-                p = pmtm(x[i * lframes:(i + 1) * lframes] * self.get_window(), e=tapers, v=eigen, method='adapt',
+                p = pmtm(x[i * lframes:(i + 1) * lframes] * self.get_window(lframes), e=tapers, v=eigen, method='adapt',
                          show=False)
                 pout[i * lframes:(i + 1) * lframes] = np.fft.fftshift(p[:, 0])
 
