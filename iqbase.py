@@ -155,7 +155,8 @@ class IQBase(object):
             for i in range(nframes):
                 p = pmtm(x[i * lframes:(i + 1) * lframes] * self.get_window(lframes), e=tapers, v=eigen, method='adapt',
                          show=False)
-                pout[i * lframes:(i + 1) * lframes] = np.fft.fftshift(p[:, 0])
+                # pay attention that mtm uses padding, so we have to cut the output array
+                pout[i * lframes:(i + 1) * lframes] = np.fft.fftshift(p[0:lframes, 0])
 
         # create a mesh grid from 0 to nframes -1 in Y direction
         xx, yy = np.meshgrid(f, np.arange(nframes))
