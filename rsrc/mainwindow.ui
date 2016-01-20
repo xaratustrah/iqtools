@@ -33,10 +33,44 @@
          <string>Navigation</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="7" column="1">
-          <widget class="QRadioButton" name="radioButto_welch_1d">
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>Welch (1D)</string>
+            <string>Window:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Method:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <widget class="QComboBox" name="comboBox_color"/>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Starting time [s]:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="label_21">
+           <property name="text">
+            <string>Color map:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="spinBox_nframes">
+           <property name="maximum">
+            <number>10000</number>
+           </property>
+           <property name="value">
+            <number>100</number>
            </property>
           </widget>
          </item>
@@ -50,61 +84,10 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="0">
-          <widget class="QLabel" name="label_21">
-           <property name="text">
-            <string>Color map:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLCDNumber" name="lcdNumber_sframes">
-           <property name="digitCount">
-            <number>7</number>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::Flat</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_20">
-           <property name="text">
-            <string>Points per frames:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="spinBox_nframes">
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-           <property name="value">
-            <number>10</number>
-           </property>
-          </widget>
-         </item>
          <item row="5" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
             <string>Threshold [dBm]:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Starting frame:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="1">
-          <widget class="QComboBox" name="comboBox_color"/>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Starting time [s]:</string>
            </property>
           </widget>
          </item>
@@ -128,6 +111,13 @@
            </property>
           </widget>
          </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Starting frame:</string>
+           </property>
+          </widget>
+         </item>
          <item row="2" column="1">
           <widget class="QSpinBox" name="spinBox_sframes">
            <property name="minimum">
@@ -141,36 +131,28 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
-          <widget class="QRadioButton" name="radioButton_fft">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_20">
            <property name="text">
-            <string>FFT (2D)</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
+            <string>Points per frames:</string>
            </property>
           </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLCDNumber" name="lcdNumber_sframes">
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QComboBox" name="comboBox_window"/>
          </item>
          <item row="6" column="1">
-          <widget class="QRadioButton" name="radioButton_fft_1d">
-           <property name="text">
-            <string>FFT (1D)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QRadioButton" name="radioButton_welch">
-           <property name="text">
-            <string>Welch (2D)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="QRadioButton" name="radioButton_multitaper">
-           <property name="text">
-            <string>Multitaper (2D)</string>
-           </property>
-          </widget>
+          <widget class="QComboBox" name="comboBox_method"/>
          </item>
         </layout>
        </widget>
@@ -378,9 +360,6 @@
   <tabstop>spinBox_lframes</tabstop>
   <tabstop>spinBox_nframes</tabstop>
   <tabstop>spinBox_sframes</tabstop>
-  <tabstop>radioButton_fft</tabstop>
-  <tabstop>radioButton_fft_1d</tabstop>
-  <tabstop>radioButton_welch</tabstop>
   <tabstop>comboBox_color</tabstop>
   <tabstop>verticalSlider_sframes</tabstop>
   <tabstop>verticalSlider_thld</tabstop>
@@ -437,70 +416,6 @@
     <hint type="destinationlabel">
      <x>283</x>
      <y>227</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_fft_1d</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>comboBox_color</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>185</x>
-     <y>249</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>328</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_fft_1d</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>verticalSlider_thld</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>185</x>
-     <y>241</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>372</x>
-     <y>266</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButto_welch_1d</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>comboBox_color</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>171</x>
-     <y>266</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>310</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButto_welch_1d</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>verticalSlider_thld</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>210</x>
-     <y>271</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>366</x>
-     <y>331</y>
     </hint>
    </hints>
   </connection>

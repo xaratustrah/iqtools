@@ -35,9 +35,27 @@ class IQBase(object):
         self.fs = 0.0
         self.center = 0.0
 
+        self.window = 'rectangular'
+        self.method = 'fft'
+
     @abstractmethod
     def read(self, nframes, lframes, sframes):
         pass
+
+    def get_window(self, n=None):
+        if not n:
+            n = self.lframes
+        assert self.window in ['rectangular', 'bartlett', 'blackman', 'hamming', 'hanning']
+        if self.window == 'rectangular':
+            return np.ones(n)
+        elif self.window == 'bartlett':
+            return np.bartlett(n)
+        elif self.window == 'blackman':
+            return np.blackman(n)
+        elif self.window == 'hamming':
+            return np.hamming(n)
+        else:
+            return np.hanning(n)
 
     def save_npy(self):
         """Saves the dictionary to a numpy file."""
@@ -70,7 +88,7 @@ class IQBase(object):
         n = data.size
         ts = 1.0 / self.fs
         f = np.fft.fftfreq(n, ts)
-        v_peak_iq = np.fft.fft(data) / n
+        v_peak_iq = np.fft.fft(data * self.get_window(n)) / n
         v_rms = abs(v_peak_iq) / np.sqrt(2)
         p_avg = v_rms ** 2 / termination
         return np.fft.fftshift(f), np.fft.fftshift(p_avg), np.fft.fftshift(v_peak_iq)
@@ -85,10 +103,11 @@ class IQBase(object):
             data = self.data_array
         else:
             data = x
-        f, p_avg = welch(data, self.fs, nperseg=data.size)
+        n = data.size
+        f, p_avg = welch(data * self.get_window(n), self.fs, nperseg=data.size)
         return np.fft.fftshift(f), np.fft.fftshift(p_avg)
 
-    def get_spectrogram(self, method='fft'):
+    def get_spectrogram(self):
         """
         Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh
         x, y and z are ndarrays and have the same shape. In order to access the contents use these kind of
@@ -107,7 +126,7 @@ class IQBase(object):
         :return: frequency, time and power for XYZ plot,
         """
 
-        assert method in ['fft', 'welch', 'multitaper']
+        assert self.method in ['fft', 'welch', 'mtm']
 
         x = self.data_array
         fs = self.fs
@@ -117,24 +136,25 @@ class IQBase(object):
         # define an empty np-array for appending
         pout = np.zeros(nframes * lframes)
 
-        if method == 'fft':
+        if self.method == 'fft':
             # go through the data array section wise and create a results array
             for i in range(nframes):
-                f, p, _ = self.get_fft(x[i * lframes:(i + 1) * lframes])
+                f, p, _ = self.get_fft(x[i * lframes:(i + 1) * lframes] * self.get_window())
                 pout[i * lframes:(i + 1) * lframes] = p
 
-        elif method == 'welch':
+        elif self.method == 'welch':
             # go through the data array section wise and create a results array
             for i in range(nframes):
-                f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes])
+                f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes] * self.get_window())
                 pout[i * lframes:(i + 1) * lframes] = p
 
-        elif method == 'multitaper':
+        elif self.method == 'mtm':
             [tapers, eigen] = dpss(lframes, NW=2)
             f = self.get_fft_freqs_only(x[0:lframes])
             # go through the data array section wise and create a results array
             for i in range(nframes):
-                p = pmtm(x[i * lframes:(i + 1) * lframes], e=tapers, v=eigen, method='adapt', show=False)
+                p = pmtm(x[i * lframes:(i + 1) * lframes] * self.get_window(), e=tapers, v=eigen, method='adapt',
+                         show=False)
                 pout[i * lframes:(i + 1) * lframes] = np.fft.fftshift(p[:, 0])
 
         # create a mesh grid from 0 to nframes -1 in Y direction
@@ -267,7 +287,7 @@ class IQBase(object):
         :return: value in dBm
         """
         if isinstance(watt, np.ndarray):
-            watt[watt <= 0] = 10**-30
+            watt[watt <= 0] = 10 ** -30
         return 10 * np.log10(np.array(watt) * 1000)
 
     @staticmethod

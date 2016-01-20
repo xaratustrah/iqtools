@@ -43,7 +43,12 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.iq_data = None
         self.loaded_file_type = False
 
+        self.cmap = None
+        self.method = None
+
         # fill combo box with names
+        self.comboBox_method.addItems(['fft-2D', 'welch-2D', 'mtm-2D', 'tfr-2D', 'fft-1D', 'welch-1D'])
+        self.comboBox_window.addItems(['rectangular', 'bartlett', 'blackman', 'hamming', 'hanning'])
         self.comboBox_color.addItems(['Viridis', 'Jet', 'Blues', 'Cool', 'Copper', 'Hot', 'Gray'])
 
         self.colormesh_xx = None
@@ -86,6 +91,40 @@ class mainWindow(QMainWindow, Ui_MainWindow):
 
         self.comboBox_color.currentIndexChanged.connect(self.on_comboBox_color_currentIndexChanged)
 
+    def check_combo_boxes(self):
+        if self.comboBox_color.currentText() == 'Viridis':
+            self.cmap = cm.viridis
+        if self.comboBox_color.currentText() == 'Jet':
+            self.cmap = cm.jet
+        if self.comboBox_color.currentText() == 'Blues':
+            self.cmap = cm.Blues
+        if self.comboBox_color.currentText() == 'Hot':
+            self.cmap = cm.hot
+        if self.comboBox_color.currentText() == 'Cool':
+            self.cmap = cm.cool
+        if self.comboBox_color.currentText() == 'Copper':
+            self.cmap = cm.copper
+        if self.comboBox_color.currentText() == 'Gray':
+            self.cmap = cm.gray
+
+        if self.comboBox_method.currentText() == 'fft-2D':
+            self.method = 'fft-2D'
+            self.iq_data.method = 'fft'
+        elif self.comboBox_method.currentText() == 'welch-2D':
+            self.method = 'welch-2D'
+            self.iq_data.method = 'welch'
+        elif self.comboBox_method.currentText() == 'mtm-2D':
+            self.method = 'mtm-2D'
+            self.iq_data.method = 'mtm'
+        elif self.comboBox_method.currentText() == 'tfr-2D':
+            self.method = 'tfr-2D'
+        elif self.comboBox_method.currentText() == 'welch-1D':
+            self.method = 'welch-1D'
+        else:
+            self.method = 'fft_1D'
+
+        self.iq_data.window = self.comboBox_window.currentText()
+
     def plot(self, replot=True):
         """
         Main plot function
@@ -100,104 +139,50 @@ class mainWindow(QMainWindow, Ui_MainWindow):
         self.iq_data.read(self.spinBox_nframes.value(), self.spinBox_lframes.value(),
                           self.spinBox_sframes.value())
 
+        self.check_combo_boxes()
+
         self.textBrowser.clear()
         self.textBrowser.append(str(self.iq_data))
-        if self.radioButton_multitaper.isChecked():
-            method = 'multitaper'
-        elif self.radioButton_welch.isChecked():
-            method = 'welch'
-        elif self.radioButton_fft.isChecked():
-            method = 'fft'
-        elif self.radioButton_fft_1d.isChecked():
-            method = 'fft_1d'
-        else:
-            method = 'welch_1d'
 
-        if method in ['multitaper', 'welch', 'fft']:
+        info_txt = 'nframes = {}, lframes = {}, sframes = {}, method = {}'.format(self.iq_data.nframes,
+                                                                                  self.iq_data.lframes,
+                                                                                  self.iq_data.sframes,
+                                                                                  self.method)
+
+        if self.method in ['mtm-2D', 'welch-2D', 'fft-2D']:
             # if you only like to change the color, don't calculate the spectrum again, just replot
             if replot:
-                self.colormesh_xx, self.colormesh_yy, self.colormesh_zz = self.iq_data.get_spectrogram(method=method)
+                self.colormesh_xx, self.colormesh_yy, self.colormesh_zz = self.iq_data.get_spectrogram()
 
             delta_f = np.abs(np.abs(self.colormesh_xx[0, 1]) - np.abs(self.colormesh_xx[0, 0]))
             delta_t = np.abs(np.abs(self.colormesh_yy[1, 0]) - np.abs(self.colormesh_yy[0, 0]))
 
-            self.mplWidget.canvas.ax.clear()
-
-            if self.comboBox_color.currentText() == 'Viridis':
-                cmap = cm.viridis
-            if self.comboBox_color.currentText() == 'Jet':
-                cmap = cm.jet
-            if self.comboBox_color.currentText() == 'Blues':
-                cmap = cm.Blues
-            if self.comboBox_color.currentText() == 'Hot':
-                cmap = cm.hot
-            if self.comboBox_color.currentText() == 'Cool':
-                cmap = cm.cool
-            if self.comboBox_color.currentText() == 'Copper':
-                cmap = cm.copper
-            if self.comboBox_color.currentText() == 'Gray':
-                cmap = cm.gray
-
-            self.colormesh_zz_dbm = IQBase.get_dbm(self.colormesh_zz)
-
             # Apply threshold
+            self.colormesh_zz_dbm = IQBase.get_dbm(self.colormesh_zz)
             self.colormesh_zz_dbm[self.colormesh_zz_dbm < self.verticalSlider_thld.value()] = 0
 
             # find the correct object in the matplotlib widget and plot on it
+            self.mplWidget.canvas.ax.clear()
             sp = self.mplWidget.canvas.ax.pcolormesh(self.colormesh_xx, self.colormesh_yy, self.colormesh_zz_dbm,
-                                                     cmap=cmap)
+                                                     cmap=self.cmap)
             cb = colorbar(sp)
             cb.set_label('Power Spectral Density [dBm/Hz]')
             # TODO: Colorbar doesn't show here.
 
-            info = 'nframes = {}, lframes = {}, sframes = {}, method = {}'.format(self.iq_data.nframes,
-                                                                                  self.iq_data.lframes,
-                                                                                  self.iq_data.sframes,
-                                                                                  method)
             # Change frequency axis formatting
             self.mplWidget.canvas.ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))
             self.mplWidget.canvas.ax.set_xlabel(
                 "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
             self.mplWidget.canvas.ax.set_ylabel('Time [sec] (resolution = {:.2e} [s])'.format(delta_t))
             self.mplWidget.canvas.ax.set_title('Spectrogram (File: {})'.format(self.iq_data.file_basename))
-            self.mplWidget.canvas.ax.text(0.5, 0.995, info,
-                                          horizontalalignment='center',
-                                          verticalalignment='top',
-                                          fontsize=11,
-                                          transform=self.mplWidget.canvas.ax.transAxes)
-            self.mplWidget.canvas.draw()
-            self.mplWidget.canvas.show()
 
-        elif method == 'fft_1d':
-            ff, pp, _ = self.iq_data.get_fft()
-            delta_f = ff[1] - ff[0]
-            info = 'nframes = {}, lframes = {}, sframes = {}, method = {}'.format(self.iq_data.nframes,
-                                                                                  self.iq_data.lframes,
-                                                                                  self.iq_data.sframes,
-                                                                                  method)
+        elif self.method == 'tfr-2D':
+            self.show_message('Waiting for carlkl@GitHUB to import libtfr to Python 3.4 :-)')
+            return
 
-            self.mplWidget.canvas.ax.clear()
-            self.mplWidget.canvas.ax.plot(ff, IQBase.get_dbm(pp))
-            self.mplWidget.canvas.ax.set_title('Spectrum (File: {})'.format(self.iq_data.file_basename))
-            self.mplWidget.canvas.ax.set_xlabel(
-                "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
-            self.mplWidget.canvas.ax.set_ylabel("Power Spectral Density [dBm/Hz]")
-            self.mplWidget.canvas.ax.grid(True)
-            self.mplWidget.canvas.ax.text(0.5, 0.995, info,
-                                          horizontalalignment='center',
-                                          verticalalignment='top',
-                                          fontsize=11,
-                                          transform=self.mplWidget.canvas.ax.transAxes)
-            self.mplWidget.canvas.draw()
-            self.mplWidget.canvas.show()
-
-        else:
+        elif self.method == 'welch-1D':
             ff, pp = self.iq_data.get_pwelch()
             delta_f = ff[1] - ff[0]
-            info = 'nframes = {}, lframes = {}, sframes = {}, method = {}'.format(self.iq_data.nframes,
-                                                                                  self.iq_data.lframes,
-                                                                                  self.iq_data.sframes,
-                                                                                  method)
             self.mplWidget.canvas.ax.clear()
             self.mplWidget.canvas.ax.plot(ff, IQBase.get_dbm(pp))
             self.mplWidget.canvas.ax.set_title('Spectrum (File: {})'.format(self.iq_data.file_basename))
@@ -205,13 +190,26 @@ class mainWindow(QMainWindow, Ui_MainWindow):
                 "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
             self.mplWidget.canvas.ax.set_ylabel("Power Spectral Density [dBm/Hz]")
             self.mplWidget.canvas.ax.grid(True)
-            self.mplWidget.canvas.ax.text(0.5, 0.995, info,
-                                          horizontalalignment='center',
-                                          verticalalignment='top',
-                                          fontsize=12,
-                                          transform=self.mplWidget.canvas.ax.transAxes)
-            self.mplWidget.canvas.draw()
-            self.mplWidget.canvas.show()
+
+        else:  # this means self.method == 'fft-1D'
+            ff, pp, _ = self.iq_data.get_fft()
+            delta_f = ff[1] - ff[0]
+            self.mplWidget.canvas.ax.clear()
+            self.mplWidget.canvas.ax.plot(ff, IQBase.get_dbm(pp))
+            self.mplWidget.canvas.ax.set_title('Spectrum (File: {})'.format(self.iq_data.file_basename))
+            self.mplWidget.canvas.ax.set_xlabel(
+                "Delta f [Hz] @ {:.2e} [Hz] (resolution = {:.2e} [Hz])".format(self.iq_data.center, delta_f))
+            self.mplWidget.canvas.ax.set_ylabel("Power Spectral Density [dBm/Hz]")
+            self.mplWidget.canvas.ax.grid(True)
+
+        # finish up plot
+        self.mplWidget.canvas.ax.text(0.5, 0.995, info_txt,
+                                      horizontalalignment='center',
+                                      verticalalignment='top',
+                                      fontsize=12,
+                                      transform=self.mplWidget.canvas.ax.transAxes)
+        self.mplWidget.canvas.draw()
+        self.mplWidget.canvas.show()
 
     def addmpl(self, fig):
         """
