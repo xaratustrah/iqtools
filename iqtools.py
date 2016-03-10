@@ -198,14 +198,14 @@ def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
     else:
         mask = (f <= span / 2) & (f >= -span / 2)
 
-    plt.plot(f[mask], 10 * IQBase.get_dbm(p[mask]))
+    plt.plot(f[mask], IQBase.get_dbm(p[mask]))
     plt.xlabel("Delta f [Hz] @ {} [Hz]".format(cen))
     plt.title(filename)
     plt.ylabel("Power Spectral Density [dBm/Hz]")
     plt.grid(True)
     if to_file:
-        plt.savefig(filename + '.pdf')
-
+        plt.savefig(filename)
+        plt.close()
 
 def get_iq_object(filename, header_filename):
     """
