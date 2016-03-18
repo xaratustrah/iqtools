@@ -59,9 +59,9 @@ The resulting file can be read by library, or by using **iqgui**.
 
 #### Usage under Linux and OSX
 
-Usage under Linux and OSX is pretty straight forward. Use **pip** to install missing libraries.
+Runtime usage without compilation under Linux and OSX is pretty straight forward. Use **pip** to install missing libraries.
 
-#### Building GUI under windows
+#### Building GUI Binary under windows
 
 Building iqgui under windows has been tested using a minimal python installation under Win7 64 bit:
 
@@ -115,7 +115,23 @@ Using [UPX](http://upx.sourceforge.net/) the size of the resulting compilation u
 
 	upx --best --lzma --compress-exports=0 --strip-relocs=0 *.pyd *.dll
 
-`--lzma` can be removed if desired.
+#### Building OSX App
+
+After making sure the run time version stars without any problems, you may like to build an app. You need to use `py2app`:
+
+    python setup_osx.py py2app
+    
+Still I encountered a couple of errors which I describe here. I needed to modify this file:
+
+    /opt/local/Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4/site-packages/py2app/recipes/pyopengl.py
+
+open it and change `file` to `open`. The after consulting [this post](http://stackoverflow.com/a/32750895/5177935) this file needed to be changed:
+
+    /opt/local/Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4/site-packages/macholib/dyld.py
+
+where each instance of `loader_path` was changed to `loader`.
+
+
 
 ## Acknowledgements
 I am thankful to [carlkl](https://github.com/carlkl) for his valuable help in making a stand alone binary under MS Windows and also for fruitful discussions and suggestions.
