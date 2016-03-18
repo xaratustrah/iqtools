@@ -11,6 +11,8 @@ AUG 2015 Xaratustrah
 from distutils.core import setup
 import py2exe
 import matplotlib
+from glob import glob
+import PyQt5
 from version import __version__
 
 name = 'iqgui'
@@ -18,6 +20,7 @@ name = 'iqgui'
 pkgs = []
 
 includes = ['sip',
+			'atexit',
             'PyQt5',
             'PyQt5.QtWidgets',
             'PyQt5.QtCore',
@@ -44,37 +47,31 @@ excludes = ['pkg_resources',
             'urllib2',
             'tkinter']
 
-options = {'bundle_files': 3,
-           # 'optimize': 2,
+options = {
+           'optimize': 2,
            'compressed': True,
            'includes': includes,
            'excludes': excludes,
            'packages': pkgs
            }
 
-datafiles = matplotlib.get_py2exe_datafiles() + \
-            [("platforms", ["C:\\Python34\\Lib\\site-packages\\PyQt5\\plugins\\platforms\\qwindows.dll"]),
-             ("", [r"c:\windows\syswow64\MSVCP100.dll", r"C:\Windows\System32\MSVCR100.dll"]),
-             ("", [r"C:\Python34\Lib\site-packages\numpy\core\libifcoremd.dll"]),
-             ("", [r"C:\Python34\Lib\site-packages\numpy\core\libifportmd.dll"]),
-             ("", [r"C:\Python34\Lib\site-packages\numpy\core\libiomp5md.dll"]),
-             ("", [r"C:\Python34\Lib\site-packages\numpy\core\svml_dispmd.dll"]),
-             ("", [r"C:\Python34\Lib\site-packages\numpy\core\libiompstubs5md.dll"]),
-             ("", [r"C:\Python34\Lib\site-packages\numpy\core\libmmd.dll"]),
-			 ("", [r"C:\Python34\Lib\site-packages\spectrum\mydpss.pyd"])
-             ]
+data_files = []
+qt_platform_plugins = [("platforms", glob(PyQt5.__path__[0] + r'\plugins\platforms\*.*'))]
+spectrum_plugin = [("", [r"C:\Python34\Lib\site-packages\spectrum\mydpss.pyd"])]
+data_files.extend(qt_platform_plugins)
+data_files.extend(matplotlib.get_py2exe_datafiles())
+data_files.extend(spectrum_plugin)
 
 setup(
     name=name,
     version=__version__,
     url='https://github.com/xaratustrah/iq_suite',
-    license='GPL V 2.0',
+    license='GPLv.3',
     zipfile=None,
-    data_files=datafiles,
+    data_files=data_files,
     windows=[{
         'script': 'iqgui.py',
         'icon_resources': [(1, 'rsrc/icon.ico')],
-        'dest_base': 'iqgui'
     }],
     options={'py2exe': options}
 )
