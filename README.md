@@ -59,17 +59,16 @@ The resulting file can be read by library, or by using **iqgui**.
 
 #### Usage under Linux and OSX
 
-Usage under Linux and OSX is pretty straight forward.
+Usage under Linux and OSX is pretty straight forward. Use **pip** to install missing libraries.
 
 #### Building GUI under windows
 
 Building iqgui under windows has been tested using a minimal python installation under Win7 64 bit:
 
-Python 3.4.0 and PyQt5.5.0 both x64 versions, directly from their respective official websites. Following packages were installed from [Ch. Gohlke](http://www.lfd.uci.edu/~gohlke/pythonlibs/)'s website: 
+Python 3.4.0 and PyQt5.5.0 both x64 versions, directly from their respective official websites. Numpy and scipy are installed from [carlkl](https://github.com/carlkl)'s [anaconda site](https://anaconda.org/mingwpy) by using:
 
-    matplotlib-1.5.0rc1-cp34-none-win_amd64
-    numpy-1.10.0b1+mkl-cp34-none-win_amd64.whl
-    scipy-0.16.0-cp34-none-win_amd64.whl
+	pip install -i https://pypi.anaconda.org/mingwpy/simple numpy
+	pip install -i https://pypi.anaconda.org/mingwpy/simple scipy
 
 Following packages where installed using **pip**:
 
@@ -77,6 +76,7 @@ Following packages where installed using **pip**:
     py2exe (0.9.2.2)
     setuptools (2.1)
     spectrum (0.6.1)
+    matplotlib (1.5.1)
 
 For the pyTDMS, the [package](https://pypi.python.org/pypi/pyTDMS/0.0.2) in PyPI is **not** used, because it refers to an old version. Instead it is provided as a single file here in the repository.
 
