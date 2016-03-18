@@ -15,12 +15,12 @@ from glob import glob
 import PyQt5
 from version import __version__
 
-name = 'iqgui'
+NAME = 'iqgui'
 
-pkgs = []
+packages = []
 
 includes = ['sip',
-			'atexit',
+            'atexit',
             'PyQt5',
             'PyQt5.QtWidgets',
             'PyQt5.QtCore',
@@ -48,22 +48,23 @@ excludes = ['pkg_resources',
             'tkinter']
 
 options = {
-           'optimize': 2,
-           'compressed': True,
-           'includes': includes,
-           'excludes': excludes,
-           'packages': pkgs
-           }
+    'optimize': 2,
+    'compressed': True,
+    'includes': includes,
+    'excludes': excludes,
+    'packages': packages
+}
 
-data_files = []
 qt_platform_plugins = [("platforms", glob(PyQt5.__path__[0] + r'\plugins\platforms\*.*'))]
 spectrum_plugin = [("", [r"C:\Python34\Lib\site-packages\spectrum\mydpss.pyd"])]
+
+data_files = []
 data_files.extend(qt_platform_plugins)
 data_files.extend(matplotlib.get_py2exe_datafiles())
 data_files.extend(spectrum_plugin)
 
 setup(
-    name=name,
+    name=NAME,
     version=__version__,
     url='https://github.com/xaratustrah/iq_suite',
     license='GPLv.3',
