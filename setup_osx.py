@@ -21,7 +21,7 @@ NAME = 'iqgui'
 
 app = ['iqgui.py']
 
-packages = ['zmq']
+packages = ['zmq', 'spectrum']
 
 includes = ['sip',
             'PyQt5',
@@ -32,7 +32,7 @@ includes = ['sip',
             'scipy',
             'matplotlib.backends.backend_qt5agg',
             'matplotlib',
-            'atexit']
+            'atexit', ]
 
 excludes = ['PyQt5.QtDesigner', 'PyQt5.QtNetwork', 'PyQt5.QtOpenGL', 'PyQt5.QtScript', 'PyQt5.QtTest', 'PyQt5.QtSql',
             'PyQt5.QtWebKit', 'PyQt5.QtXml', 'PyQt5.phonon', 'PyQt5.uic.port_v2']
@@ -63,7 +63,7 @@ setup(
     app=app,
     name=NAME,
     version=__version__,
-    url='https://github.com/xaratustrah/barion',
+    url='https://github.com/xaratustrah/iq_suite',
     license='GPLv.3',
     data_files=data_files,
     setup_requires=['py2app'],
