@@ -63,6 +63,8 @@ Runtime usage without compilation under Linux and OSX is pretty straight forward
 
 #### Building GUI Binary under windows
 
+More general info can be found on this [gist](https://gist.github.com/xaratustrah/4efc5001f1bbcce47e02e2343ba29b87).
+
 Building iqgui under windows has been tested using a minimal python installation under Win7 64 bit:
 
 Python 3.4.0 and PyQt5.5.0 both x64 versions, directly from their respective official websites. Numpy and scipy are installed from [carlkl](https://github.com/carlkl)'s [anaconda site](https://anaconda.org/mingwpy) by using:
@@ -80,23 +82,9 @@ Following packages where installed using **pip**:
 
 For the pyTDMS, the [package](https://pypi.python.org/pypi/pyTDMS/0.0.2) in PyPI is **not** used, because it refers to an old version. Instead it is provided as a single file here in the repository.
 
-The spectrum package needs a compiler to build. Usually one needs MS Visual ot GCC. I use [mingwpy](https://anaconda.org/carlkl/mingwpy) by [carlkl](https://github.com/carlkl). You can go to the file list, and choose the one wheel file that you need, donwload and install locally. If during the compilation you get the error message
+The spectrum package needs a compiler to build. Usually one needs MS Visual ot GCC. I use [mingwpy](https://anaconda.org/carlkl/mingwpy) by [carlkl](https://github.com/carlkl). You can go to the file list, and choose the one wheel file that you need, donwload and install locally.
 
-	cannot find vcvarsal.bat
-
-then you still need to tell the system that your compiler is `gcc`. For that you need to find out where is your home directory in your `msys` or other shell you are using. For that type
-
-	cd
-	pwd
-
-Then you should see your home directory. Then you should create a file there with the name: `pydistutils.cfg` with the following content:
-
-	[build]
-	compiler = mingw32
-	[build_ext]
-	compiler = mingw32
-
-After that the compiliation should work like a charm. Note that in the current version of the spectrum, the mtm.py needs a patch. Replace the following line:
+Note that in the current version of the spectrum, the mtm.py needs a patch. Replace the following line:
 
 	p = os.path.abspath(os.path.dirname(__file__))
 
@@ -108,12 +96,6 @@ with:
 		p = os.path.abspath(os.path.dirname(__file__))
 	
 then perform the compilation. Note there is also a ready made package for spectrum that can be found [here](https://anaconda.org/carlkl/spectrum).
-
-**Compressing using UPX**
-
-Using [UPX](http://upx.sourceforge.net/) the size of the resulting compilation under windows can be reduced by the following command:
-
-	upx --best --lzma --compress-exports=0 --strip-relocs=0 *.pyd *.dll
 
 #### Building OSX App
 
