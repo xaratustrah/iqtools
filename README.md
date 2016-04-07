@@ -55,7 +55,7 @@ The binary files begin with a 32-bit integer for sampling rate, followed by a 32
 
 The resulting file can be read by library, or by using **iqgui**.
 
-## Installation
+## Installation and usage
 
 #### Usage under Linux and OSX
 
@@ -74,15 +74,10 @@ Python 3.4.0 and PyQt5.5.0 both x64 versions, directly from their respective off
 
 Following packages where installed using **pip**:
 
-    pip (1.5.4)
-    py2exe (0.9.2.2)
-    setuptools (2.1)
     spectrum (0.6.1)
     matplotlib (1.5.1)
 
 For the pyTDMS, the [package](https://pypi.python.org/pypi/pyTDMS/0.0.2) in PyPI is **not** used, because it refers to an old version. Instead it is provided as a single file here in the repository.
-
-The spectrum package needs a compiler to build. Usually one needs MS Visual ot GCC. I use [mingwpy](https://anaconda.org/carlkl/mingwpy) by [carlkl](https://github.com/carlkl). You can go to the file list, and choose the one wheel file that you need, donwload and install locally.
 
 Note that in the current version of the spectrum, the mtm.py needs a patch. Replace the following line:
 
@@ -114,7 +109,5 @@ open it and change `file` to `open`. The after consulting [this post](http://sta
 where each instance of `loader_path` was changed to `loader`.
 
 
-
 ## Acknowledgements
 I am thankful to [carlkl](https://github.com/carlkl) for his valuable help in making a stand alone binary under MS Windows and also for fruitful discussions and suggestions.
-
