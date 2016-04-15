@@ -12,7 +12,7 @@ from distutils.core import setup
 import py2exe
 import matplotlib
 from glob import glob
-import PyQt5
+import PyQt5, spectrum
 from version import __version__
 
 NAME = 'iqgui'
@@ -54,9 +54,9 @@ options = {
     'excludes': excludes,
     'packages': packages
 }
-
-qt_platform_plugins = [("platforms", glob(PyQt5.__path__[0] + r'\plugins\platforms\*.*'))]
-spectrum_plugin = [("", [r"C:\Python34\Lib\site-packages\spectrum\mydpss.pyd"])]
+    
+qt_platform_plugins = [('platforms', glob(PyQt5.__path__[0] + r'\plugins\platforms\*.*'))]
+spectrum_plugin = [('', glob(spectrum.__path__[0] + r'\mydpss.pyd'))]
 
 data_files = []
 data_files.extend(qt_platform_plugins)
