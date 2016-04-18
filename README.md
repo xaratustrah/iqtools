@@ -63,22 +63,13 @@ Runtime usage without compilation under Linux and OSX is pretty straight forward
 
 #### Building GUI Binary under windows
 
-More general info can be found on this [gist](https://gist.github.com/xaratustrah/4efc5001f1bbcce47e02e2343ba29b87).
+More general info on installation under Win can be found on this [gist](https://gist.github.com/xaratustrah/4efc5001f1bbcce47e02e2343ba29b87). Additionally following packages where installed using **pip**:
 
-Building iqgui under windows has been tested using a minimal python installation under Win7 64 bit:
-
-Python 3.4.0 and PyQt5.5.0 both x64 versions, directly from their respective official websites. Numpy and scipy are installed from [carlkl](https://github.com/carlkl)'s [anaconda site](https://anaconda.org/mingwpy) by using:
-
-	pip install -i https://pypi.anaconda.org/mingwpy/simple numpy
-	pip install -i https://pypi.anaconda.org/mingwpy/simple scipy
-
-Following packages where installed using **pip**:
-
-    spectrum (0.6.1)
     matplotlib (1.5.1)
     pyTDMS (0.0.3)
+    spectrum (0.6.1)
 
-Note that in the current version of the spectrum, the mtm.py needs a patch. Replace the following line:
+Note that in the current version of the `spectrum`, the file `mtm.py` needs a patch. Replace the following line:
 
 	p = os.path.abspath(os.path.dirname(__file__))
 
@@ -93,7 +84,7 @@ then perform the compilation. Note there is also a ready made package for spectr
 
 #### Building OSX App
 
-After making sure the run time version stars without any problems, you may like to build an app. You need to use `py2app`:
+More general info on installation under OSX can be found on this [gist](https://gist.github.com/xaratustrah/4f1ddb54b94386b4e8c311b905f03396). You also need the packages mentioned above. After making sure the run time version stars without any problems, you may like to build an app. You need to use `py2app`:
 
     python setup_osx.py py2app
     
