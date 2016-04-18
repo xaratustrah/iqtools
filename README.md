@@ -76,8 +76,7 @@ Following packages where installed using **pip**:
 
     spectrum (0.6.1)
     matplotlib (1.5.1)
-
-For the pyTDMS, the [package](https://pypi.python.org/pypi/pyTDMS/0.0.2) in PyPI is **not** used, because it refers to an old version. Instead it is provided as a single file here in the repository.
+    pyTDMS (0.0.3)
 
 Note that in the current version of the spectrum, the mtm.py needs a patch. Replace the following line:
 

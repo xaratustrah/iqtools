@@ -33,7 +33,7 @@ includes = ['sip',
             'scipy.linalg.cython_blas',
             'scipy.linalg.cython_lapack',
             'scipy.sparse.csgraph._validation',
-            'pyTDMS',
+            'pytdms',
             'spectrum',
             ]
 

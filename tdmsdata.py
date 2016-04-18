@@ -11,7 +11,7 @@ import time
 import logging as log
 import numpy as np
 from iqbase import IQBase
-import pyTDMS
+import pytdms
 
 
 class TDMSData(IQBase):
@@ -76,7 +76,7 @@ class TDMSData(IQBase):
         f = open(self.filename, "rb")
         while f.tell() < sz:
             try:
-                objects, raw_data = pyTDMS.readSegment(f, sz, (objects, raw_data))
+                objects, raw_data = pytdms.readSegment(f, sz, (objects, raw_data))
             except:
                 log.error('TDMS file seems to end here!')
                 return
@@ -162,7 +162,7 @@ class TDMSData(IQBase):
                 log.info('Reached end of first record.')
             # Now we read record by record
             try:
-                objects, raw_data = pyTDMS.readSegment(f, absolute_size, (objects, raw_data))
+                objects, raw_data = pytdms.readSegment(f, absolute_size, (objects, raw_data))
             except:
                 log.error('File seems to end here!')
                 return
