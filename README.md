@@ -57,34 +57,11 @@ The resulting file can be read by library, or by using **iqgui**.
 
 ## Installation and usage
 
-#### Usage under Linux and OSX
-
-Runtime usage without compilation under Linux and OSX is pretty straight forward. Use **pip** to install missing libraries.
-
-#### Building GUI Binary under windows
-
-More general info on installation under Win can be found on this [gist](https://gist.github.com/xaratustrah/4efc5001f1bbcce47e02e2343ba29b87). Additionally following packages where installed using **pip**:
-
-    matplotlib (1.5.1)
-    pyTDMS (0.0.3)
-    spectrum (0.6.1)
-
-Note that in the current version of the `spectrum`, the file `mtm.py` needs a patch. Replace the following line:
-
-	p = os.path.abspath(os.path.dirname(__file__))
-
-with:
-
-	if hasattr(sys, 'frozen'):
-		p = os.path.abspath(os.path.dirname(sys.executable))
-	else:
-		p = os.path.abspath(os.path.dirname(__file__))
-	
-then perform the compilation. Note there is also a ready made package for spectrum that can be found [here](https://anaconda.org/carlkl/spectrum).
+More general info on python installation under Win and OSX can be found on this [gist](https://gist.github.com/xaratustrah/4efc5001f1bbcce47e02e2343ba29b87). Just remember to install missing packages, like `pyTDMS`.
 
 #### Building OSX App
 
-More general info on installation under OSX can be found on this [gist](https://gist.github.com/xaratustrah/4f1ddb54b94386b4e8c311b905f03396). You also need the packages mentioned above. After making sure the run time version stars without any problems, you may like to build an app. You need to use `py2app`:
+After making sure the run time version stars without any problems, you may like to build an app. You need to use `py2app`:
 
     python setup_osx.py py2app
     
