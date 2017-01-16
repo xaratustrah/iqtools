@@ -33,7 +33,7 @@ from version import __version__
 def eng_notation(value, unit=''):
     ref = {15: 'P', 12: 'T', 9: 'G', 6: 'M', 3: 'k', 0: '', -3: 'm', -6: 'u', -9: 'n', -12: 'p', -15: 'f', }
     num = max([key for key in ref.keys() if value > 10 ** key])
-    return '{}{}{}'.format(int(value / 10 ** num), ref[num], unit)
+    return '{}{}{}'.format(int(value / 10 ** num * 100) / 100, ref[num], unit)
 
 
 def make_test_signal(f, fs, length=1, nharm=0, noise=False):
