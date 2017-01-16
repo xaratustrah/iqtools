@@ -9,7 +9,6 @@ import os
 import numpy as np
 from scipy.io import wavfile
 from scipy.signal import welch, find_peaks_cwt
-from spectrum import dpss, pmtm
 from abc import ABCMeta, abstractmethod
 
 
@@ -125,6 +124,7 @@ class IQBase(object):
 
         :return: frequency, time and power for XYZ plot,
         """
+        from spectrum import dpss, pmtm
 
         assert self.method in ['fft', 'welch', 'mtm']
 
@@ -165,7 +165,7 @@ class IQBase(object):
         zz = np.reshape(pout, (nframes, lframes))
         return xx, yy * lframes / fs, zz
 
-    def get_dp_p_vs_time(self, xx, yy, zz):
+    def get_dp_p_vs_time(self, xx, yy, zz, eta):
         """
         Returns two arrays for plotting dp_p vs time
         :param xx: from spectrogram
@@ -173,14 +173,11 @@ class IQBase(object):
         :param zz: from spectrogram
         :return: Flattened array for 2D plot
         """
-        gamma = 1.20397172736
-        gamma_t = 1.34
-        eta = (1 / gamma ** 2) - (1 / gamma_t ** 2)
         # Slices parallel to frequency axis
         n_time_frames = np.shape(xx)[0]
         dp_p = np.zeros(n_time_frames)
         for i in range(n_time_frames):
-            fwhm, f_peak, _, _ = IQBase.get_fwhm(xx[i, :], zz[i, :], skip=15)
+            fwhm, f_peak, _, _ = IQBase.get_fwhm(xx[i, :], zz[i, :], skip=20)
             dp_p[i] = fwhm / (f_peak + self.center) / eta
 
         # Flatten array for 2D plot

@@ -30,6 +30,12 @@ from version import __version__
 
 # ------------ TOOLS ----------------------------
 
+def eng_notation(value, unit=''):
+    ref = {15: 'P', 12: 'T', 9: 'G', 6: 'M', 3: 'k', 0: '', -3: 'm', -6: 'u', -9: 'n', -12: 'p', -15: 'f', }
+    num = max([key for key in ref.keys() if value > 10 ** key])
+    return '{}{}{}'.format(int(value / 10 ** num), ref[num], unit)
+
+
 def make_test_signal(f, fs, length=1, nharm=0, noise=False):
     """Make a sine signal with/without noise."""
 
@@ -206,6 +212,7 @@ def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
     if to_file:
         plt.savefig(filename)
         plt.close()
+
 
 def get_iq_object(filename, header_filename):
     """
