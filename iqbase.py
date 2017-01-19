@@ -106,7 +106,7 @@ class IQBase(object):
         f, p_avg = welch(data * self.get_window(n), self.fs, nperseg=data.size)
         return np.fft.fftshift(f), np.fft.fftshift(p_avg)
 
-    def get_spectrogram(self):
+    def get_spectrogram(self, nframes, lframes):
         """
         Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh
         x, y and z are ndarrays and have the same shape. In order to access the contents use these kind of
@@ -130,8 +130,6 @@ class IQBase(object):
 
         x = self.data_array
         fs = self.fs
-        nframes = self.nframes
-        lframes = self.lframes
 
         # define an empty np-array for appending
         pout = np.zeros(nframes * lframes)
