@@ -18,7 +18,7 @@ class ASCIIData(IQBase):
     @property
     def dictionary(self):
         return {'center': self.center,
-                'nsamples': self.nsamples,
+                'nsamples_total': self.nsamples_total,
                 'fs': self.fs,
                 'nframes': self.nframes,
                 'lframes': self.lframes,
@@ -30,8 +30,8 @@ class ASCIIData(IQBase):
     def __str__(self):
         return \
             '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.nsamples / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples) + '\n' + \
+                self.nsamples_total / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples_total) + '\n' + \
             '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
@@ -48,8 +48,8 @@ class ASCIIData(IQBase):
         self.center = x[0, 1]
         all_data = x[1:, :]
         all_data = all_data.view(np.complex64)[:, 0]
-        self.nsamples = len(all_data)
-        self.nframes_tot = int(self.nsamples / lframes)
+        self.nsamples_total = len(all_data)
+        self.nframes_tot = int(self.nsamples_total / lframes)
         self.date_time = time.ctime(os.path.getctime(self.filename))
 
         total_n_bytes = nframes * lframes

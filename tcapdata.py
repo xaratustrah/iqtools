@@ -41,7 +41,7 @@ class TCAPData(IQBase):
     @property
     def dictionary(self):
         return {'center': self.center,
-                'nsamples': self.nsamples,
+                'nsamples_total': self.nsamples_total,
                 'fs': self.fs,
                 'nframes': self.nframes,
                 'lframes': self.lframes,
@@ -53,8 +53,8 @@ class TCAPData(IQBase):
     def __str__(self):
         return \
             '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.nsamples / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples) + '\n' + \
+                self.nsamples_total / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples_total) + '\n' + \
             '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
@@ -102,7 +102,7 @@ class TCAPData(IQBase):
         data_section_size = self.frame_size - 88
         n_iq_samples = data_section_size / 2 / 2  # two bytes for I and two bytes for Q
         self.nframes_tot = int(self.segment_blocks * n_iq_samples / nframes)
-        self.nsamples = self.segment_blocks * n_iq_samples
+        self.nsamples_total = self.segment_blocks * n_iq_samples
 
         total_n_bytes = 4 * nframes * lframes  # 4 comes from 2 times 2 byte integer for I and Q
         start_n_bytes = 4 * (sframes - 1) * lframes

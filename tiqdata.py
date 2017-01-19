@@ -29,7 +29,7 @@ class TIQData(IQBase):
     @property
     def dictionary(self):
         return {'center': self.center,
-                'nsamples': self.nsamples,
+                'nsamples_total': self.nsamples_total,
                 'fs': self.fs,
                 'nframes': self.nframes,
                 'lframes': self.lframes,
@@ -45,8 +45,8 @@ class TIQData(IQBase):
     def __str__(self):
         return \
             '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.nsamples / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples) + '\n' + \
+                self.nsamples_total / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples_total) + '\n' + \
             '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
@@ -100,7 +100,7 @@ class TIQData(IQBase):
         for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}DateTime'):
             self.date_time = str(elem.text)
         for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}NumberSamples'):
-            self.nsamples = int(elem.text)  # this entry matches (filesize - self.data_offset) / 8) well
+            self.nsamples_total = int(elem.text)  # this entry matches (filesize - self.data_offset) / 8) well
         for elem in xml_tree_root.iter('NumericParameter'):
             if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'rbw':
                 self.rbw = float(elem.find('Value').text)
@@ -119,10 +119,10 @@ class TIQData(IQBase):
         log.info("Header size {} bytes.".format(self.data_offset))
 
         log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
-        log.info('Total number of samples: {}'.format(self.nsamples))
+        log.info('Total number of samples: {}'.format(self.nsamples_total))
         log.info("Frame length: {0} data points = {1}s".format(lframes, lframes / self.fs))
-        self.nframes_tot = int(self.nsamples / lframes)
-        log.info("Total number of frames: {0} = {1}s".format(self.nframes_tot, self.nsamples / self.fs))
+        self.nframes_tot = int(self.nsamples_total / lframes)
+        log.info("Total number of frames: {0} = {1}s".format(self.nframes_tot, self.nsamples_total / self.fs))
         log.info("Start reading at offset: {0} = {1}s".format(sframes, sframes * lframes / self.fs))
         log.info("Reading {0} frames = {1}s.".format(nframes, nframes * lframes / self.fs))
 
@@ -149,7 +149,7 @@ class TIQData(IQBase):
         log.info("Output complex array has a size of {}.".format(self.data_array.size))
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
 
-    def read_samples(self, n, offset=0):
+    def read_samples(self, nsamples, offset=0):
         """
         Read a specific number of samples
         Parameters
@@ -162,9 +162,9 @@ class TIQData(IQBase):
 
         """
         self.read_header()
-        assert n < (self.nsamples - offset)
+        assert nsamples < (self.nsamples_total - offset)
 
-        total_n_bytes = 8 * n  # 8 comes from 2 times 4 byte integer for I and Q
+        total_n_bytes = 8 * nsamples  # 8 comes from 2 times 4 byte integer for I and Q
         start_n_bytes = 8 * offset
 
         try:
@@ -202,7 +202,7 @@ class TIQData(IQBase):
         for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}DateTime'):
             self.date_time = str(elem.text)
         for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}NumberSamples'):
-            self.nsamples = int(elem.text)  # this entry matches (filesize - self.data_offset) / 8) well
+            self.nsamples_total = int(elem.text)  # this entry matches (filesize - self.data_offset) / 8) well
         for elem in xml_tree_root.iter('NumericParameter'):
             if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'rbw':
                 self.rbw = float(elem.find('Value').text)

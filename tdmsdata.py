@@ -31,7 +31,7 @@ class TDMSData(IQBase):
     @property
     def dictionary(self):
         return {'center': self.center,
-                'nsamples': self.nsamples,
+                'nsamples_total': self.nsamples_total,
                 'fs': self.fs,
                 'nframes': self.nframes,
                 'lframes': self.lframes,
@@ -44,8 +44,8 @@ class TDMSData(IQBase):
     def __str__(self):
         return \
             '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.nsamples / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples) + '\n' + \
+                self.nsamples_total / self.fs) + '\n' + \
+            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples_total) + '\n' + \
             '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
@@ -103,8 +103,8 @@ class TDMSData(IQBase):
         self.date_time = time.ctime(os.path.getctime(self.filename))
         self.tdms_nSamplesPerRecord = int(objects[b'/'][3][b'NSamplesPerRecord'][1])
         self.tdms_nRecordsPerFile = int(objects[b'/'][3][b'NRecordsPerFile'][1])
-        self.nsamples = self.tdms_nSamplesPerRecord * self.tdms_nRecordsPerFile
-        self.nframes_tot = int(self.nsamples / lframes)
+        self.nsamples_total = self.tdms_nSamplesPerRecord * self.tdms_nRecordsPerFile
+        self.nframes_tot = int(self.nsamples_total / lframes)
 
         self.information_read = True
 
