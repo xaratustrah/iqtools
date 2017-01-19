@@ -30,7 +30,7 @@ from version import __version__
 
 # ------------ TOOLS ----------------------------
 
-def get_eng_notation(value, decimal_place=2, unit=''):
+def get_eng_notation(value, unit='', decimal_place=2):
     """
     Convert numbers to scientific notation
     Parameters
@@ -48,9 +48,16 @@ def get_eng_notation(value, decimal_place=2, unit=''):
            -3: 'm', -6: 'u', -9: 'n', -12: 'p',
            -15: 'f', -18: 'a', -21: 'z', -24: 'y',
            }
-    num = max([key for key in ref.keys() if value > 10 ** key])
-    mult = ref[num] if unit else 'e{}'.format(num)
-    return '{}{}{}'.format(int(value / 10 ** num * 10 ** decimal_place) / 10 ** decimal_place, mult, unit)
+    if value == 0:
+        return '{}{}'.format(0, unit)
+    flag = '-' if value < 0 else ''
+    num = max([key for key in ref.keys() if abs(value) >= 10 ** key])
+    if num == 0:
+        mult = ''
+    else:
+        mult = ref[num] if unit else 'e{}'.format(num)
+    return '{}{}{}{}'.format(flag, int(abs(value) / 10 ** num * 10 ** decimal_place) / 10 ** decimal_place, mult,
+                             unit)
 
 
 def make_test_signal(f, fs, length=1, nharm=0, noise=False):
@@ -205,8 +212,9 @@ def plot_spectrogram_dbm(xx, yy, zz, cen=0.0, filename='', to_file=False, cmap=c
     delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
     sp = plt.pcolormesh(xx, yy, IQBase.get_dbm(zz), cmap=cmap)
     cb = plt.colorbar(sp)
-    plt.xlabel("Delta f [Hz] @ {} [Hz] (resolution = {:.2e} [Hz])".format(cen, delta_f))
-    plt.ylabel('Time [sec] (resolution = {:.2e} [s])'.format(delta_t))
+    plt.xlabel(
+        "Delta f @ {} (resolution = {})".format(get_eng_notation(cen, unit='Hz'), get_eng_notation(delta_f, unit='Hz')))
+    plt.ylabel('Time [sec] (resolution = {})'.format(get_eng_notation(delta_t, 's')))
     plt.title('Spectrogram')
     cb.set_label('Power Spectral Density [dBm/Hz]')
     if to_file:
@@ -222,7 +230,7 @@ def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
         mask = (f <= span / 2) & (f >= -span / 2)
 
     plt.plot(f[mask], IQBase.get_dbm(p[mask]))
-    plt.xlabel("Delta f [Hz] @ {} [Hz]".format(cen))
+    plt.xlabel("Delta f [Hz] @ {}".format(get_eng_notation(cen, 'Hz')))
     plt.title(filename)
     plt.ylabel("Power Spectral Density [dBm/Hz]")
     plt.grid(True)
