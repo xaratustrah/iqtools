@@ -30,10 +30,27 @@ from version import __version__
 
 # ------------ TOOLS ----------------------------
 
-def eng_notation(value, unit=''):
-    ref = {15: 'P', 12: 'T', 9: 'G', 6: 'M', 3: 'k', 0: '', -3: 'm', -6: 'u', -9: 'n', -12: 'p', -15: 'f', }
+def get_eng_notation(value, decimal_place=2, unit=''):
+    """
+    Convert numbers to scientific notation
+    Parameters
+    ----------
+    value input number float or integer
+    decimal_place How many decimal places should be left
+    unit The unit will be shown, otherwise powers of ten
+
+    Returns
+    -------
+
+    """
+    ref = {24: 'Y', 21: 'Z', 18: 'E', 15: 'P',
+           12: 'T', 9: 'G', 6: 'M', 3: 'k', 0: '',
+           -3: 'm', -6: 'u', -9: 'n', -12: 'p',
+           -15: 'f', -18: 'a', -21: 'z', -24: 'y',
+           }
     num = max([key for key in ref.keys() if value > 10 ** key])
-    return '{}{}{}'.format(int(value / 10 ** num * 100) / 100, ref[num], unit)
+    mult = ref[num] if unit else 'e{}'.format(num)
+    return '{}{}{}'.format(int(value / 10 ** num * 10 ** decimal_place) / 10 ** decimal_place, mult, unit)
 
 
 def make_test_signal(f, fs, length=1, nharm=0, noise=False):

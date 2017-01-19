@@ -24,6 +24,7 @@ class TIQData(IQBase):
         self.span = 0.0
         self.scale = 0.0
         self.header = ''
+        self.data_offset = 0
 
     @property
     def dictionary(self):
@@ -66,7 +67,7 @@ class TIQData(IQBase):
         Frequency
         File name
         Data I and Q [Unit is Volt]
-        Data_offset
+        Data Offset
         DateTime
         NumberSamples
         Resolution Bandwidth
@@ -85,10 +86,10 @@ class TIQData(IQBase):
 
         with open(self.filename) as f:
             line = f.readline()
-        data_offset = int(line.split("\"")[1])
+        self.data_offset = int(line.split("\"")[1])
 
         with open(self.filename, 'rb') as f:
-            ba = f.read(data_offset)
+            ba = f.read(self.data_offset)
 
         xml_tree_root = et.fromstring(ba)
 
@@ -99,7 +100,7 @@ class TIQData(IQBase):
         for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}DateTime'):
             self.date_time = str(elem.text)
         for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}NumberSamples'):
-            self.nsamples = int(elem.text)  # this entry matches (filesize - data_offset) / 8) well
+            self.nsamples = int(elem.text)  # this entry matches (filesize - self.data_offset) / 8) well
         for elem in xml_tree_root.iter('NumericParameter'):
             if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'rbw':
                 self.rbw = float(elem.find('Value').text)
@@ -115,7 +116,7 @@ class TIQData(IQBase):
 
         log.info("Center {0} Hz, span {1} Hz, sampling frequency {2} scale factor {3}.".format(self.center, self.span,
                                                                                                self.fs, self.scale))
-        log.info("Header size {} bytes.".format(data_offset))
+        log.info("Header size {} bytes.".format(self.data_offset))
 
         log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
         log.info('Total number of samples: {}'.format(self.nsamples))
@@ -132,7 +133,7 @@ class TIQData(IQBase):
 
         try:
             with open(self.filename, 'rb') as f:
-                f.seek(data_offset + start_n_bytes)
+                f.seek(self.data_offset + start_n_bytes)
                 ba = f.read(total_n_bytes)
         except:
             log.error('File seems to end here!')
@@ -147,6 +148,78 @@ class TIQData(IQBase):
 
         log.info("Output complex array has a size of {}.".format(self.data_array.size))
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
+
+    def read_samples(self, n, offset=0):
+        """
+        Read a specific number of samples
+        Parameters
+        ----------
+        nsamples How many samples to read
+        offset Either start from the beginning, i.e. 0 or start at a different offset.
+
+        Returns
+        -------
+
+        """
+        self.read_header()
+        assert n < (self.nsamples - offset)
+
+        total_n_bytes = 8 * n  # 8 comes from 2 times 4 byte integer for I and Q
+        start_n_bytes = 8 * offset
+
+        try:
+            with open(self.filename, 'rb') as f:
+                f.seek(self.data_offset + start_n_bytes)
+                ba = f.read(total_n_bytes)
+        except:
+            log.error('File seems to end here!')
+            return
+
+        # return a numpy array of little endian 8 byte floats (known as doubles)
+        self.data_array = np.fromstring(ba, dtype='<i4')  # little endian 4 byte ints.
+        # Scale to retrieve value in Volts. Augmented assignment does not work here!
+        self.data_array = self.data_array * self.scale
+        self.data_array = self.data_array.view(
+            dtype='c16')  # reinterpret the bytes as a 16 byte complex number, which consists of 2 doubles.
+
+        log.info("Output complex array has a size of {}.".format(self.data_array.size))
+        # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
+
+    def read_header(self):
+        with open(self.filename) as f:
+            line = f.readline()
+        self.data_offset = int(line.split("\"")[1])
+
+        with open(self.filename, 'rb') as f:
+            ba = f.read(self.data_offset)
+
+        xml_tree_root = et.fromstring(ba)
+
+        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}AcquisitionBandwidth'):
+            self.acq_bw = float(elem.text)
+        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}Frequency'):
+            self.center = float(elem.text)
+        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}DateTime'):
+            self.date_time = str(elem.text)
+        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}NumberSamples'):
+            self.nsamples = int(elem.text)  # this entry matches (filesize - self.data_offset) / 8) well
+        for elem in xml_tree_root.iter('NumericParameter'):
+            if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'rbw':
+                self.rbw = float(elem.find('Value').text)
+        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}RFAttenuation'):
+            self.rf_att = float(elem.text)
+        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}SamplingFrequency'):
+            self.fs = float(elem.text)
+        for elem in xml_tree_root.iter('NumericParameter'):
+            if 'name' in elem.attrib and elem.attrib['name'] == 'Span' and elem.attrib['pid'] == 'globalrange':
+                self.span = float(elem.find('Value').text)
+        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}Scaling'):
+            self.scale = float(elem.text)
+
+        log.info("Center {0} Hz, span {1} Hz, sampling frequency {2} scale factor {3}.".format(self.center, self.span,
+                                                                                               self.fs, self.scale))
+        log.info("Header size {} bytes.".format(self.data_offset))
+        self.header = ba
 
     def save_header(self):
         """Saves the header byte array into a txt tile."""
