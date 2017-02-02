@@ -231,6 +231,8 @@ class IQBase(object):
         f_m3db = 0
         p_p3db = 0
         p_m3db = 0
+        index_p3db = 0
+        index_m3db = 0
         f_peak_index = p_dbm.argmax()
         for i in range(f_peak_index, len(p_dbm)):
             if skip is not None and i < skip:
@@ -238,6 +240,7 @@ class IQBase(object):
             if p_dbm[i] <= (f_peak - 3):
                 p_p3db = p[i]
                 f_p3db = f[i]
+                index_p3db = i
                 break
         for i in range(f_peak_index, -1, -1):
             if skip is not None and f_peak_index - i < skip:
@@ -245,10 +248,33 @@ class IQBase(object):
             if p_dbm[i] <= (f_peak - 3):
                 p_m3db = p[i]
                 f_m3db = f[i]
+                index_m3db = i
                 break
         fwhm = f_p3db - f_m3db
         # return watt values not dbm
-        return fwhm, f_peak, np.array([f_m3db, f_p3db]), np.array([p_m3db, p_p3db])
+        return fwhm, f_peak, np.array([index_m3db, index_p3db]), np.array([f_m3db, f_p3db]), np.array([p_m3db, p_p3db])
+
+    @staticmethod
+    def get_sigma_estimate(f, p):
+        p_peak = p.max()
+        f_peak_index = p.argmax()
+        f_peak = f[f_peak_index]
+        idx_phm = 0
+        idx_mhm = 0
+        rng_max = int(len(f) - len(f) / 4)
+        rng_min = int(len(f) - 3 * len(f) / 4)
+
+        for i in range(rng_max, rng_min, -1):
+            if p[i] >= p_peak / 2:
+                idx_phm = i
+                break
+
+        for i in range(rng_min, rng_max):
+            if p[i] >= p_peak / 2:
+                idx_mhm = i
+                break
+
+        return f_peak_index, idx_phm - idx_mhm, idx_mhm, idx_phm
 
     @staticmethod
     def get_narrow_peaks_dbm(f, p, accuracy=50):
