@@ -77,4 +77,4 @@ where each instance of `loader_path` was changed to `loader`.
 
 
 ## Acknowledgements
-I am thankful to [carlkl](https://github.com/carlkl) for his valuable help in making a stand alone binary under MS Windows and also for fruitful discussions and suggestions.
+I am thankful to [@carlkl](https://github.com/carlkl) for his valuable help in making a stand alone binary under MS Windows and also for fruitful discussions and suggestions.
