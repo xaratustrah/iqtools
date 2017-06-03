@@ -1,6 +1,6 @@
-iq_suite
+iqtools
 ============
-<img src="https://raw.githubusercontent.com/xaratustrah/iq_suite/master/rsrc/icon.png" width="128">
+<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/icon.png" width="128">
 
 Collection of code for working with offline complex valued time series data ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components) or IQ Data) with numpy written in Python. 
 
@@ -39,7 +39,7 @@ This data format is mostly useful for software defined radio applications. Left 
 
 The binary files begin with a 32-bit integer for sampling rate, followed by a 32-bit float for the center frequency. The rest of the file contains real and imaginary parts each as a 32-bit floats. File size is automatically calculated. All data are little endian. The ASCII files are tab or space separated values with real and imaginary on every line. These data will later be treated as 32-bit floating point numbers. Lines beginning with # are considered as comments and are ignored. Here also the first line contains the a 32-bit integer for sampling rate, followed by a 32-bit float for the center frequency. Such files are used as a result of synthesis signals. For example you can create a synthetic signal like the following: 
 
-    from iqtools import *
+    import iqtools
     freq = 400 # in Hz
     center = 0 # in Hz
     fs = 10000 # samples per second
