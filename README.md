@@ -8,6 +8,8 @@ These data are usually results of measurements of quantities in physical experim
 
 The usage allows direct programing using the class file and tools within own scrips or iPython Notebook sessions. The suite offers a extendible structure for adding further methods e.g. in spectral analysis or non-linear time series analysis.
 
+A related project uses this library for a GUI representation and can be found [here](https://github.com/xaratustrah/iqgui).
+
 ## Code Components
 
 ### IQBase class
