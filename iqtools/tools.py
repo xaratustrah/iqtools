@@ -120,10 +120,20 @@ def make_test_signal(f, fs, length=1, nharm=0, noise=False):
     return t, x
 
 
-def write_signal_as_binary(filename, x, fs, center):
+def write_signal_as_binary(filename, x, fs, center, write_header=False):
+    """
+    filename: name of the output filename
+    x: data vector to write to filename
+    fs: sampling Frequency
+    center: center Frequency
+    write_header: if set to true, then the first 4 bytes of the file are 32-bit
+    sampling Frequency and then follows the center frequency also in 32-bit. the
+    Data follows afterwards in I, Q format each 32-bit as well.
+    """
     # 32-bit little endian floats
     # insert header
-    x = np.insert(x, 0, complex(fs, center))
+    if write_header:
+        x = np.insert(x, 0, complex(fs, center))
     x = x.astype(np.complex64)
     x.tofile(filename)
 
@@ -204,7 +214,8 @@ def read_data_csv(filename):
     :return:
     """
     data = np.genfromtxt(filename, skip_header=10, delimiter=",")
-    data = np.ravel(data).view(dtype='c16')  # has one dimension more, should use ravel
+    # has one dimension more, should use ravel
+    data = np.ravel(data).view(dtype='c16')
     return data
 
 

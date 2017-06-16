@@ -9,7 +9,8 @@ xaratustrah oct-2014
             jan-2016
 """
 
-import argparse, sys
+import argparse
+import sys
 from pprint import pprint
 import logging as log
 
@@ -32,12 +33,20 @@ def main():
                         help="Number of frames, default is 10.")
     parser.add_argument("-s", "--sframes", nargs='?', type=int, const=1, default=1,
                         help="Starting frame, default is 1.")
-    parser.add_argument("-d", "--dic", help="Print dictionary to screen.", action="store_true")
-    parser.add_argument("-f", "--fft", help="Plot FFT to file.", action="store_true")
-    parser.add_argument("-p", "--psd", help="Plot PSD to file.", action="store_true")
-    parser.add_argument("-g", "--spec", help="Plot spectrogram to file.", action="store_true")
-    parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
-    parser.add_argument("-y", "--npy", help="Write dic to NPY file.", action="store_true")
+    parser.add_argument(
+        "-d", "--dic", help="Print dictionary to screen.", action="store_true")
+    parser.add_argument(
+        "-f", "--fft", help="Plot FFT to file.", action="store_true")
+    parser.add_argument(
+        "-p", "--psd", help="Plot PSD to file.", action="store_true")
+    parser.add_argument(
+        "-g", "--spec", help="Plot spectrogram to file.", action="store_true")
+    parser.add_argument("-v", "--verbose",
+                        help="Increase output verbosity", action="store_true")
+    parser.add_argument(
+        "-y", "--npy", help="Write dic to NPY file.", action="store_true")
+    parser.add_argument(
+        "-r", "--raw", help="Write file to a raw format.", action="store_true")
 
     args = parser.parse_args()
 
@@ -61,17 +70,20 @@ def main():
     if args.fft:
         log.info('Generating FFT plot.')
         f1, v1, p1 = iq_data.get_fft()
-        plot_dbm_per_hz(f1, p1, iq_data.center, iq_data.span, iq_data.filename_wo_ext + '_psd_fft.png', True)
+        plot_dbm_per_hz(f1, p1, iq_data.center, iq_data.span,
+                        iq_data.filename_wo_ext + '_psd_fft.png', True)
 
     if args.psd:
         log.info('Generating PSD plot.')
         f2, p2 = iq_data.get_pwelch()
-        plot_dbm_per_hz(f2, p2, iq_data.center, iq_data.span, iq_data.filename_wo_ext + '_psd_welch.png', True)
+        plot_dbm_per_hz(f2, p2, iq_data.center, iq_data.span,
+                        iq_data.filename_wo_ext + '_psd_welch.png', True)
 
     if args.spec:
         log.info('Generating spectrogram plot.')
         x, y, z = iq_data.get_spectrogram()
-        plot_spectrogram_dbm(x, y, z, iq_data.center, iq_data.filename_wo_ext + '_spectrogram.png', True)
+        plot_spectrogram_dbm(x, y, z, iq_data.center,
+                             iq_data.filename_wo_ext + '_spectrogram.png', True)
 
     if args.npy:
         log.info('Saving data dictionary in numpy format.')
@@ -81,8 +93,14 @@ def main():
         log.info('Printing dictionary on the screen.')
         pprint(iq_data.dictionary)
 
+    if args.raw:
+        log.info('Converting data to raw.')
+        write_signal_as_binary(iq_data.filename_wo_ext + '.bin',
+                               iq_data.data_array, iq_data.fs, iq_data.center, write_header=False)
+        print('The sampling frequency is: {}'.format(iq_data.fs))
 
 # ----------------------------------------
+
 
 if __name__ == "__main__":
     main()
