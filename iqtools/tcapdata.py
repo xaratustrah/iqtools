@@ -197,7 +197,7 @@ class TCAPData(IQBase):
         sem6 = (tfp[10] >> 0) & 0x0f
         #sem7 = (tfp[11] >> 4) & 0x0f
 
-        year = int(self.filename[0:4])
+        year = int(self.file_basename[0:4])
         days = int(dh * 100 + dt * 10 + du)
         hours = int(ht * 10 + hu)
         minutes = int(mt * 10 + mu)
