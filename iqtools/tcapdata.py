@@ -59,7 +59,8 @@ class TCAPData(IQBase):
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
                 self.center) + '\n' + \
-            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
+            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(
+                self.date_time) + '\n'
 
     def read(self, nframes=10, lframes=1024, sframes=1):
         """
@@ -80,7 +81,8 @@ class TCAPData(IQBase):
 
         filesize = os.path.getsize(self.filename)
         if not filesize == 15625 * BLOCK_SIZE:
-            log.info("File size does not match block sizes times total number of blocks. Aborting...")
+            log.info(
+                "File size does not match block sizes times total number of blocks. Aborting...")
             return
 
         # read header section
@@ -104,7 +106,8 @@ class TCAPData(IQBase):
         self.nframes_tot = int(self.segment_blocks * n_iq_samples / nframes)
         self.nsamples_total = self.segment_blocks * n_iq_samples
 
-        total_n_bytes = 4 * nframes * lframes  # 4 comes from 2 times 2 byte integer for I and Q
+        # 4 comes from 2 times 2 byte integer for I and Q
+        total_n_bytes = 4 * nframes * lframes
         start_n_bytes = 4 * (sframes - 1) * lframes
 
         ba = bytearray()
@@ -113,7 +116,8 @@ class TCAPData(IQBase):
                 f.seek(BLOCK_HEADER_SIZE + start_n_bytes)
                 for i in range(total_n_bytes):
                     if not f.tell() % 131160:
-                        log.info('File pointer before jump: {}'.format(f.tell()))
+                        log.info(
+                            'File pointer before jump: {}'.format(f.tell()))
                         log.info(
                             "Reached end of block {}. Now skipoing header of block {}!".format(
                                 int(f.tell() / BLOCK_SIZE),
@@ -121,14 +125,16 @@ class TCAPData(IQBase):
                                     f.tell() / BLOCK_SIZE) + 1))
                         f.seek(88, 1)
                         log.info('File pointer after jump: {}'.format(f.tell()))
-                    ba.extend(f.read(1))  # using bytearray.extend is much faster than using +=
+                    # using bytearray.extend is much faster than using +=
+                    ba.extend(f.read(1))
         except:
             log.error('File seems to end here!')
             return
 
         log.info('Total bytes read: {}'.format(len(ba)))
 
-        self.data_array = np.frombuffer(ba, '>i2')  # big endian 16 bit for I and 16 bit for Q
+        # big endian 16 bit for I and 16 bit for Q
+        self.data_array = np.frombuffer(ba, '>i2')
         self.data_array = self.data_array.astype(np.float32)
         self.data_array = self.data_array * self.scale
         self.data_array = self.data_array.view(np.complex64)
@@ -189,16 +195,18 @@ class TCAPData(IQBase):
 
         sem5 = (tfp[10] >> 4) & 0x0f
         sem6 = (tfp[10] >> 0) & 0x0f
-        sem7 = (tfp[11] >> 4) & 0x0f
+        #sem7 = (tfp[11] >> 4) & 0x0f
 
-        days = dh * 100 + dt * 10 + du
-        hours = ht * 10 + hu
-        minutes = mt * 10 + mu
-        seconds = st * 10 + su + sem1 * 1e-1 + sem2 * 1e-2 + sem3 * 1e-3 + sem4 * 1e-4 + sem5 * 1e-5 + sem6 * 1e-6 + sem7 * 1e-7
-
-        ts_epoch = seconds + 60 * (minutes + 60 * (hours + 24 * days))
-        ts = datetime.datetime.fromtimestamp(ts_epoch).strftime('%Y-%m-%d %H:%M:%S')
-        return ts
+        year = int(self.filename[0:4])
+        days = int(dh * 100 + dt * 10 + du)
+        hours = int(ht * 10 + hu)
+        minutes = int(mt * 10 + mu)
+        seconds = int(st * 10 + su)
+        microseconds = int(1000 * (sem1 * 1e-1 + sem2 * 1e-2 + sem3 *
+                                   1e-3 + sem4 * 1e-4 + sem5 * 1e-5 + sem6 * 1e-6))
+        ts = datetime.datetime(year, 1, 1, hours, minutes, seconds,
+                               microseconds) + datetime.timedelta(days - 1)
+        return ts.strftime('%Y-%m-%d %H:%M:%S')
 
     def text_header_parser(self):
         """
