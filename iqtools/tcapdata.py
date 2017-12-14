@@ -4,6 +4,27 @@ TCAP format
 
 Xaratustrah Aug-2015
 
+
+
+TCAP format information:
+
+- Each file contains 15625 blocks
+
+- Each block is 2^17=131072 BYTES of data + 88 bytes of header
+
+- Each sample is 4 bytes = 32bits (2 I + 2 Q bytes), hence each block contains
+32768 complex valued samples
+
+- Sampling frequency is 312500 sps, thus the data of a block give a resolution
+frequency of 312500 / 32768 = 9.5 Hz per block
+
+- To double the frequency resolution one can take two consecutive blocks which
+mean 4.7 Hz for two consecutive blocks
+
+- Either from one block or two blocks a frame can be created.
+
+- An FFT is done on each frame. 10 such FFTs can be averaged to reduce noise.
+
 """
 
 import datetime
@@ -35,6 +56,9 @@ class TCAPData(IQBase):
         self.decimation = 0
         self.trigger_time = 0
         self.segment_blocks = 0
+
+        self.fs = 10e6 / (2 ** self.decimation)  # usually 312500
+        # center is usually 1.6e5
 
         self.text_header_parser()
 
@@ -80,6 +104,7 @@ class TCAPData(IQBase):
         self.sframes = sframes
 
         filesize = os.path.getsize(self.filename)
+        # each file contains 15625 blocks
         if not filesize == 15625 * BLOCK_SIZE:
             log.info(
                 "File size does not match block sizes times total number of blocks. Aborting...")
@@ -91,17 +116,11 @@ class TCAPData(IQBase):
             pio = f.read(12)
             scalers = f.read(64)
 
-        # self.header = header
-        # self.parse_tcap_header(header)
         self.date_time = self.parse_tcap_tfp(tfp)
-
         self.tcap_pio = pio
         self.tcap_scalers = scalers
 
-        self.fs = 10e6 / (2 ** self.decimation)  # usually 312500
-        # center is usually 1.6e5
-
-        data_section_size = self.frame_size - 88
+        data_section_size = self.frame_size - BLOCK_HEADER_SIZE
         n_iq_samples = data_section_size / 2 / 2  # two bytes for I and two bytes for Q
         self.nframes_tot = int(self.segment_blocks * n_iq_samples / nframes)
         self.nsamples_total = self.segment_blocks * n_iq_samples
@@ -115,7 +134,7 @@ class TCAPData(IQBase):
             with open(self.filename, 'rb') as f:
                 f.seek(BLOCK_HEADER_SIZE + start_n_bytes)
                 for i in range(total_n_bytes):
-                    if not f.tell() % 131160:
+                    if not f.tell() % BLOCK_SIZE:
                         log.info(
                             'File pointer before jump: {}'.format(f.tell()))
                         log.info(
@@ -138,6 +157,47 @@ class TCAPData(IQBase):
         self.data_array = self.data_array.astype(np.float32)
         self.data_array = self.data_array * self.scale
         self.data_array = self.data_array.view(np.complex64)
+
+    def read_block(self, block_no):
+        """
+        Read the specified block between 1 and 15625.
+        """
+        BLOCK_HEADER_SIZE = 88
+        BLOCK_DATA_SIZE = 2 ** 17
+        BLOCK_SIZE = BLOCK_HEADER_SIZE + BLOCK_DATA_SIZE
+
+        try:
+            with open(self.filename, 'rb') as f:
+                f.seek((block_no - 1) * BLOCK_SIZE)
+                tfp = f.read(12)
+                pio = f.read(12)
+                scalers = f.read(64)
+                ba = f.read(131072)
+        except:
+            log.error('File seems to end here!')
+            return
+
+        self.date_time = self.parse_tcap_tfp(tfp)
+        self.tcap_pio = pio
+        self.tcap_scalers = scalers
+
+        log.info('Total bytes read: {}'.format(len(ba)))
+
+        # big endian 16 bit for I and 16 bit for Q
+        self.data_array = np.frombuffer(ba, '>i2')
+        self.data_array = self.data_array.astype(np.float32)
+        self.data_array = self.data_array * self.scale
+        self.data_array = self.data_array.view(np.complex64)
+        return self.data_array
+
+    def get_frame(self, first, second):
+        """
+        Make a frame by connecting two blocks
+        """
+        array = np.zeros(2 * 32768, dtype=np.complex64)
+        array[0:32768] = self.read_block(first)
+        array[32768:] = self.read_block(second)
+        return array
 
     def parse_binary_tcap_header(self, ba):
         version = ba[0:8]

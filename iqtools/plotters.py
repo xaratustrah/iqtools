@@ -35,7 +35,7 @@ def plot_frame_power(yy, frame_power):
     plt.title('Frame power')
 
 
-def plot_spectrogram_dbm(xx, yy, zz, cen=0.0, cmap=cm.jet, filename=None):
+def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram'):
     """
     Plot the calculated spectrogram
     :param xx:
@@ -46,16 +46,20 @@ def plot_spectrogram_dbm(xx, yy, zz, cen=0.0, cmap=cm.jet, filename=None):
     """
     delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
     delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
-    sp = plt.pcolormesh(xx, yy, IQBase.get_dbm(zz), cmap=cmap)
+    if dbm:
+        sp = plt.pcolormesh(xx, yy, IQBase.get_dbm(zz), cmap=cmap)
+    else:
+        sp = plt.pcolormesh(xx, yy, zz, cmap=cmap)
     cb = plt.colorbar(sp)
     plt.xlabel(
         "Delta f @ {} (resolution = {})".format(get_eng_notation(cen, unit='Hz'), get_eng_notation(delta_f, unit='Hz')))
     plt.ylabel('Time [sec] (resolution = {})'.format(
         get_eng_notation(delta_t, 's')))
-    plt.title('Spectrogram')
+    plt.title(title)
     cb.set_label('Power Spectral Density [dBm/Hz]')
-    if filename:
-        plt.savefig(filename + '.png')
+    if filename is not None:
+        plt.savefig(filename + '.png', dpi=dpi, bbox_inches='tight')
+    plt.close()
 
 
 def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
