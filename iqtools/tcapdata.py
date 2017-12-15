@@ -19,11 +19,18 @@ TCAP format information:
 frequency of 312500 / 32768 = 9.5 Hz per block
 
 - To double the frequency resolution one can take two consecutive blocks which
-mean 4.7 Hz for two consecutive blocks
+mean 4.7 Hz for two consecutive blocks which is 0.212 s
 
 - Either from one block or two blocks a frame can be created.
 
 - An FFT is done on each frame. 10 such FFTs can be averaged to reduce noise.
+e.g. a 2-block frame would correspond to 2.12s data.
+
+- 400 such averaged groups of 10 frames can be plotted on a single spectrogram
+
+- each picture of a single spectrogram corresponds to 14m and 8 sec.
+
+
 
 """
 
