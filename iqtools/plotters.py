@@ -9,9 +9,12 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from iqtools.iqbase import IQBase
 from iqtools.tools import *
-
+import subprocess
+import struct
+import os
 
 # ------------ PLOTTERS ----------------------------
+
 
 def plot_hilbert(x_bar):
     """Show Hilbert plot."""
@@ -56,10 +59,51 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
     plt.ylabel('Time [sec] (resolution = {})'.format(
         get_eng_notation(delta_t, 's')))
     plt.title(title)
-    cb.set_label('Power Spectral Density [dBm/Hz]')
+    if dbm:
+        cb.set_label('Power Spectral Density [dBm/Hz]')
+    else:
+        cb.set_label('Power Spectral Density')
+
     if filename is not None:
         plt.savefig(filename + '.png', dpi=dpi, bbox_inches='tight')
     plt.close()
+
+
+def plot_spectrogram_with_gnuplot(zz):
+    """
+    zz: reshaped data in form of a matrix for plotting
+
+    based on https://stackoverflow.com/a/15885230/5177935
+
+    """
+    temp_file = 'foo.bin'
+    with open(temp_file, 'wb') as foo:
+        for (i, j), dat in np.ndenumerate(np.rot90(zz, 3)):
+            s = struct.pack('4f', i, j, dat, dat)
+            foo.write(s)
+
+    gnuplot = subprocess.Popen(
+        ['gnuplot'], stdin=subprocess.PIPE, universal_newlines=True)
+
+    gnuplot.stdin.write("""
+    set pm3d map;
+    unset clabel;
+    set terminal png size 1024,768;
+    set palette defined (0 0.0 0.0 0.5, \
+                         1 0.0 0.0 1.0, \
+                         2 0.0 0.5 1.0, \
+                         3 0.0 1.0 1.0, \
+                         4 0.5 1.0 0.5, \
+                         5 1.0 1.0 0.0, \
+                         6 1.0 0.5 0.0, \
+                         7 1.0 0.0 0.0, \
+                         8 0.5 0.0 0.0 );
+    """)
+    gnuplot.stdin.write("set output '{}.png';".format(temp_file))
+    gnuplot.stdin.write(
+        "splot '{}' binary record=(10,-1) format='%float' u 1:2:3:4 w pm3d;".format(temp_file))
+    # the following command needs terminating the process
+    # os.remove(temp_file)
 
 
 def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):

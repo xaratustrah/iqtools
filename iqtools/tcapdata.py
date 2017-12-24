@@ -8,18 +8,18 @@ Xaratustrah Aug-2015
 
 TCAP format information:
 
-- Each file contains 15625 blocks
+- Each file contains 15625 blocks equivalent of 27min 18 seconds of recording
 
 - Each block is 2^17=131072 BYTES of data + 88 bytes of header
 
 - Each sample is 4 bytes = 32bits (2 I + 2 Q bytes), hence each block contains
 32768 complex valued samples
 
-- Sampling frequency is 312500 sps, thus the data of a block give a resolution
-frequency of 312500 / 32768 = 9.5 Hz per block
+- Sampling frequency is 312500 sps, thus the data of a block are each 0.105s
+worth of data and a resolution frequency of 312500 / 32768 = 9.5 Hz per block
 
 - To double the frequency resolution one can take two consecutive blocks which
-mean 4.7 Hz for two consecutive blocks which is 0.212 s
+mean 4.77 Hz for two consecutive blocks which is 0.210 s
 
 - Either from one block or two blocks a frame can be created.
 
