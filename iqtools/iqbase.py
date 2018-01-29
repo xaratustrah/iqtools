@@ -44,7 +44,8 @@ class IQBase(object):
     def get_window(self, n=None):
         if not n:
             n = self.lframes
-        assert self.window in ['rectangular', 'bartlett', 'blackman', 'hamming', 'hanning']
+        assert self.window in ['rectangular',
+                               'bartlett', 'blackman', 'hamming', 'hanning']
         if self.window == 'rectangular':
             return np.ones(n)
         elif self.window == 'bartlett':
@@ -124,7 +125,6 @@ class IQBase(object):
 
         :return: frequency, time and power for XYZ plot,
         """
-        from spectrum import dpss, pmtm
 
         assert self.method in ['fft', 'welch', 'mtm']
 
@@ -137,16 +137,19 @@ class IQBase(object):
         if self.method == 'fft':
             # go through the data array section wise and create a results array
             for i in range(nframes):
-                f, p, _ = self.get_fft(x[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
+                f, p, _ = self.get_fft(
+                    x[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
                 pout[i * lframes:(i + 1) * lframes] = p
 
         elif self.method == 'welch':
             # go through the data array section wise and create a results array
             for i in range(nframes):
-                f, p = self.get_pwelch(x[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
+                f, p = self.get_pwelch(
+                    x[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
                 pout[i * lframes:(i + 1) * lframes] = p
 
         elif self.method == 'mtm':
+            from spectrum import dpss, pmtm
             [tapers, eigen] = dpss(lframes, NW=2)
             f = self.get_fft_freqs_only(x[0:lframes])
             # go through the data array section wise and create a results array
@@ -154,7 +157,8 @@ class IQBase(object):
                 p = pmtm(x[i * lframes:(i + 1) * lframes] * self.get_window(lframes), e=tapers, v=eigen, method='adapt',
                          show=False)
                 # pay attention that mtm uses padding, so we have to cut the output array
-                pout[i * lframes:(i + 1) * lframes] = np.fft.fftshift(p[0:lframes, 0])
+                pout[i * lframes:(i + 1) *
+                     lframes] = np.fft.fftshift(p[0:lframes, 0])
 
         # create a mesh grid from 0 to nframes -1 in Y direction
         xx, yy = np.meshgrid(f, np.arange(nframes))
