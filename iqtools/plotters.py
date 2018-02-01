@@ -66,7 +66,7 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
 
     if filename is not None:
         plt.savefig(filename + '.png', dpi=dpi, bbox_inches='tight')
-    plt.close()
+        plt.close()
 
 
 def plot_spectrogram_with_gnuplot(zz):
