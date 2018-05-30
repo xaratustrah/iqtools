@@ -124,6 +124,18 @@ def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
         plt.close()
 
 
+def plot_phase_shift(x, phase):
+    """
+    Plots the signal before and after the phase shift
+    """
+    plt.rcParams['axes.grid'] = True
+    fig, axs = plt.subplots(2, 2, sharex=True, sharey=True)
+    axs[0, 0].plot(np.real(x))
+    axs[0, 1].plot(np.imag(x))
+    axs[1, 0].plot(np.real(shift_phase(x, phase)))
+    axs[1, 1].plot(np.imag(shift_phase(x, phase)))
+
+
 def get_iq_object(filename, header_filename):
     """
     Return suitable object accorting to extension.

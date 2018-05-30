@@ -120,6 +120,21 @@ def make_test_signal(f, fs, length=1, nharm=0, noise=False):
     return t, x
 
 
+def shift_phase(x, phase):
+    """
+    Shift phase in frequency domain
+    x: complex or analytical signal
+    phase: amount in radians
+
+    returns: shifted complex signal
+    """
+
+    XX = np.fft.fft(x)
+    angle = np.unwrap(np.angle(XX)) + phase
+    YY = np.abs(XX) * np.exp(1j * angle)
+    return np.fft.ifft(YY)
+
+
 def write_signal_as_binary(filename, x, fs, center, write_header=False):
     """
     filename: name of the output filename
