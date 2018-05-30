@@ -73,8 +73,8 @@ Later the file can be imported using a `File Source` block in GNU-Radio. Use a `
 
 ## Install / Uninstall
 
-    sudo python setup.py install --record files.txt
+    python setup.py install --record files.txt
 
-be careful with this one:
+You may need to use `sudo` in your case. Also be careful with this one:
 
     cat files.txt | sudo xargs rm -rf
