@@ -51,8 +51,8 @@ class TDMSData(IQBase):
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
                 self.center) + '\n' + \
             '<font size="4" color="green">RF Att.:</font> {} <br>'.format(self.rf_att) + '\n' + \
-            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
-
+            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(
+                self.date_time) + '\n'
 
     def read_tdms_information(self, lframes=1):
         """
@@ -76,7 +76,8 @@ class TDMSData(IQBase):
         f = open(self.filename, "rb")
         while f.tell() < sz:
             try:
-                objects, raw_data = pytdms.readSegment(f, sz, (objects, raw_data))
+                objects, raw_data = pytdms.readSegment(
+                    f, sz, (objects, raw_data))
             except:
                 log.error('TDMS file seems to end here!')
                 return
@@ -101,8 +102,10 @@ class TDMSData(IQBase):
         self.rf_att = float(objects[b'/'][3][b'RFAttentuation'][1])
         self.center = float(objects[b'/'][3][b'IQCarrierFrequency'][1])
         self.date_time = time.ctime(os.path.getctime(self.filename))
-        self.tdms_nSamplesPerRecord = int(objects[b'/'][3][b'NSamplesPerRecord'][1])
-        self.tdms_nRecordsPerFile = int(objects[b'/'][3][b'NRecordsPerFile'][1])
+        self.tdms_nSamplesPerRecord = int(
+            objects[b'/'][3][b'NSamplesPerRecord'][1])
+        self.tdms_nRecordsPerFile = int(
+            objects[b'/'][3][b'NRecordsPerFile'][1])
         self.nsamples_total = self.tdms_nSamplesPerRecord * self.tdms_nRecordsPerFile
         self.nframes_tot = int(self.nsamples_total / lframes)
 
@@ -135,14 +138,16 @@ class TDMSData(IQBase):
         starting_sample_within_start_record = start_n_bytes % self.tdms_nSamplesPerRecord
 
         # See how many records should we read, considering also the half-way started record?
-        n_records = int((starting_sample_within_start_record + total_n_bytes) / self.tdms_nSamplesPerRecord) + 1
+        n_records = int((starting_sample_within_start_record +
+                         total_n_bytes) / self.tdms_nSamplesPerRecord) + 1
 
         # that would be too much
         if start_record + n_records > self.tdms_nRecordsPerFile:
             return
 
         # instead of real file size find out where to stop
-        absolute_size = self.tdms_first_rec_size + (start_record + n_records - 2) * self.tdms_other_rec_size
+        absolute_size = self.tdms_first_rec_size + \
+            (start_record + n_records - 2) * self.tdms_other_rec_size
 
         # We start with empty data
         objects = {}
@@ -157,12 +162,14 @@ class TDMSData(IQBase):
             # don't jump if start record is 1, just go on reading
             if start_record > 1 and f.tell() == self.tdms_first_rec_size:
                 # reached the end of first record, now do the jump
-                f.seek(f.tell() + (start_record - 2) * self.tdms_other_rec_size)
+                f.seek(f.tell() + (start_record - 2)
+                       * self.tdms_other_rec_size)
             if f.tell() == self.tdms_first_rec_size:
                 log.info('Reached end of first record.')
             # Now we read record by record
             try:
-                objects, raw_data = pytdms.readSegment(f, absolute_size, (objects, raw_data))
+                objects, raw_data = pytdms.readSegment(
+                    f, absolute_size, (objects, raw_data))
             except:
                 log.error('File seems to end here!')
                 return
@@ -188,7 +195,35 @@ class TDMSData(IQBase):
         self.data_array = np.zeros(2 * total_n_bytes, dtype=np.float32)
         self.data_array[::2], self.data_array[1::2] = ii, qq
         self.data_array = self.data_array.view(np.complex64)
-        gain = np.frombuffer(raw_data[b"/'RecordHeader'/'gain'"], dtype=np.float64)
+        gain = np.frombuffer(
+            raw_data[b"/'RecordHeader'/'gain'"], dtype=np.float64)
+        self.scale = gain[0]
+        self.data_array = self.data_array * self.scale
+        log.info("TDMS Read finished.")
+
+    def read_complete_file(self):
+        """
+        Read a complete TDMS file
+        :return:
+        """
+
+        if not self.information_read:
+            self.read_tdms_information()
+
+        objects, raw_data = pytdms.read(self.filename)
+
+        # convert array.array to np.array
+        ii = np.frombuffer(raw_data[b"/'RecordData'/'I'"], dtype=np.int16)
+        qq = np.frombuffer(raw_data[b"/'RecordData'/'Q'"], dtype=np.int16)
+
+        # Vectorized is slow, so do interleaved copy instead
+
+        len = np.shape(ii)[0]
+        self.data_array = np.zeros(2 * len, dtype=np.float32)
+        self.data_array[::2], self.data_array[1::2] = ii, qq
+        self.data_array = self.data_array.view(np.complex64)
+        gain = np.frombuffer(
+            raw_data[b"/'RecordHeader'/'gain'"], dtype=np.float64)
         self.scale = gain[0]
         self.data_array = self.data_array * self.scale
         log.info("TDMS Read finished.")
