@@ -51,6 +51,17 @@ The binary files begin with a 32-bit integer for sampling rate, followed by a 32
     write_signal_as_binary('test_signal.bin', xbar, fs, center)
     write_signal_as_ascii('test_signal.bin', xbar, fs, center)
 
+#### GNU-Radio file-sink format
+If you have a flow graph in gnuradio and like to save files, you can use the **file sink** block and save data. Using `iqtools` you can then import the data as usual, except that you have to provide the sampling rate. Here is an example to plot an spectrogram:
+
+    import iqtools
+    filename = './test.bin'
+    iqdata = iqtools.GRData(filename, fs = 2.5e6, center=30e6)
+    iqdata.read_complete_file()
+    xx, yy, zz = iqdata.get_spectrogram(nframes=2000, lframes=1024)
+    iqtools.plot_spectrogram(xx, yy, zz)
+
+
 
 ## Using files in GNU-Radio
 You can use the command line interface to convert your data into complex64 (I and Q each 32-bit) for further use in [GNU Radio](http://gnuradio.org/).

@@ -7,6 +7,7 @@ xaratustrah oct-2014
             mar-2015
             aug-2015
             jan-2016
+            aug-2018
 """
 
 import argparse
