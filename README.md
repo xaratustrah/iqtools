@@ -51,7 +51,7 @@ The binary files begin with a 32-bit integer for sampling rate, followed by a 32
     write_signal_as_binary('test_signal.bin', xbar, fs, center)
     write_signal_as_ascii('test_signal.bin', xbar, fs, center)
 
-#### GNU-Radio file-sink format
+#### Reading GNURadio files
 If you have a flow graph in gnuradio and like to save files, you can use the **file sink** block and save data. Using `iqtools` you can then import the data as usual, except that you have to provide the sampling rate. Here is an example to plot an spectrogram:
 
     import iqtools
@@ -61,14 +61,13 @@ If you have a flow graph in gnuradio and like to save files, you can use the **f
     xx, yy, zz = iqdata.get_spectrogram(nframes=2000, lframes=1024)
     iqtools.plot_spectrogram(xx, yy, zz)
 
+#### Writing GNURadio files
 
+You can use the library interface or the command line interface to convert your data into complex64 (I and Q each 32-bit) for further use in [GNU Radio](http://gnuradio.org/).
 
-## Using files in GNU-Radio
-You can use the command line interface to convert your data into complex64 (I and Q each 32-bit) for further use in [GNU Radio](http://gnuradio.org/).
+    iqtools --verbose --lframes 1024 --nframes 1 --raw inputfile.tiq
 
-    iqtools --lframes 1024 --nframes 1 --raw inputfile.tiq
-
-The sampling rate will also be printed. Or within your program like:
+The *sampling rate* and the *center frequency* will also be printed. Or within your program like:
 
     import iqtools
     filename = "inputfile.tiq"
@@ -79,8 +78,8 @@ The sampling rate will also be printed. Or within your program like:
 
 Later the file can be imported using a `File Source` block in GNU-Radio. Use a `Throttle` block with the sampling rate of the data.
 
-<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/gnuradio.png">
-
+<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/gnuradio1.png">
+<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/gnuradio2.png">
 
 ## Install / Uninstall
 
