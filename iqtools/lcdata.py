@@ -10,16 +10,16 @@ an old code by M. Hausmann from 1992
 
 import numpy as np
 import struct
+import datetime
 import os
 from iqtools.iqbase import IQBase
 
 
 class LCData(IQBase):
-    def __init__(self, filename, date_time=""):
+    def __init__(self, filename):
         super().__init__(filename)
         self.fs = 4e9
         self.center = 0
-        self.date_time = date_time
 
     @property
     def dictionary(self):
@@ -76,6 +76,16 @@ class LCData(IQBase):
             0].decode("utf-8")
         self.horiz_unit = struct.unpack_from('c', file_data, 255)[
             0].decode("utf-8")
+
+        sec, mt, hr, dd, mm, yy = struct.unpack_from(
+            '{}dbbbbI'.format(biglit), file_data, 307)
+        try:
+            dt_obj = datetime.datetime(yy, mm, dd, hr, mt, int(
+                sec), int((sec - int(sec)) * 1e6))
+            self.date_time = dt_obj.strftime("%Y-%m-%d_%H:%M:%S.%f")
+        except ValueError:
+            self.date_time = ''
+
         self.data_array = np.frombuffer(
             file_data, np.int8, offset=hdr_len) * self.vert_gain
         return self.data_array
@@ -101,6 +111,6 @@ if __name__ == '__main__':
     plt.grid()
     plt.xlabel('Time [us]')
     plt.ylabel('Voltage [v]')
-    plt.title(os.path.basename(filename))
+    plt.title('{}{}'.format(os.path.basename(filename), mydata.date_time))
     plt.savefig('{}.png'.format(filename), dpi=600)
     print(mydata)
