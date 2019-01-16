@@ -134,13 +134,8 @@ class IQBase(object):
         pout = np.zeros(nframes * lframes)
 
         if self.method == 'fft':
-            # go through the data array section wise and create a results array
-            for i in range(nframes):
-                f, p, _ = self.get_fft(
-                    self.data_array[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
-                pout[i * lframes:(i + 1) * lframes] = p
-            # fold the results array to the mesh grid
-            zz = np.reshape(pout, (nframes, lframes))
+            sig = np.reshape(self.data_array, (nframes, lframes))
+            zz = np.abs(np.fft.fftshift(np.fft.fft(sig, axis=1)))
 
         elif self.method == 'welch':
             # go through the data array section wise and create a results array
