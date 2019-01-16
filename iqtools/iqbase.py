@@ -10,6 +10,8 @@ import numpy as np
 from scipy.io import wavfile
 from scipy.signal import welch, find_peaks_cwt
 from abc import ABCMeta, abstractmethod
+from scipy.signal.windows import dpss
+from multitaper import *
 
 
 class IQBase(object):
@@ -128,9 +130,6 @@ class IQBase(object):
 
         assert self.method in ['fft', 'welch', 'mtm']
 
-        x = self.data_array
-        fs = self.fs
-
         # define an empty np-array for appending
         pout = np.zeros(nframes * lframes)
 
@@ -138,34 +137,33 @@ class IQBase(object):
             # go through the data array section wise and create a results array
             for i in range(nframes):
                 f, p, _ = self.get_fft(
-                    x[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
+                    self.data_array[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
                 pout[i * lframes:(i + 1) * lframes] = p
+            # fold the results array to the mesh grid
+            zz = np.reshape(pout, (nframes, lframes))
 
         elif self.method == 'welch':
             # go through the data array section wise and create a results array
             for i in range(nframes):
                 f, p = self.get_pwelch(
-                    x[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
+                    self.data_array[i * lframes:(i + 1) * lframes] * self.get_window(lframes))
                 pout[i * lframes:(i + 1) * lframes] = p
+            # fold the results array to the mesh grid
+            zz = np.reshape(pout, (nframes, lframes))
 
         elif self.method == 'mtm':
-            from spectrum import dpss, pmtm
-            [tapers, eigen] = dpss(lframes, NW=2)
-            f = self.get_fft_freqs_only(x[0:lframes])
-            # go through the data array section wise and create a results array
-            for i in range(nframes):
-                p = pmtm(x[i * lframes:(i + 1) * lframes] * self.get_window(lframes), e=tapers, v=eigen, method='adapt',
-                         show=False)
-                # pay attention that mtm uses padding, so we have to cut the output array
-                pout[i * lframes:(i + 1) *
-                     lframes] = np.fft.fftshift(p[0:lframes, 0])
+            mydpss = dpss(M=lframes, NW=4, Kmax=6)
+            #f = self.get_fft_freqs_only(x[0:lframes])
+            sig = np.reshape(self.data_array, (nframes, lframes))
+            zz = pmtm(sig, mydpss, axis=1)
 
         # create a mesh grid from 0 to nframes -1 in Y direction
-        xx, yy = np.meshgrid(f, np.arange(nframes))
+        xx, yy = np.meshgrid(np.arange(lframes), np.arange(nframes))
+        yy = yy * lframes / self.fs
+        xx = xx - xx[-1, -1] / 2
+        xx = xx * self.fs / lframes
 
-        # fold the results array to the mesh grid
-        zz = np.reshape(pout, (nframes, lframes))
-        return xx, yy * lframes / fs, zz
+        return xx, yy, zz
 
     def get_dp_p_vs_time(self, xx, yy, zz, eta):
         """
