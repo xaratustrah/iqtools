@@ -23,7 +23,7 @@ from iqtools.tools import *
 # ------------ MAIN ----------------------------
 
 def main():
-    scriptname = 'iq_suite'
+    scriptname = 'iqtools'
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", type=str, help="Name of the input file.")
     parser.add_argument("-hdr", "--header-filename", nargs='?', type=str, default=None,
@@ -81,10 +81,11 @@ def main():
                         iq_data.filename_wo_ext + '_psd_welch.png', True)
 
     if args.spec:
+        iq_data.method = 'mtm'
         log.info('Generating spectrogram plot.')
-        x, y, z = iq_data.get_spectrogram()
-        plot_spectrogram_dbm(x, y, z, iq_data.center,
-                             iq_data.filename_wo_ext + '_spectrogram.png', True)
+        x, y, z = iq_data.get_spectrogram(iq_data.nframes, iq_data.lframes)
+        plot_spectrogram(x, y, z, iq_data.center, cmap=cm.jet, dpi=300, dbm=False,
+                         filename='{}_spectrogram.png'.format(iq_data.filename_wo_ext), title='Spectrogram')
 
     if args.npy:
         log.info('Saving data dictionary in numpy format.')

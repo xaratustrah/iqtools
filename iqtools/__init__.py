@@ -9,6 +9,6 @@ from iqtools.asciidata import ASCIIData
 from iqtools.wavdata import WAVData
 from iqtools.grdata import GRData
 from iqtools.lcdata import LCData
-from iqtools.version import __version__
+#from iqtools.version import __version__
 from iqtools.plotters import *
 from iqtools.tools import *

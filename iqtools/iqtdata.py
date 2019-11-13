@@ -48,8 +48,8 @@ class IQTData(IQBase):
                 self.center) + '\n' + \
             '<font size="4" color="green">Span:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
                 self.span) + '\n' + \
-            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
-
+            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(
+                self.date_time) + '\n'
 
     def read(self, nframes=10, lframes=1024, sframes=1):
         """
@@ -93,7 +93,8 @@ class IQTData(IQBase):
         self.nsamples_total = self.nframes_tot * self.fft_points
         self.fs = self.fft_points / self.frame_length
 
-        self.scale = np.sqrt(np.power(10, (self.gain_offset + self.max_input_level + self.level_offset) / 10) / 20 * 2)
+        self.scale = np.sqrt(np.power(
+            10, (self.gain_offset + self.max_input_level + self.level_offset) / 10) / 20 * 2)
 
         log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
 
@@ -103,7 +104,8 @@ class IQTData(IQBase):
              'formats': [np.int16, np.int16, np.int16, np.int16, np.int16, np.int16, np.int16,
                          np.int16, np.int16, np.int16, np.int32]})
 
-        frame_data_type = np.dtype((np.int16, 2 * 1024))  # 2 byte integer for Q, 2 byte integer for I
+        # 2 byte integer for Q, 2 byte integer for I
+        frame_data_type = np.dtype((np.int16, 2 * 1024))
         frame_type = np.dtype({'names': ['header', 'data'],
                                'formats': [(frame_header_type, 1), (frame_data_type, 1)]})
 
@@ -122,6 +124,7 @@ class IQTData(IQBase):
             log.error('File seems to end here!')
             return
 
+        print(len(ba))
         frame_array = np.fromstring(ba, dtype=frame_type)
 
         for i in range(frame_array.size):
