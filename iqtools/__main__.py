@@ -8,6 +8,7 @@ xaratustrah oct-2014
             aug-2015
             jan-2016
             aug-2018
+            nov-2019
 """
 
 import argparse
@@ -70,22 +71,22 @@ def main():
 
     if args.fft:
         log.info('Generating FFT plot.')
-        f1, v1, p1 = iq_data.get_fft()
-        plot_dbm_per_hz(f1, p1, iq_data.center, iq_data.span,
-                        iq_data.filename_wo_ext + '_psd_fft.png', True)
+        f1, p1, _ = iq_data.get_fft()
+        plot_sectrum(f1, p1, iq_data.center, iq_data.span, dbm=False,
+                     filename='{}_fft'.format(iq_data.filename_wo_ext))
 
     if args.psd:
         log.info('Generating PSD plot.')
         f2, p2 = iq_data.get_pwelch()
-        plot_dbm_per_hz(f2, p2, iq_data.center, iq_data.span,
-                        iq_data.filename_wo_ext + '_psd_welch.png', True)
+        plot_sectrum(f2, p2, iq_data.center, iq_data.span, dbm=True,
+                     filename='{}_psd_welch'.format(iq_data.filename_wo_ext))
 
     if args.spec:
         iq_data.method = 'mtm'
         log.info('Generating spectrogram plot.')
         x, y, z = iq_data.get_spectrogram(iq_data.nframes, iq_data.lframes)
         plot_spectrogram(x, y, z, iq_data.center, cmap=cm.jet, dpi=300, dbm=False,
-                         filename='{}_spectrogram.png'.format(iq_data.filename_wo_ext), title='Spectrogram')
+                         filename='{}_spectrogram'.format(iq_data.filename_wo_ext))
 
     if args.npy:
         log.info('Saving data dictionary in numpy format.')

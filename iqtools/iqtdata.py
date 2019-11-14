@@ -124,7 +124,7 @@ class IQTData(IQBase):
             log.error('File seems to end here!')
             return
 
-        print(len(ba))
+        # print(len(ba))
         frame_array = np.fromstring(ba, dtype=frame_type)
 
         for i in range(frame_array.size):

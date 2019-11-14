@@ -106,7 +106,8 @@ class IQBase(object):
         else:
             data = x
         n = data.size
-        f, p_avg = welch(data * self.get_window(n), self.fs, nperseg=data.size)
+        f, p_avg = welch(data * self.get_window(n), self.fs,
+                         nperseg=data.size, return_onesided=False)
         return np.fft.fftshift(f), np.fft.fftshift(p_avg)
 
     def get_spectrogram(self, nframes, lframes):

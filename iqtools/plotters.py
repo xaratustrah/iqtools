@@ -69,6 +69,30 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
         plt.close()
 
 
+def plot_sectrum(f, p, cen=0.0, span=None, dbm=False, filename=None, title='Spectrum'):
+    """Plot average power in dBm per Hz"""
+
+    if not span:
+        mask = (f != 0) | (f == 0)
+    else:
+        mask = (f <= span / 2) & (f >= -span / 2)
+    if dbm:
+        plt.plot(f[mask], IQBase.get_dbm(p[mask]))
+    else:
+        plt.plot(f[mask], p[mask])
+    plt.xlabel("Delta f [Hz] @ {}".format(get_eng_notation(cen, 'Hz')))
+    plt.title(title)
+    if dbm:
+        plt.ylabel('Power Spectral Density [dBm/Hz]')
+    else:
+        plt.ylabel('Power Spectral Density')
+
+    plt.grid(True)
+    if filename is not None:
+        plt.savefig(filename + '.png')  # , bbox_inches='tight')
+        plt.close()
+
+
 def plot_spectrogram_with_gnuplot(zz):
     """
     zz: reshaped data in form of a matrix for plotting
@@ -104,24 +128,6 @@ def plot_spectrogram_with_gnuplot(zz):
         "splot '{}' binary record=(10,-1) format='%float' u 1:2:3:4 w pm3d;".format(temp_file))
     # the following command needs terminating the process
     # os.remove(temp_file)
-
-
-def plot_dbm_per_hz(f, p, cen=0.0, span=None, filename='', to_file=False):
-    """Plot average power in dBm per Hz"""
-
-    if not span:
-        mask = (f != 0) | (f == 0)
-    else:
-        mask = (f <= span / 2) & (f >= -span / 2)
-
-    plt.plot(f[mask], IQBase.get_dbm(p[mask]))
-    plt.xlabel("Delta f [Hz] @ {}".format(get_eng_notation(cen, 'Hz')))
-    plt.title(filename)
-    plt.ylabel("Power Spectral Density [dBm/Hz]")
-    plt.grid(True)
-    if to_file:
-        plt.savefig(filename)
-        plt.close()
 
 
 def plot_phase_shift(x, phase):
