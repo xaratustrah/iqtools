@@ -80,26 +80,15 @@ class IQBase(object):
         f = np.fft.fftfreq(n, ts)
         return np.fft.fftshift(f)
 
-    def get_fft(self, x=None):
-        """ Get the FFT spectrum of a signal over a load of 50 ohm."""
-        termination = 50  # in Ohms for termination resistor
-        if x is None:
-            data = self.data_array
-        else:
-            data = x
-        freqs = self.get_fft_freqs_only(data)
-        v_peak_iq = np.fft.fft(data * self.get_window(len(data))) / len(data)
-        v_rms = abs(v_peak_iq) / np.sqrt(2)
-        p_avg = v_rms ** 2 / termination
-        # freqs is already fft shifted
-        return freqs, np.fft.fftshift(p_avg), np.fft.fftshift(v_peak_iq)
-
-    def get_fft_average(self, nframes=0, lframes=0):
+    def get_fft(self, x=None, nframes=0, lframes=0):
         """
+        If nframes and lframes are provided then it
         Reshapes the data to a 2D matrix, performs FFT in the horizontal
         direction i.e. for each row, then averages in frequency domain in the
         vertical direction, for every bin. The result is a flattened 1D
         array that can be plotted using the frequencies.
+
+        Otherwise it is just the standard 1D FFT
 
         :return: frequency, power and voltage
         """
@@ -110,6 +99,14 @@ class IQBase(object):
         else:
             nf = 1
             lf = len(self.data_array)
+            # overwrite
+            if x is not None:
+                lf = len(x)
+
+        if x is None:
+            data = self.data_array
+        else:
+            data = x
 
         termination = 50  # in Ohms for termination resistor
         data = np.reshape(self.data_array, (nf, lf))
