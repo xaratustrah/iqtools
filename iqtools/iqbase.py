@@ -185,6 +185,30 @@ class IQBase(object):
 
         return xx, yy, zz
 
+    @staticmethod
+    def get_averaged_spectrum(xa, ya, za, every):
+        """
+        Averages a spectrogram in time, given every such frames in n_time_frames
+        example: a spectrogram with 100 frames in time each 1024 bins in frequency
+        will be averaged every 5 frames in time bin by bin, resulting in a new spectrogram
+        with only 20 frames and same frame length as original.
+
+        """
+        rows, cols = np.shape(za)
+        dim3 = int(rows / every)
+
+        # This is such an ndarray gymnastics I think I would never be
+        # able to figure out ever again how I managed it,
+        # but it works fine!
+
+        zz = np.reshape(za, (dim3, every, cols))
+        zz = np.average(zz, axis=1)
+
+        yy = np.reshape(ya, (dim3, every, cols))
+        yy = np.reshape(yy[:, every - 1, :].flatten(), (dim3, cols))
+
+        return xa[:dim3], yy, zz
+
     def get_dp_p_vs_time(self, xx, yy, zz, eta):
         """
         Returns two arrays for plotting dp_p vs time
