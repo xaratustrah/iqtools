@@ -94,7 +94,7 @@ class IQBase(object):
         # freqs is already fft shifted
         return freqs, np.fft.fftshift(p_avg), np.fft.fftshift(v_peak_iq)
 
-    def get_fft_average(self, nframes, lframes):
+    def get_fft_average(self, nframes=0, lframes=0):
         """
         Reshapes the data to a 2D matrix, performs FFT in the horizontal
         direction i.e. for each row, then averages in frequency domain in the
@@ -103,11 +103,19 @@ class IQBase(object):
 
         :return: frequency, power and voltage
         """
+
+        if nframes and lframes:
+            nf = nframes
+            lf = lframes
+        else:
+            nf = 1
+            lf = len(self.data_array)
+
         termination = 50  # in Ohms for termination resistor
-        data = np.reshape(self.data_array, (nframes, lframes))
+        data = np.reshape(self.data_array, (nf, lf))
         freqs = self.get_fft_freqs_only(data[0])
         v_peak_iq = np.fft.fft(
-            data * self.get_window(lframes), axis=1) / lframes
+            data * self.get_window(lf), axis=1) / lf
         v_peak_iq = np.average(v_peak_iq, axis=0)
         v_rms = abs(v_peak_iq) / np.sqrt(2)
         p_avg = v_rms ** 2 / termination
