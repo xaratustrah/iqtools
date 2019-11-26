@@ -87,13 +87,32 @@ class IQBase(object):
             data = self.data_array
         else:
             data = x
-        n = data.size
-        ts = 1.0 / self.fs
-        f = np.fft.fftfreq(n, ts)
-        v_peak_iq = np.fft.fft(data * self.get_window(n)) / n
+        freqs = self.get_fft_freqs_only(data)
+        v_peak_iq = np.fft.fft(data * self.get_window(len(data))) / len(data)
         v_rms = abs(v_peak_iq) / np.sqrt(2)
         p_avg = v_rms ** 2 / termination
-        return np.fft.fftshift(f), np.fft.fftshift(p_avg), np.fft.fftshift(v_peak_iq)
+        # freqs is already fft shifted
+        return freqs, np.fft.fftshift(p_avg), np.fft.fftshift(v_peak_iq)
+
+    def get_fft_average(self, nframes, lframes):
+        """
+        Reshapes the data to a 2D matrix, performs FFT in the horizontal
+        direction i.e. for each row, then averages in frequency domain in the
+        vertical direction, for every bin. The result is a flattened 1D
+        array that can be plotted using the frequencies.
+
+        :return: frequency, power and voltage
+        """
+        termination = 50  # in Ohms for termination resistor
+        data = np.reshape(self.data_array, (nframes, lframes))
+        freqs = self.get_fft_freqs_only(data[0])
+        v_peak_iq = np.fft.fft(
+            data * self.get_window(lframes), axis=1) / lframes
+        v_peak_iq = np.average(v_peak_iq, axis=0)
+        v_rms = abs(v_peak_iq) / np.sqrt(2)
+        p_avg = v_rms ** 2 / termination
+        # freqs is already fft shifted
+        return freqs, np.fft.fftshift(p_avg), np.fft.fftshift(v_peak_iq)
 
     def get_pwelch(self, x=None):
         """
@@ -195,22 +214,6 @@ class IQBase(object):
 
         # Flatten array for 2D plot
         return yy[:, 0], frame_power
-
-    def get_time_average_vs_frequency(self, xx, yy, zz):
-        """
-        Returns the time average for each frequency bin
-        :param xx:
-        :param yy:
-        :param zz:
-        :return:
-        """
-        # Slices parallel to time axis (second dimension of xx is needed)
-        n_frequency_frames = np.shape(xx)[1]
-        f_slice_average = np.zeros(n_frequency_frames)
-        for i in range(n_frequency_frames):
-            f_slice_average[i] = np.average(zz[:, i])
-        # Flatten array fro 2D plot (second dimension of xx is needed)
-        return xx[0, :], f_slice_average
 
     @staticmethod
     def get_fwhm(f, p, skip=None):
