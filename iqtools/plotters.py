@@ -69,7 +69,7 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
         plt.close()
 
 
-def plot_sectrum(f, p, cen=0.0, span=None, dbm=False, filename=None, title='Spectrum'):
+def plot_spectrum(f, p, cen=0.0, span=None, dbm=False, filename=None, title='Spectrum'):
     """Plot average power in dBm per Hz"""
 
     if not span:
