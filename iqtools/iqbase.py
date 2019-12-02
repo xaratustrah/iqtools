@@ -357,10 +357,15 @@ class IQBase(object):
     #     """
     #     return np.trapz(p, x=f)
 
-    def get_channel_power(self, f, p):
+    def get_channel_power(self, f, p, span=None):
         """ Return total power in band in Watts
         Input: average power in Watts
         """
+        if not span:
+            mask = (f != 0) | (f == 0)
+        else:
+            mask = (f <= span / 2) & (f >= -span / 2)
+
         summ = 0
         nbw = self.rbw * 5
         for i in range(np.size(p)):
@@ -368,7 +373,7 @@ class IQBase(object):
         # ACQ bandwidth here is a better measure.
         # correct formula uses NBW
         final = summ / np.size(p) * self.acq_bw / nbw
-        return final
+        return final[mask]
 
     @staticmethod
     def zoom_in_freq(f, p, center=0, span=1000):
