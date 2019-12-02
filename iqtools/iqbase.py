@@ -366,14 +366,12 @@ class IQBase(object):
         else:
             mask = (f <= span / 2) & (f >= -span / 2)
 
-        summ = 0
         nbw = self.rbw * 5
-        for i in range(np.size(p)):
-            summ += p[i]
+        summ = np.sum(p[mask])
         # ACQ bandwidth here is a better measure.
         # correct formula uses NBW
         final = summ / np.size(p) * self.acq_bw / nbw
-        return final[mask]
+        return final
 
     @staticmethod
     def zoom_in_freq(f, p, center=0, span=1000):
