@@ -112,8 +112,8 @@ class IQBase(object):
         data = np.reshape(self.data_array, (nf, lf))
         freqs = self.get_fft_freqs_only(data[0])
         v_peak_iq = np.fft.fft(
-            data * self.get_window(lf), axis=1) / lf
-        v_peak_iq = np.average(v_peak_iq, axis=0)
+            data * self.get_window(lf), axis=1)
+        v_peak_iq = np.average(v_peak_iq, axis=0) / lf * nf
         v_rms = abs(v_peak_iq) / np.sqrt(2)
         p_avg = v_rms ** 2 / termination
         # freqs is already fft shifted
