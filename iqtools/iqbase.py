@@ -366,11 +366,15 @@ class IQBase(object):
         else:
             mask = (f <= span / 2) & (f >= -span / 2)
 
-        nbw = self.rbw * 5
+        # based on agilent application note on RBW and ENBW
+        # for typical FFT based analysers
+        #nbw = self.rbw * 5
+        nbw = self.rbw * 1.056
         summ = np.sum(p[mask])
         # ACQ bandwidth here is a better measure.
         # correct formula uses NBW
-        final = summ / np.size(p) * self.acq_bw / nbw
+        # final = summ / np.size(p) * self.acq_bw / nbw
+        final = summ / nbw
         return final
 
     @staticmethod
