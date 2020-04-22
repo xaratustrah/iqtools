@@ -105,7 +105,7 @@ class IQTData(IQBase):
                          np.int16, np.int16, np.int16, np.int32]})
 
         # 2 byte integer for Q, 2 byte integer for I
-        frame_data_type = np.dtype((np.int16, 2 * 1024))
+        frame_data_type = np.dtype((np.int16, 2 * lframes))
         frame_type = np.dtype({'names': ['header', 'data'],
                                'formats': [(frame_header_type, 1), (frame_data_type, 1)]})
 
@@ -113,7 +113,7 @@ class IQTData(IQBase):
         start_n_bytes = (sframes - 1) * frame_type.itemsize
 
         # prepare an empty array with enough room
-        self.data_array = np.zeros(1024 * nframes, np.complex64)
+        self.data_array = np.zeros(lframes * nframes, np.complex64)
 
         # Read n frames at once
         try:
@@ -128,11 +128,11 @@ class IQTData(IQBase):
         frame_array = np.fromstring(ba, dtype=frame_type)
 
         for i in range(frame_array.size):
-            temp_array = np.zeros(2 * 1024, np.int16)
+            temp_array = np.zeros(2 * lframes, np.int16)
             temp_array[::2], temp_array[1::2] = frame_array[i]['data'][1::2], frame_array[i]['data'][::2]
             temp_array = temp_array.astype(np.float32)
             temp_array = temp_array.view(np.complex64)
-            self.data_array[i * 1024:(i + 1) * 1024] = temp_array
+            self.data_array[i * lframes:(i + 1) * lframes] = temp_array
         # and finally scale the data
         self.data_array = self.data_array * self.scale
         # todo: correction data block
