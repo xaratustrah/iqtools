@@ -193,9 +193,10 @@ def read_result_csv(filename):
     return f, p
 
 
-def read_result_xml(filename):
+def read_trace_xml(filename):
     """
-    Read the resulting saved trace file SpecAn from the RSA5000 series
+    Read the resulting saved trace file Specan from the Tektronix RSA5000 series
+    these files are produced while saving traces.
     :param filename:
     :return:
     """
@@ -208,6 +209,10 @@ def read_result_xml(filename):
         start = float(elem.text)
     for elem in xml_tree_root.iter(tag='XStop'):
         stop = float(elem.text)
+    for elem in xml_tree_root.iter(tag='XUnits'):
+        xunits = elem.text
+    for elem in xml_tree_root.iter(tag='YUnits'):
+        yunits = elem.text
     for elem in xml_tree_root.iter(tag='y'):
         pwr = float(elem.text)
     p = np.zeros(count)
@@ -216,8 +221,8 @@ def read_result_xml(filename):
         p[i] = float(elem.text)
         i += 1
     f = np.linspace(start, stop, count)
-    # return watts for compatibility
-    return f, IQBase.get_watt(p)
+
+    return f, p, (xunits, yunits)
 
 
 def read_data_csv(filename):
