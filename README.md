@@ -6,18 +6,29 @@ Collection of code for working with offline complex valued time series data ([in
 
 These data are usually results of measurements of quantities in physical experiments in fundamental research or other related fields in science and engineering. These data are usually a result of radio frequency data acquisition systems involving one of the many methods of analog or digital [Hilbert transformation](https://en.wikipedia.org/wiki/Hilbert_transform) for the creation of [analytic signals](https://en.wikipedia.org/wiki/Analytic_signal), which in turn are easily processed in further stages. Applications include particle and fundamental physics, astrophysics, [software defined radio](https://en.wikipedia.org/wiki/Software-defined_radio) and many more.
 
-The usage allows direct programing using the class file and tools within own scrips or iPython Notebook sessions. The suite offers a extendible structure for adding further methods e.g. in spectral analysis or non-linear time series analysis.
-
-A related project uses this library for a GUI representation and can be found [here](https://github.com/xaratustrah/iqgui).
+The usage allows direct programming using the class file and tools within own scrips or iPython Notebook sessions. The library offers an extendable structure for adding further methods e.g. in spectral analysis or non-linear time series analysis. A related project uses this library for a GUI representation and can be found [here](https://github.com/xaratustrah/iqgui).
 
 ## Code Components
 
 ### IQBase class
 This class covers all required parameters to handle time domain IQ data and their representation in frequency domain. Cuts, slices etc. are also available. Also a set of windowing functions are available.
 
-### iqtools
-Is a collection of commandline tools and additional functions that uses the IQBase class as main data type but additionally offers tools for plotting and accessing the data. Stand alone operation is also possible using
-command line arguments.
+### Filetype specific classes
+
+There are several specific classes available for each file type, all sharing the common base.
+
+### tools
+
+A separate module includes several tools like input and output routines
+
+
+### iqtools as a command line program
+
+`iqtools` can be run as a command line program for processing data file as well. Type:
+
+    iqtools --help
+
+For more information.
 
 
 ## Supported file formats
@@ -81,10 +92,35 @@ Later the file can be imported using a `File Source` block in GNU-Radio. Use a `
 <img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/gnuradio1.png">
 <img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/gnuradio2.png">
 
+#### Writing to CERN ROOT format
+
+1D spectra can be exported to ROOT histograms for later analysis in ROOT.
+
+    from iqtools import *
+    filename='foobar.tiq'
+    dd = TIQData(filename)
+    dd.read_samples(1024)
+    ff, pp, _ = dd.get_fft()
+    write_spectrum_to_root(ff, pp, filename, center=dd.center, title='spectrum')
+
+
+
+
 ## Install / Uninstall
+
+#### Dependencies
+
+This library depends on `numpy`, `pytdms` and `uproot`, which can be installed via `pip` and the [multitaper](https://github.com/xaratustrah/multitaper) library which can be installed using `python setup`.
+
+
+#### Installation
 
     python setup.py install --record files.txt
 
-You may need to use `sudo` in your case. Also be careful with this one:
+You may need to use `sudo` in your case.
+
+#### Uninstall
+
+Also be careful with this one:
 
     cat files.txt | sudo xargs rm -rf

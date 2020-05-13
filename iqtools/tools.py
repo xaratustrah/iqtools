@@ -11,6 +11,10 @@ from scipy.signal import hilbert
 import xml.etree.ElementTree as et
 import numpy as np
 
+import types
+import uproot
+import uproot_methods.classes.TH1
+
 from iqtools.iqbase import IQBase
 from iqtools.tcapdata import TCAPData
 from iqtools.tdmsdata import TDMSData
@@ -174,7 +178,7 @@ def make_analytical(x):
 
 def read_result_csv(filename):
     """
-    Read special format CSV result file from RSA5100 series output
+    Read special format CSV result file from RSA5000 series output
     :param filename:
     :return:
     """
@@ -193,7 +197,7 @@ def read_result_csv(filename):
     return f, p
 
 
-def read_trace_xml(filename):
+def read_specan_xml(filename):
     """
     Read the resulting saved trace file Specan from the Tektronix RSA5000 series
     these files are produced while saving traces.
@@ -251,3 +255,30 @@ def parse_filename(filename):
     energy = float(filename[1].replace('MeVu', 'e6'))
     current = float(filename[2].replace('uA', 'e-6'))
     return descr, energy, current
+
+
+def write_spectrum_to_csv(ff, pp, filename, center=0):
+    a = np.concatenate(
+        (ff, pp, IQBase.get_dbm(pp)))
+    b = np.reshape(a, (3, -1)).T
+    np.savetxt(filename + '.csv', b, header='Delta f [Hz] @ {:.2e} [Hz]|Power [W]|Power [dBm]'.format(
+        center), delimiter='|')
+
+
+def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
+    class MyTH1(uproot_methods.classes.TH1.Methods, list):
+        def __init__(self, low, high, values, title=""):
+            self._fXaxis = types.SimpleNamespace()
+            self._fXaxis._fNbins = len(values)
+            self._fXaxis._fXmin = low
+            self._fXaxis._fXmax = high
+            values.insert(0, 0)
+            values.append(0)
+            for x in values:
+                self.append(float(x))
+            self._fTitle = title
+            self._classname = "TH1F"
+
+    th1f = MyTH1(center + ff[0], center + ff[-1], pp.tolist(), title=title)
+    file = uproot.recreate(filename + '.root', compression=uproot.ZLIB(4))
+    file["th1f"] = th1f
