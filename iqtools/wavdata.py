@@ -7,7 +7,8 @@ Xaratustrah Aug-2015
 """
 
 import numpy as np
-import time, os
+import time
+import os
 from scipy.io import wavfile
 from logging import log
 from iqtools.iqbase import IQBase
@@ -38,7 +39,8 @@ class WAVData(IQBase):
                 self.fs) + '\n' + \
             '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
                 self.center) + '\n' + \
-            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
+            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(
+                self.date_time) + '\n'
 
     def read(self, nframes=10, lframes=1024, sframes=1):
         """

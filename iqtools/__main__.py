@@ -9,6 +9,7 @@ xaratustrah oct-2014
             jan-2016
             aug-2018
             nov-2019
+            jul-2020
 """
 
 import argparse

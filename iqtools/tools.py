@@ -23,6 +23,7 @@ from iqtools.iqtdata import IQTData
 from iqtools.tiqdata import TIQData
 from iqtools.asciidata import ASCIIData
 from iqtools.wavdata import WAVData
+from iqtools.xdatdata import XDATData
 
 
 # ------------ TOOLS ----------------------------
@@ -78,6 +79,15 @@ def get_iq_object(filename, header_filename):
             return None
         else:
             iq_data = TCAPData(filename, header_filename)
+
+    if file_extension.lower() == '.xdat':
+        log.info('This is a XDAT file.')
+        if not header_filename:
+            log.info('XDAT files need a text header file as well. Aborting....')
+            return None
+        else:
+            iq_data = XDATData(filename, header_filename)
+
     return iq_data
 
 
