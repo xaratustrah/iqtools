@@ -33,9 +33,11 @@ For more information.
 
 ## Supported file formats
 
-#### [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats \*.IQT and \*.TIQ
+#### [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats \*.IQT, \*.TIQ and \*.XDAT
 
-Data format from different generations of real time spectrum analyzers.
+Data format from different generations of real time spectrum analyzers, including the 3000, 5000 and 600 USB analyzer series.
+
+In the tools section, there is also support for the **\*.specan** data format which is the already converted trace format in the analyzer software.
 
 #### [National Instruments<sup>&trade;</sup>](http://www.ni.com) \*.TDMS
 
@@ -62,7 +64,7 @@ The binary files begin with a 32-bit integer for sampling rate, followed by a 32
     write_signal_as_binary('test_signal.bin', xbar, fs, center)
     write_signal_as_ascii('test_signal.bin', xbar, fs, center)
 
-#### Reading GNURadio files
+#### GNURadio: Reading GNURadio files
 If you have a flow graph in gnuradio and like to save files, you can use the **file sink** block and save data. Using `iqtools` you can then import the data as usual, except that you have to provide the sampling rate. Here is an example to plot an spectrogram:
 
     import iqtools
@@ -72,7 +74,7 @@ If you have a flow graph in gnuradio and like to save files, you can use the **f
     xx, yy, zz = iqdata.get_spectrogram(nframes=2000, lframes=1024)
     iqtools.plot_spectrogram(xx, yy, zz)
 
-#### Writing GNURadio files
+#### GNURadio: Writing GNURadio files
 
 You can use the library interface or the command line interface to convert your data into complex64 (I and Q each 32-bit) for further use in [GNU Radio](http://gnuradio.org/).
 
@@ -92,7 +94,7 @@ Later the file can be imported using a `File Source` block in GNU-Radio. Use a `
 <img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/gnuradio1.png">
 <img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/gnuradio2.png">
 
-#### Writing to CERN ROOT format
+#### CERN ROOT: Writing to CERN ROOT format
 
 1D spectra can be exported to ROOT histograms for later analysis in ROOT.
 
@@ -117,7 +119,7 @@ This library depends on `numpy`, `pytdms` and `uproot`, which can be installed v
 
     python setup.py install --record files.txt
 
-You may need to use `sudo` in your case.
+You may need to use `sudo` in your case if needed.
 
 #### Uninstall
 
