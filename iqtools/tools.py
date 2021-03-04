@@ -27,7 +27,7 @@ from iqtools.xdatdata import XDATData
 
 
 # ------------ TOOLS ----------------------------
-def get_iq_object(filename, header_filename):
+def get_iq_object(filename, header_filename=None):
     """
     Return suitable object accorting to extension.
 

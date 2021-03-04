@@ -22,7 +22,7 @@ There are several specific classes available for each file type, all sharing the
 
 ### tools
 
-A separate module includes several tools like input and output routines
+A separate module includes several tools like input and output routines for convenience.
 
 
 ### iqtools as a command line program
