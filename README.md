@@ -49,6 +49,10 @@ Data format used in NI's [LabView<sup>&trade;</sup>](http://www.ni.com/labview/)
 #### TCAP \*.DAT files
 TCAP file format form the older HP E1430A systems. In this case, the header information is stored in a TXT file, while the data file is stored in blocks of 2GB sequentially. More information can be found in [this PhD thesis](http://www.worldcat.org/oclc/76566695).
 
+
+#### LeCroy<sup>&reg;</sup> 584AM Data files
+Data files from this old oscilloscope is possible with its own class.
+
 #### Audio file \*.WAV
 
 This data format is mostly useful for software defined radio applications. Left and right channels are treated as real and imaginary components respectively, file duration and sampling rate are determined automatically. Memory map is activated to avoid the whole file will be loaded in memory.
