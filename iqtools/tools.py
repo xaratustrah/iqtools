@@ -12,8 +12,8 @@ import xml.etree.ElementTree as et
 import numpy as np
 
 import types
-import uproot
-import uproot_methods.classes.TH1
+import uproot3
+import uproot3_methods.classes.TH1
 
 from iqtools.iqbase import IQBase
 from iqtools.tcapdata import TCAPData
@@ -276,7 +276,7 @@ def write_spectrum_to_csv(ff, pp, filename, center=0):
 
 
 def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
-    class MyTH1(uproot_methods.classes.TH1.Methods, list):
+    class MyTH1(uproot3_methods.classes.TH1.Methods, list):
         def __init__(self, low, high, values, title=""):
             self._fXaxis = types.SimpleNamespace()
             self._fXaxis._fNbins = len(values)
@@ -290,5 +290,5 @@ def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
             self._classname = "TH1F"
 
     th1f = MyTH1(center + ff[0], center + ff[-1], pp.tolist(), title=title)
-    file = uproot.recreate(filename, compression=uproot.ZLIB(4))
+    file = uproot3.recreate(filename, compression=uproot3.ZLIB(4))
     file["th1f"] = th1f

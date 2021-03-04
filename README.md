@@ -119,7 +119,7 @@ Later the file can be imported using a `File Source` block in GNU-Radio. Use a `
 
 #### Dependencies
 
-This library depends on `numpy`, `pytdms` and `uproot`, which can be installed via `pip` and the [multitaper](https://github.com/xaratustrah/multitaper) library which can be installed using `python setup`.
+This library depends on `numpy`, `pytdms` and `uproot3`, which can be installed via `pip` and the [multitaper](https://github.com/xaratustrah/multitaper) library which can be installed using `python setup`.
 
 
 #### Installation
