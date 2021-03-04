@@ -109,7 +109,7 @@ class IQBase(object):
             data = x
 
         termination = 50  # in Ohms for termination resistor
-        data = np.reshape(self.data_array, (nf, lf))
+        data = np.reshape(data, (nf, lf))
         freqs = self.get_fft_freqs_only(data[0])
         v_peak_iq = np.fft.fft(
             data * self.get_window(lf), axis=1)
