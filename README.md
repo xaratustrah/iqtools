@@ -6,7 +6,10 @@ Collection of code for working with offline complex valued time series data ([in
 
 These data are usually results of measurements of quantities in physical experiments in fundamental research or other related fields in science and engineering. These data are usually a result of radio frequency data acquisition systems involving one of the many methods of analog or digital [Hilbert transformation](https://en.wikipedia.org/wiki/Hilbert_transform) for the creation of [analytic signals](https://en.wikipedia.org/wiki/Analytic_signal), which in turn are easily processed in further stages. Applications include particle and fundamental physics, astrophysics, [software defined radio](https://en.wikipedia.org/wiki/Software-defined_radio) and many more.
 
-The usage allows direct programming using the class file and tools within own scrips or iPython Notebook sessions. The library offers an extendable structure for adding further methods e.g. in spectral analysis or non-linear time series analysis. A related project uses this library for a GUI representation and can be found [here](https://github.com/xaratustrah/iqgui).
+The usage allows direct programming using the class file and tools within own scrips or iPython Notebook sessions. The library offers an extendable structure for adding further methods e.g. in spectral analysis or non-linear time series analysis.
+
+#### Related project:
+A related project uses this library for a GUI representation and can be found [here](https://github.com/xaratustrah/iqgui).
 
 ## Code Components
 
