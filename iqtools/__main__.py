@@ -73,14 +73,14 @@ def main():
     if args.fft:
         log.info('Generating FFT plot.')
         f1, p1, _ = iq_data.get_fft()
-        plot_sectrum(f1, p1, iq_data.center, iq_data.span, dbm=False,
-                     filename='{}_fft'.format(iq_data.filename_wo_ext))
+        plot_spectrum(f1, p1, iq_data.center, iq_data.span, dbm=False,
+                      filename='{}_fft'.format(iq_data.filename_wo_ext))
 
     if args.psd:
         log.info('Generating PSD plot.')
         f2, p2 = iq_data.get_pwelch()
-        plot_sectrum(f2, p2, iq_data.center, iq_data.span, dbm=True,
-                     filename='{}_psd_welch'.format(iq_data.filename_wo_ext))
+        plot_spectrum(f2, p2, iq_data.center, iq_data.span, dbm=True,
+                      filename='{}_psd_welch'.format(iq_data.filename_wo_ext))
 
     if args.spec:
         iq_data.method = 'mtm'
