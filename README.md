@@ -119,17 +119,41 @@ Later the file can be imported using a `File Source` block in GNU-Radio. Use a `
 
 #### Dependencies
 
-This library depends on `numpy`, `pytdms` and `uproot3`, which can be installed via `pip` and the [multitaper](https://github.com/xaratustrah/multitaper) library which can be installed using `python setup`.
+This library depends on `numpy`, `scipy`, `pytdms` and `uproot3`, which can be installed via `pip` and the [multitaper](https://github.com/xaratustrah/multitaper) library which can be installed using `python setup`.
 
+#### Installation details
 
-#### Installation
+For using `iqtools` you need a working python installation. We strongly recommend not to use or change your system python, instead please use [Anaconda](https://www.anaconda.com/) for Linux, MacOS and also Windows. Additionally for Windows, we strongly recommend [WinPython](https://winpython.github.io/) which indeed is a blessing, if you really need to deal with Windows. WinPython is also recommended if you are interested to run the optional related project [iqgui](https://github.com/xaratustrah/iqgui) that provides a GUI to iqtools.
 
+After installing your python distribution you can start installing the dependencies with PIP:
+
+    pip install numpy scipy pytdms uproot3
+    
+Finally you need to install the multitaper library. Assuming you have a directory called `my_git_repos` you can use `git` command to clone the repository there. If you don't have `git` you can just download the ZIP file from the repository and unpack it there:
+
+    cd my_git_repos
+    git clone https://github.com/xaratustrah/multitaper
+    cd multitaper
+    python setup.py install --record files.txt
+    
+Then you do the same thing for `iqtools`:
+
+    cd my_git_repos
+    git clone https://github.com/xaratustrah/iqtools
+    cd multitaper
     python setup.py install --record files.txt
 
-You may need to use `sudo` in your case if needed.
+Use of `sudo` is not recommended.
 
 #### Uninstall
 
 Also be careful with this one:
 
     cat files.txt | sudo xargs rm -rf
+
+You can do this with `multitaper` library as well. Also you can use:
+
+    pip uninstall ...
+    
+to get rid of the rest.
+
