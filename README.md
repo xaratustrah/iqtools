@@ -127,15 +127,15 @@ For using `iqtools` you need a working python installation. We strongly recommen
 
 After installing your python distribution you can start installing the dependencies with PIP:
 
-    pip install numpy scipy pytdms uproot3
-    
+    pip install numpy scipy matplotlib pytdms uproot3
+
 Finally you need to install the multitaper library. Assuming you have a directory called `my_git_repos` you can use `git` command to clone the repository there. If you don't have `git` you can just download the ZIP file from the repository and unpack it there:
 
     cd my_git_repos
     git clone https://github.com/xaratustrah/multitaper
     cd multitaper
     python setup.py install --record files.txt
-    
+
 Then you do the same thing for `iqtools`:
 
     cd my_git_repos
@@ -154,6 +154,5 @@ Also be careful with this one:
 You can do this with `multitaper` library as well. Also you can use:
 
     pip uninstall ...
-    
-to get rid of the rest.
 
+to get rid of the rest.
