@@ -123,7 +123,9 @@ This library depends on `numpy`, `scipy`, `matplotlib`, `pytdms` and `uproot3`, 
 
 #### Installation details
 
-For using `iqtools` you need a working python installation. We strongly recommend not to use or change your system python, instead please use [Anaconda](https://www.anaconda.com/) for Linux, MacOS and also Windows. For server installations and automatic analysis, we recommend using [miniconda](https://docs.conda.io/en/latest/miniconda.html) which is the smaller version of Anaconda distribution. Additionally for Windows, we strongly recommend [WinPython](https://winpython.github.io/) which indeed is a blessing, if you really need to deal with Windows. WinPython is also recommended if you are interested to run the optional related project [iqgui](https://github.com/xaratustrah/iqgui) that provides a GUI to iqtools.
+For using `iqtools` you need a working python installation. We strongly recommend not to use or change your system python, instead please use [Anaconda](https://www.anaconda.com/) for Linux, MacOS and also Windows. For server installations and automatic analysis, we recommend using [miniconda](https://docs.conda.io/en/latest/miniconda.html) which is the smaller version of *Anaconda* distribution.
+
+Additionally to *Anaconda* for Windows, we strongly recommend [WinPython](https://winpython.github.io/) which indeed is a blessing, if you really need to deal with Windows. WinPython is also recommended if you are interested to run the optional related project [iqgui](https://github.com/xaratustrah/iqgui) that provides a GUI to *iqtools*, ny providing the necessary QT libraries and much more.
 
 After installing your python distribution you can start installing the dependencies with PIP:
 
