@@ -7,6 +7,7 @@ Xaratustrah
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from matplotlib.ticker import FormatStrFormatter
 from iqtools.iqbase import IQBase
 from iqtools.tools import *
 import subprocess
@@ -54,6 +55,10 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
     else:
         sp = plt.pcolormesh(xx, yy, zz, cmap=cmap, shading='auto')
     cb = plt.colorbar(sp)
+
+    ax = plt.gca()
+    ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))
+
     plt.xlabel(
         "Delta f @ {} (resolution = {})".format(get_eng_notation(cen, unit='Hz'), get_eng_notation(delta_f, unit='Hz')))
     plt.ylabel('Time [sec] (resolution = {})'.format(
@@ -80,6 +85,10 @@ def plot_spectrum(f, p, cen=0.0, span=None, dbm=False, filename=None, title='Spe
         plt.plot(f[mask], IQBase.get_dbm(p[mask]))
     else:
         plt.plot(f[mask], p[mask])
+
+    ax = plt.gca()
+    ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))
+
     plt.xlabel("Delta f [Hz] @ {}".format(get_eng_notation(cen, 'Hz')))
     plt.title(title)
     if dbm:
