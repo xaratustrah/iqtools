@@ -52,7 +52,7 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
     if dbm:
         sp = plt.pcolormesh(xx, yy, IQBase.get_dbm(zz), cmap=cmap)
     else:
-        sp = plt.pcolormesh(xx, yy, zz, cmap=cmap)
+        sp = plt.pcolormesh(xx, yy, zz, cmap=cmap, shading='auto')
     cb = plt.colorbar(sp)
     plt.xlabel(
         "Delta f @ {} (resolution = {})".format(get_eng_notation(cen, unit='Hz'), get_eng_notation(delta_f, unit='Hz')))
