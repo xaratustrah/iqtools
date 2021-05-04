@@ -5,14 +5,17 @@ Xaratustrah
 2017
 """
 
+import subprocess
+import struct
+import os
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.ticker import FormatStrFormatter
 from iqtools.iqbase import IQBase
 from iqtools.tools import *
-import subprocess
-import struct
-import os
+
 
 # ------------ PLOTTERS ----------------------------
 
