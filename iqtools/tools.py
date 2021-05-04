@@ -290,5 +290,5 @@ def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
             self._classname = "TH1F"
 
     th1f = MyTH1(center + ff[0], center + ff[-1], pp.tolist(), title=title)
-    file = uproot3.recreate(filename, compression=uproot3.ZLIB(4))
+    file = uproot3.recreate(filename + '.root', compression=uproot3.ZLIB(4))
     file["th1f"] = th1f
