@@ -102,6 +102,7 @@ Later the file can be imported using a `File Source` block in GNU-Radio. Use a `
 <img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/gnuradio2.png">
 
 #### CERN ROOT: Writing to CERN ROOT format
+[ROOT](https://root.cern/) is an extensive data analysis framework that is very popular in the physics community. IQTools has possibilities to interface with ROOT using the [uproot](https://uproot.readthedocs.io/en/latest/) library.
 
 1D spectra can be exported to ROOT histograms for later analysis in ROOT.
 
@@ -112,8 +113,11 @@ Later the file can be imported using a `File Source` block in GNU-Radio. Use a `
     ff, pp, _ = dd.get_fft()
     write_spectrum_to_root(ff, pp, filename, center=dd.center, title='spectrum')
 
+the resulting ROOT file will contain a histogram. Also time domain data can be written to a ROOT file:
 
+    write_timedata_to_root(iq_obj, filename)
 
+The structure of the root files in this case is like this: there are two trees inside, one tree has only one branch with an integer in it, which is the sampling rate, and another tree with a branch which is the center frequency. the other tree also has a branch in it, which contains the time series, which correspond to the power of the signal, meaning (I^2+Q^2). The distance between the time samples is 1/(sampling_rate).
 
 ## Install / Uninstall
 

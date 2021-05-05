@@ -292,3 +292,20 @@ def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
     th1f = MyTH1(center + ff[0], center + ff[-1], pp.tolist(), title=title)
     file = uproot3.recreate(filename + '.root', compression=uproot3.ZLIB(4))
     file["th1f"] = th1f
+
+
+def write_timedata_to_root(iq_obj, filename):
+    with uproot3.recreate(filename + '.root') as f:
+        f['t_f_samp'] = uproot3.newtree(
+            {'f_samp': uproot3.newbranch(np.int32, title='Sampling frequency'),
+             })
+        f['t_f_center'] = uproot3.newtree(
+            {'f_center': uproot3.newbranch(np.int32, title='Center frequency'),
+             })
+        f['t_timedata'] = uproot3.newtree(
+            {'timedata': uproot3.newbranch(np.float64, title='Time domain signal power')})
+
+        f['t_f_samp'].extend({'f_samp': np.array([int(iq_obj.fs)])})
+        f['t_f_center'].extend({'f_center': np.array([int(iq_obj.center)])})
+
+        f['t_timedata'].extend({'timedata': np.abs(iq_obj.data_array)**2})
