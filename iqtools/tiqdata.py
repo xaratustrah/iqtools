@@ -56,10 +56,10 @@ class TIQData(IQBase):
             '<font size="4" color="green">Acq. BW.:</font> {} <br>'.format(self.acq_bw) + '\n' + \
             '<font size="4" color="green">RBW:</font> {} <br>'.format(self.rbw) + '\n' + \
             '<font size="4" color="green">RF Att.:</font> {} <br>'.format(self.rf_att) + '\n' + \
-            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(self.date_time) + '\n'
+            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(
+                self.date_time) + '\n'
 
     def read(self, nframes=10, lframes=1024, sframes=1):
-
         """Process the tiq input file.
         Following information are extracted, except Data offset, all other are stored in the dic. Data needs to be normalized over 50 ohm.
 
@@ -100,7 +100,8 @@ class TIQData(IQBase):
         for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}DateTime'):
             self.date_time = str(elem.text)
         for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}NumberSamples'):
-            self.nsamples_total = int(elem.text)  # this entry matches (filesize - self.data_offset) / 8) well
+            # this entry matches (filesize - self.data_offset) / 8) well
+            self.nsamples_total = int(elem.text)
         for elem in xml_tree_root.iter('NumericParameter'):
             if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'rbw':
                 self.rbw = float(elem.find('Value').text)
@@ -120,15 +121,20 @@ class TIQData(IQBase):
 
         log.info("Proceeding to read binary section, 32bit (4 byte) little endian.")
         log.info('Total number of samples: {}'.format(self.nsamples_total))
-        log.info("Frame length: {0} data points = {1}s".format(lframes, lframes / self.fs))
+        log.info("Frame length: {0} data points = {1}s".format(
+            lframes, lframes / self.fs))
         self.nframes_tot = int(self.nsamples_total / lframes)
-        log.info("Total number of frames: {0} = {1}s".format(self.nframes_tot, self.nsamples_total / self.fs))
-        log.info("Start reading at offset: {0} = {1}s".format(sframes, sframes * lframes / self.fs))
-        log.info("Reading {0} frames = {1}s.".format(nframes, nframes * lframes / self.fs))
+        log.info("Total number of frames: {0} = {1}s".format(
+            self.nframes_tot, self.nsamples_total / self.fs))
+        log.info("Start reading at offset: {0} = {1}s".format(
+            sframes, sframes * lframes / self.fs))
+        log.info("Reading {0} frames = {1}s.".format(
+            nframes, nframes * lframes / self.fs))
 
         self.header = ba
 
-        total_n_bytes = 8 * nframes * lframes  # 8 comes from 2 times 4 byte integer for I and Q
+        # 8 comes from 2 times 4 byte integer for I and Q
+        total_n_bytes = 8 * nframes * lframes
         start_n_bytes = 8 * (sframes - 1) * lframes
 
         try:
@@ -140,13 +146,15 @@ class TIQData(IQBase):
             return
 
         # return a numpy array of little endian 8 byte floats (known as doubles)
-        self.data_array = np.fromstring(ba, dtype='<i4')  # little endian 4 byte ints.
+        # little endian 4 byte ints.
+        self.data_array = np.fromstring(ba, dtype='<i4')
         # Scale to retrieve value in Volts. Augmented assignment does not work here!
         self.data_array = self.data_array * self.scale
         self.data_array = self.data_array.view(
             dtype='c16')  # reinterpret the bytes as a 16 byte complex number, which consists of 2 doubles.
 
-        log.info("Output complex array has a size of {}.".format(self.data_array.size))
+        log.info("Output complex array has a size of {}.".format(
+            self.data_array.size))
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
 
     def read_samples(self, nsamples, offset=0):
@@ -176,50 +184,55 @@ class TIQData(IQBase):
             return
 
         # return a numpy array of little endian 8 byte floats (known as doubles)
-        self.data_array = np.fromstring(ba, dtype='<i4')  # little endian 4 byte ints.
+        # little endian 4 byte ints.
+        self.data_array = np.fromstring(ba, dtype='<i4')
         # Scale to retrieve value in Volts. Augmented assignment does not work here!
         self.data_array = self.data_array * self.scale
         self.data_array = self.data_array.view(
             dtype='c16')  # reinterpret the bytes as a 16 byte complex number, which consists of 2 doubles.
 
-        log.info("Output complex array has a size of {}.".format(self.data_array.size))
+        log.info("Output complex array has a size of {}.".format(
+            self.data_array.size))
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
 
     def read_header(self):
-        with open(self.filename) as f:
-            line = f.readline()
-        self.data_offset = int(line.split("\"")[1])
+        ba = bytearray('', encoding='UTF-8')
+        b = b''
+        with open(self.filename, 'rb') as f:
+            while b != b'\n':
+                b = f.read(1)
+                ba.extend(b)
+
+        self.data_offset = int(ba.decode().split("\"")[1])
 
         with open(self.filename, 'rb') as f:
             ba = f.read(self.data_offset)
-
+        self.header = ba
         xml_tree_root = et.fromstring(ba)
 
-        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}AcquisitionBandwidth'):
-            self.acq_bw = float(elem.text)
-        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}Frequency'):
-            self.center = float(elem.text)
-        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}DateTime'):
-            self.date_time = str(elem.text)
-        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}NumberSamples'):
-            self.nsamples_total = int(elem.text)  # this entry matches (filesize - self.data_offset) / 8) well
-        for elem in xml_tree_root.iter('NumericParameter'):
-            if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'rbw':
-                self.rbw = float(elem.find('Value').text)
-        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}RFAttenuation'):
-            self.rf_att = float(elem.text)
-        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}SamplingFrequency'):
-            self.fs = float(elem.text)
-        for elem in xml_tree_root.iter('NumericParameter'):
-            if 'name' in elem.attrib and elem.attrib['name'] == 'Span' and elem.attrib['pid'] == 'globalrange':
-                self.span = float(elem.find('Value').text)
-        for elem in xml_tree_root.iter(tag='{http://www.tektronix.com}Scaling'):
-            self.scale = float(elem.text)
+        self.date_time = [e.text for e in xml_tree_root.iter(
+            '*') if 'DateTime' in e.tag][0]
+        self.center = float([e.text for e in xml_tree_root.iter(
+            '*') if 'Frequency' in e.tag and 'Sampling' not in e.tag][0])
+        self.acq_bw = float([e.text for e in xml_tree_root.iter(
+            '*') if 'AcquisitionBandwidth' in e.tag][0])
+        self.nsamples_total = int(
+            [e.text for e in xml_tree_root.iter('*') if 'NumberSamples' in e.tag][0])
+        self.rf_att = float([e.text for e in xml_tree_root.iter(
+            '*') if 'RFAttenuation' in e.tag][0])
+        self.fs = float([e.text for e in xml_tree_root.iter(
+            '*') if 'SamplingFrequency' in e.tag][0])
+        self.scale = float(
+            [e.text for e in xml_tree_root.iter('*') if 'Scaling' in e.tag][0])
 
-        log.info("Center {0} Hz, span {1} Hz, sampling frequency {2} scale factor {3}.".format(self.center, self.span,
-                                                                                               self.fs, self.scale))
-        log.info("Header size {} bytes.".format(self.data_offset))
-        self.header = ba
+        for elem in xml_tree_root.iter('NumericParameter'):
+            if 'name' in elem.attrib and elem.attrib['name'] == 'Span' and (elem.attrib['pid'] == 'specanrange' or elem.attrib['pid'] == 'globalrange'):
+                self.span = float(elem.find('Value').text)
+
+        self.rbw = 0.0
+        for elem in xml_tree_root.iter('NumericParameter'):
+            if 'name' in elem.attrib and elem.attrib['name'] == 'Resolution Bandwidth' and elem.attrib['pid'] == 'fmtRBW':
+                self.rbw = float(elem.find('Value').text)
 
     def save_header(self):
         """Saves the header byte array into a txt tile."""
