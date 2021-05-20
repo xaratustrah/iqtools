@@ -2,10 +2,10 @@ from iqtools.tiqdata import TIQData
 from iqtools.iqbase import IQBase
 from iqtools.tcapdata import TCAPData
 from iqtools.tdmsdata import TDMSData
-from iqtools.rawdata import RAWData
+from iqtools.bindata import BINData
 from iqtools.iqtdata import IQTData
 from iqtools.tiqdata import TIQData
-from iqtools.asciidata import ASCIIData
+from iqtools.csvdata import CSVData
 from iqtools.wavdata import WAVData
 from iqtools.grdata import GRData
 from iqtools.lcdata import LCData

@@ -5,16 +5,16 @@ Xaratustrah
 2017
 """
 
+from iqtools.tools import *
+from iqtools.iqbase import IQBase
+from matplotlib.ticker import FormatStrFormatter
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 import subprocess
 import struct
 import os
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-from matplotlib.ticker import FormatStrFormatter
-from iqtools.iqbase import IQBase
-from iqtools.tools import *
 
 
 # ------------ PLOTTERS ----------------------------
@@ -173,11 +173,11 @@ def get_iq_object(filename, header_filename):
 
     if file_extension.lower() == '.txt' or file_extension.lower() == '.csv':
         log.info('This is an ASCII file.')
-        iq_data = ASCIIData(filename)
+        iq_data = CSVData(filename)
 
     if file_extension.lower() == '.bin':
         log.info('This is a raw binary file.')
-        iq_data = RAWData(filename)
+        iq_data = BINData(filename)
 
     if file_extension.lower() == '.wav':
         log.info('This is a wav file.')

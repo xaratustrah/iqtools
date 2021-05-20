@@ -19,10 +19,10 @@ import uproot3_methods.classes.TH1
 from iqtools.iqbase import IQBase
 from iqtools.tcapdata import TCAPData
 from iqtools.tdmsdata import TDMSData
-from iqtools.rawdata import RAWData
+from iqtools.bindata import BINData
 from iqtools.iqtdata import IQTData
 from iqtools.tiqdata import TIQData
-from iqtools.asciidata import ASCIIData
+from iqtools.csvdata import CSVData
 from iqtools.wavdata import WAVData
 from iqtools.xdatdata import XDATData
 
@@ -47,11 +47,11 @@ def get_iq_object(filename, header_filename=None):
 
     if file_extension.lower() == '.txt' or file_extension.lower() == '.csv':
         log.info('This is an ASCII file.')
-        iq_data = ASCIIData(filename)
+        iq_data = CSVData(filename)
 
     if file_extension.lower() == '.bin':
         log.info('This is a raw binary file.')
-        iq_data = RAWData(filename)
+        iq_data = BINData(filename)
 
     if file_extension.lower() == '.wav':
         log.info('This is a wav file.')
