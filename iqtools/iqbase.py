@@ -7,7 +7,6 @@ Xaratustrah Aug-2015
 
 import os
 import numpy as np
-from scipy.io import wavfile
 from scipy.signal import welch, find_peaks_cwt
 from abc import ABCMeta, abstractmethod
 from scipy.signal.windows import dpss
@@ -21,26 +20,68 @@ class IQBase(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, filename):
+
         # fields required in all subclasses
+        # primary fileds
 
         self.filename = filename
+        self.data_array = None
+        self.scale = 1
+        self.nsamples_total = 0
+        self.fs = 0.0
+
+        # secondary fileds
         self.file_basename = os.path.basename(filename)
         self.filename_wo_ext = os.path.splitext(filename)[0]
-        self.date_time = ''
-        self.lframes = 0
-        self.nframes = 0
-        self.sframes = 0
-        self.nframes_tot = 0
-        self.nsamples_total = 0
-        self.data_array = None
-        self.fs = 0.0
-        self.center = 0.0
-
         self.window = 'rectangular'
         self.method = 'fft'
 
+    def __str__(self):
+        return self.dic2htmlstring(vars(self))
+
+    def dic2htmlstring(self, dic):
+        outstr = ''
+        if 'filename' in dic:
+            outstr += '<font size="4" color="green">File name:</font> {} <font size="4" color="green"></font><br>\n'.format(
+                self.filename)
+        if 'nsamples_total' in dic:
+            outstr += '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>\n'.format(
+                self.get_record_length())
+        if 'nsamples_total' in dic:
+            outstr += '<font size="4" color="green">No. Samples:</font> {} <br>\n'.format(
+                self.nsamples_total)
+        if 'fs' in dic:
+            outstr += '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>\n'.format(
+                self.fs)
+        if 'center' in dic:
+            outstr += '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>\n'.format(
+                self.center)
+        if 'span' in dic:
+            outstr += '<font size="4" color="green">Span:</font> {} <font size="4" color="green">[Hz]</font><br>\n'.format(
+                self.span)
+        if 'acq_bw' in dic:
+            outstr += '<font size="4" color="green">Acq. BW.:</font> {} <br>\n'.format(
+                self.acq_bw)
+        if 'rbw' in dic:
+            outstr += '<font size="4" color="green">RBW:</font> {} <br>\n'.format(
+                self.rbw)
+        if 'rf_att' in dic:
+            outstr += '<font size="4" color="green">RF Att.:</font> {} <br>\n'.format(
+                self.rf_att)
+        if 'date_time' in dic:
+            outstr += '<font size="4" color="green">Date and Time:</font> {} <br>\n'.format(
+                self.date_time)
+            return outstr
+
+    def get_record_length(self):
+        return self.nsamples_total / self.fs
+
     @abstractmethod
     def read(self, nframes, lframes, sframes):
+        pass
+
+    @abstractmethod
+    def read_samples(self, nsamples, offset):
         pass
 
     def get_window(self, n=None):
@@ -58,14 +99,6 @@ class IQBase(object):
             return np.hamming(n)
         else:
             return np.hanning(n)
-
-    def save_npy(self):
-        """Saves the dictionary to a numpy file."""
-        np.save(self.filename_wo_ext + '.npy', self.dictionary)
-
-    def save_audio(self, afs):
-        """ Save the singal as an audio wave """
-        wavfile.write(self.filename_wo_ext + '.wav', afs, abs(self.data_array))
 
     def get_fft_freqs_only(self, x=None):
         """

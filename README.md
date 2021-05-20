@@ -38,7 +38,7 @@ For more information.
 
 #### [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats \*.IQT, \*.TIQ and \*.XDAT
 
-Data format from different generations of real time spectrum analyzers, including the 3000, 5000 and 600 USB analyzer series.
+Data format from different generations of real time spectrum analyzers, including the 3000, 5000 and also 600 USB analyzer series.
 
 In the tools section, there is also support for the **\*.specan** data format which is the already converted trace format in the analyzer software.
 
@@ -49,9 +49,8 @@ Data format used in NI's [LabView<sup>&trade;</sup>](http://www.ni.com/labview/)
 #### TCAP \*.DAT files
 TCAP file format form the older HP E1430A systems. In this case, the header information is stored in a TXT file, while the data file is stored in blocks of 2GB sequentially. More information can be found in [this PhD thesis](http://www.worldcat.org/oclc/76566695).
 
-
 #### LeCroy<sup>&reg;</sup> 584AM Data files
-Data files from this old oscilloscope is possible with its own class.
+Reading data files from this old oscilloscope is possible with its own class.
 
 #### Audio file \*.WAV
 

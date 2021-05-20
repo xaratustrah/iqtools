@@ -1,5 +1,5 @@
 """
-Collection of tools
+Collection of tools for the IQTools library
 
 Xaratustrah
 2017
@@ -8,6 +8,7 @@ Xaratustrah
 import os
 import logging as log
 from scipy.signal import hilbert
+from scipy.io import wavfile
 import xml.etree.ElementTree as et
 import numpy as np
 
@@ -149,7 +150,7 @@ def shift_phase(x, phase):
     return np.fft.ifft(YY)
 
 
-def write_signal_as_binary(filename, x, fs, center, write_header=False):
+def write_signal_to_bin(filename, cx, fs=1, center=0, write_header=True):
     """
     filename: name of the output filename
     x: data vector to write to filename
@@ -162,17 +163,24 @@ def write_signal_as_binary(filename, x, fs, center, write_header=False):
     # 32-bit little endian floats
     # insert header
     if write_header:
-        x = np.insert(x, 0, complex(fs, center))
-    x = x.astype(np.complex64)
-    x.tofile(filename)
+        cx = np.insert(cx, 0, complex(fs, center))
+    cx = cx.astype(np.complex64)
+    cx.tofile(filename)
 
 
-def write_signal_as_ascii(filename, x, fs, center):
+def write_signal_to_csv(filename, cx, fs=1, center=0):
     # insert ascii header which looks like a complex number
-    x = np.insert(x, 0, complex(fs, center))
+    cx = np.insert(cx, 0, complex(fs, center))
     with open(filename, 'w') as f:
-        for i in range(len(x)):
-            f.write('{}\t{}\n'.format(np.real(x[i]), np.imag(x[i])))
+        for i in range(len(cx)):
+            f.write('{}|{}\n'.format(
+                np.real(cx[i]), np.imag(cx[i])))
+
+
+def write_signal_to_wav(filename, cx, fs=1):
+    """ Save the singal as an audio wave """
+    wavfile.write(filename + '.wav', fs,
+                  abs(cx) / max(abs(cx)))
 
 
 def make_analytical(x):
@@ -267,6 +275,28 @@ def parse_filename(filename):
     return descr, energy, current
 
 
+def write_timedata_to_npy(iq_obj):
+    """Saves the dictionary to a numpy file."""
+    np.save(iq_obj.filename_wo_ext + '.npy', vars(iq_obj))
+
+
+def write_timedata_to_root(iq_obj):
+    with uproot3.recreate(iq_obj.filename_wo_ext + '.root') as f:
+        f['t_f_samp'] = uproot3.newtree(
+            {'f_samp': uproot3.newbranch(np.int32, title='Sampling frequency'),
+             })
+        f['t_f_center'] = uproot3.newtree(
+            {'f_center': uproot3.newbranch(np.int32, title='Center frequency'),
+             })
+        f['t_timedata'] = uproot3.newtree(
+            {'timedata': uproot3.newbranch(np.float64, title='Time domain signal power')})
+
+        f['t_f_samp'].extend({'f_samp': np.array([int(iq_obj.fs)])})
+        f['t_f_center'].extend({'f_center': np.array([int(iq_obj.center)])})
+
+        f['t_timedata'].extend({'timedata': np.abs(iq_obj.data_array)**2})
+
+
 def write_spectrum_to_csv(ff, pp, filename, center=0):
     a = np.concatenate(
         (ff, pp, IQBase.get_dbm(pp)))
@@ -292,20 +322,3 @@ def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
     th1f = MyTH1(center + ff[0], center + ff[-1], pp.tolist(), title=title)
     file = uproot3.recreate(filename + '.root', compression=uproot3.ZLIB(4))
     file["th1f"] = th1f
-
-
-def write_timedata_to_root(iq_obj, filename):
-    with uproot3.recreate(filename + '.root') as f:
-        f['t_f_samp'] = uproot3.newtree(
-            {'f_samp': uproot3.newbranch(np.int32, title='Sampling frequency'),
-             })
-        f['t_f_center'] = uproot3.newtree(
-            {'f_center': uproot3.newbranch(np.int32, title='Center frequency'),
-             })
-        f['t_timedata'] = uproot3.newtree(
-            {'timedata': uproot3.newbranch(np.float64, title='Time domain signal power')})
-
-        f['t_f_samp'].extend({'f_samp': np.array([int(iq_obj.fs)])})
-        f['t_f_center'].extend({'f_center': np.array([int(iq_obj.center)])})
-
-        f['t_timedata'].extend({'timedata': np.abs(iq_obj.data_array)**2})

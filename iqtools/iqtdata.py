@@ -25,46 +25,17 @@ class IQTData(IQBase):
         self.max_input_level = 0
         self.scale = 0
 
-    @property
-    def dictionary(self):
-        return {'center': self.center,
-                'nsamples_total': self.nsamples_total,
-                'fs': self.fs,
-                'nframes': self.nframes,
-                'lframes': self.lframes,
-                'data': self.data_array,
-                'nframes_tot': self.nframes_tot,
-                'DateTime': self.date_time,
-                'span': self.span}
+    def read_samples(self, nsamples, offset=0):
+        # TODO:
+        pass
 
-    def __str__(self):
-        return \
-            '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.nsamples_total / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples_total) + '\n' + \
-            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
-                self.fs) + '\n' + \
-            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
-                self.center) + '\n' + \
-            '<font size="4" color="green">Span:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
-                self.span) + '\n' + \
-            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(
-                self.date_time) + '\n'
-
-    def read(self, nframes=10, lframes=1024, sframes=1):
+    def read(self, nframes=10, lframes=1024, sframes=0):
         """
         Read IQT Files
-        :param nframes:
-        :param lframes:
-        :param sframes:
         :return:
         """
         # in iqt files, lframes is always fixed 1024 at the time of reading the file.
         # At the usage time, the lframe can be changed from time data
-
-        self.lframes = lframes
-        self.nframes = nframes
-        self.sframes = sframes
 
         data_offset = 0
         with open(self.filename, 'rb') as f:
@@ -78,7 +49,7 @@ class IQTData(IQBase):
             data_offset += header_size
 
         self.header = ba.decode('utf8').split('\n')
-        header_dic = self.text_header_parser(self.header)
+        header_dic = self.read_header(self.header)
 
         self.fft_points = int(header_dic['FFTPoints'])
         self.max_input_level = float(header_dic['MaxInputLevel'])
@@ -110,7 +81,7 @@ class IQTData(IQBase):
                                'formats': [(frame_header_type, 1), (frame_data_type, 1)]})
 
         total_n_bytes = nframes * frame_type.itemsize
-        start_n_bytes = (sframes - 1) * frame_type.itemsize
+        start_n_bytes = sframes * frame_type.itemsize
 
         # prepare an empty array with enough room
         self.data_array = np.zeros(lframes * nframes, np.complex64)
@@ -163,7 +134,7 @@ class IQTData(IQBase):
     #         data_offset += header_size
     #
     #     self.header = ba.decode('utf8').split('\n')
-    #     header_dic = self.text_header_parser(self.header)
+    #     header_dic = self.read_header(self.header)
     #
     #     fft_points = int(header_dic['FFTPoints'])
     #     max_input_level = float(header_dic['MaxInputLevel'])
@@ -182,7 +153,7 @@ class IQTData(IQBase):
     #     # todo: IQ support not finished
 
     @staticmethod
-    def text_header_parser(str):
+    def read_header(str):
         """
         Parses key = value from the file header
         :param str:

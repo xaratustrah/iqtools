@@ -19,7 +19,7 @@ TCAP format information:
 worth of data and a resolution frequency of 312500 / 32768 = 9.5 Hz per block
 
 - To double the frequency resolution one can take two consecutive blocks which
-mean 4.77 Hz for two consecutive blocks which is 0.210 s
+mean 4.77 Hz for two consecutive blocks which is 0.210 s of time.
 
 - Either from one block or two blocks a frame can be created.
 
@@ -28,7 +28,7 @@ e.g. a 2-block frame would correspond to 2.12s data.
 
 - 400 such averaged groups of 10 frames can be plotted on a single spectrogram
 
-- each picture of a single spectrogram corresponds to 14m and 8 sec.
+- each picture of a single spectrogram would then correspond to 14m and 8 sec.
 
 
 
@@ -64,51 +64,22 @@ class TCAPData(IQBase):
         self.trigger_time = 0
         self.segment_blocks = 0
 
-        self.fs = 10e6 / (2 ** self.decimation)  # usually 312500
-        # center is usually 1.6e5
+        self.fs = 10e6 / (2 ** self.decimation)  # usually fixed to 312500
+        # center is usually fixed to 1.6e5
 
-        self.text_header_parser()
+        self.read_header()
 
-    @property
-    def dictionary(self):
-        return {'center': self.center,
-                'nsamples_total': self.nsamples_total,
-                'fs': self.fs,
-                'nframes': self.nframes,
-                'lframes': self.lframes,
-                'data': self.data_array,
-                'nframes_tot': self.nframes_tot,
-                'DateTime': self.date_time,
-                'file_name': self.filename}
+    def read(self, nframes=10, lframes=1024, sframes=0):
+        self.read_samples(nframes * lframes, offset=sframes * lframes)
 
-    def __str__(self):
-        return \
-            '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.nsamples_total / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples_total) + '\n' + \
-            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
-                self.fs) + '\n' + \
-            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
-                self.center) + '\n' + \
-            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(
-                self.date_time) + '\n'
-
-    def read(self, nframes=10, lframes=1024, sframes=1):
+    def read_samples(self, nsamples, offset=0):
         """
-        Read TCAP fiels *.dat
-        :param nframes:
-        :param lframes:
-        :param sframes:
-        :return:
+        Read TCAP files *.dat
         """
 
         BLOCK_HEADER_SIZE = 88
         BLOCK_DATA_SIZE = 2 ** 17
         BLOCK_SIZE = BLOCK_HEADER_SIZE + BLOCK_DATA_SIZE
-
-        self.lframes = lframes
-        self.nframes = nframes
-        self.sframes = sframes
 
         filesize = os.path.getsize(self.filename)
         # each file contains 15625 blocks
@@ -129,12 +100,11 @@ class TCAPData(IQBase):
 
         data_section_size = self.frame_size - BLOCK_HEADER_SIZE
         n_iq_samples = data_section_size / 2 / 2  # two bytes for I and two bytes for Q
-        self.nframes_tot = int(self.segment_blocks * n_iq_samples / nframes)
         self.nsamples_total = self.segment_blocks * n_iq_samples
 
         # 4 comes from 2 times 2 byte integer for I and Q
-        total_n_bytes = 4 * nframes * lframes
-        start_n_bytes = 4 * (sframes - 1) * lframes
+        total_n_bytes = 4 * nsamples
+        start_n_bytes = 4 * offset
 
         ba = bytearray()
         try:
@@ -275,7 +245,7 @@ class TCAPData(IQBase):
                                microseconds) + datetime.timedelta(days - 1)
         return ts.strftime('%Y-%m-%d %H:%M:%S')
 
-    def text_header_parser(self):
+    def read_header(self):
         """
         Parse text headers
         Returns

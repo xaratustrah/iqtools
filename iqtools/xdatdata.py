@@ -1,6 +1,6 @@
 """
 Class for IQ Data
-Tektronix X-COM XDATData
+Tektronix (TM) X-COM XDATData
 
 Xaratustrah Juli 2020
 
@@ -19,35 +19,16 @@ class XDATData(IQBase):
     def __init__(self, filename, header_filename):
         super().__init__(filename)
 
-        if not header_filename:
-            log.info('No XDAT header filename provided.')
+        # Additional fields in this subclass
+        self.center = 0
+        self.acq_bw = 0
+        self.date_time = ''
 
         self.header_filename = header_filename
-        self.header_parser()
+        self.read_header()
 
-    @property
-    def dictionary(self):
-        return {'center': self.center,
-                'nsamples_total': self.nsamples_total,
-                'fs': self.fs,
-                'nframes': self.nframes,
-                'lframes': self.lframes,
-                'data': self.data_array,
-                'nframes_tot': self.nframes_tot,
-                'DateTime': self.date_time,
-                'file_name': self.filename}
-
-    def __str__(self):
-        return \
-            '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.nsamples_total / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples_total) + '\n' + \
-            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
-                self.fs) + '\n' + \
-            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
-                self.center) + '\n' + \
-            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(
-                self.date_time) + '\n'
+    def read(self, nframes=10, lframes=1024, sframes=0):
+        self.read_samples(nframes * lframes, offset=sframes * lframes)
 
     def read_samples(self, nsamples, offset=0):
         """
@@ -65,11 +46,12 @@ class XDATData(IQBase):
         filesize = os.path.getsize(self.filename)
         # each file contains 15625 blocks
         if not filesize == 4 * self.nsamples_total:
-            log.info(
+            raise ValueError(
                 "File size does not match total number of samples. Aborting...")
-            return
 
-        assert nsamples < (self.nsamples_total - offset)
+        if nsamples > self.nsamples_total - offset:
+            raise ValueError(
+                'Requested number of samples is larger than the available {} samples.'.format(self.nsamples_total))
 
         total_n_bytes = 8 * nsamples  # 8 comes from 2 times 4 byte integer for I and Q
         start_n_bytes = 8 * offset
@@ -94,7 +76,7 @@ class XDATData(IQBase):
             self.data_array.size))
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
 
-    def header_parser(self):
+    def read_header(self):
         """
         Parse XDAT header file
         Returns

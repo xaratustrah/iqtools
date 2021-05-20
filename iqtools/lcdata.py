@@ -18,29 +18,20 @@ from iqtools.iqbase import IQBase
 class LCData(IQBase):
     def __init__(self, filename):
         super().__init__(filename)
+
+        # fixed features
         self.fs = 4e9
         self.center = 0
 
-    @property
-    def dictionary(self):
-        return {'center': self.center,
-                'nsamples_total': self.nsamples_total,
-                'fs': self.fs,
-                'data': self.data_array,
-                'DateTime': self.date_time,
-                'file_name': self.filename}
+        # Additional fields in this subclass
+        self.date_time = time.ctime(os.path.getctime(self.filename))
 
-    def __str__(self):
-        return \
-            '<font size="4" color="green">Record length:</font> {:.2e} <font size="4" color="green">[s]</font><br>'.format(
-                self.nsamples_total / self.fs) + '\n' + \
-            '<font size="4" color="green">No. Samples:</font> {} <br>'.format(self.nsamples_total) + '\n' + \
-            '<font size="4" color="green">Sampling rate:</font> {} <font size="4" color="green">[sps]</font><br>'.format(
-                self.fs) + '\n' + \
-            '<font size="4" color="green">Center freq.:</font> {} <font size="4" color="green">[Hz]</font><br>'.format(
-                self.center) + '\n' + \
-            '<font size="4" color="green">Date and Time:</font> {} <br>'.format(
-                self.date_time) + '\n'
+    def read(self, nframes=10, lframes=1024, sframes=0):
+        self.read_samples(nframes * lframes, offset=sframes * lframes)
+
+    def read_samples(self, nsamples, offset=0):
+        # TODO:
+        pass
 
     def read_complete_file(self):
         """
