@@ -134,7 +134,7 @@ After installing your python distribution you can start installing the dependenc
 
     pip install numpy scipy matplotlib pytdms uproot3
 
-Finally you need to install the multitaper library. Assuming you have a directory called `my_git_repos` you can use `git` command to clone the repository there. If you don't have `git` you can just download the ZIP file from the repository and unpack it there:
+Finally you need to install the multitaper library. Assuming you have a (temporary) directory called `my_git_repos` you can use `git` command to clone the repository there. If you don't have `git` you can just download the ZIP file from the repository and unpack it there:
 
     cd my_git_repos
     git clone https://github.com/xaratustrah/multitaper
