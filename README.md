@@ -145,7 +145,7 @@ Then you do the same thing for `iqtools`:
 
     cd my_git_repos
     git clone https://github.com/xaratustrah/iqtools
-    cd multitaper
+    cd iqtools
     python setup.py install --record files.txt
 
 Use of `sudo` is not recommended.
