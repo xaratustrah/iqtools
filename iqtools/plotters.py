@@ -54,7 +54,8 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
     delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
     delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
     if dbm:
-        sp = plt.pcolormesh(xx, yy, IQBase.get_dbm(zz), cmap=cmap)
+        sp = plt.pcolormesh(xx, yy, IQBase.get_dbm(zz),
+                            cmap=cmap, shading='auto')
     else:
         sp = plt.pcolormesh(xx, yy, zz, cmap=cmap, shading='auto')
     cb = plt.colorbar(sp)

@@ -122,6 +122,18 @@ def get_eng_notation(value, unit='', decimal_place=2):
                              unit)
 
 
+def get_cplx_spectrogram(x, nframes, lframes):
+    sig = np.reshape(x, (nframes, lframes))
+    zz = np.fft.fft(sig, axis=1)
+    return zz
+
+
+def get_inv_cplx_spectrogram(zz, nframes, lframes):
+    inv_zz = np.fft.ifft(zz, axis=1)
+    inv_zz = np.reshape(inv_zz, (1, nframes * lframes))[0]
+    return inv_zz
+
+
 def make_test_signal(f, fs, length=1, nharm=0, noise=False):
     """Make a sine signal with/without noise."""
 
@@ -150,7 +162,7 @@ def shift_phase(x, phase):
     return np.fft.ifft(YY)
 
 
-def write_signal_to_bin(filename, cx, fs=1, center=0, write_header=True):
+def write_signal_to_bin(cx, filename, fs=1, center=0, write_header=True):
     """
     filename: name of the output filename
     x: data vector to write to filename
@@ -165,13 +177,13 @@ def write_signal_to_bin(filename, cx, fs=1, center=0, write_header=True):
     if write_header:
         cx = np.insert(cx, 0, complex(fs, center))
     cx = cx.astype(np.complex64)
-    cx.tofile(filename)
+    cx.tofile(filename + '.bin')
 
 
 def write_signal_to_csv(filename, cx, fs=1, center=0):
     # insert ascii header which looks like a complex number
     cx = np.insert(cx, 0, complex(fs, center))
-    with open(filename, 'w') as f:
+    with open(filename + '.csv', 'w') as f:
         for i in range(len(cx)):
             f.write('{}|{}\n'.format(
                 np.real(cx[i]), np.imag(cx[i])))
