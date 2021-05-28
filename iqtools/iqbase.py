@@ -193,7 +193,7 @@ class IQBase(object):
 
         if self.method == 'fft':
             sig = np.reshape(self.data_array, (nframes, lframes))
-            zz = np.abs(np.fft.fftshift(np.fft.fft(sig, axis=1)))
+            zz = np.abs(np.fft.fftshift(np.fft.fft(sig, axis=1), axes=1))
 
         elif self.method == 'welch':
             # go through the data array section wise and create a results array
