@@ -272,7 +272,7 @@ class IQBase(object):
         n_time_frames = np.shape(xx)[0]
         frame_power = np.zeros(n_time_frames)
         for i in range(n_time_frames):
-            frame_power[i] = IQBase.get_channel_power(xx[i, :], zz[i, :])
+            frame_power[i] = self.get_channel_power(xx[i, :], zz[i, :])
 
         # Flatten array for 2D plot
         return yy[:, 0], frame_power
@@ -382,13 +382,6 @@ class IQBase(object):
         :return: value in Watt
         """
         return 10 ** (np.array(dbm) / 10) / 1000
-
-    # @staticmethod
-    # def get_channel_power(f, p):
-    #     """ Return total power in band in Watts
-    #     Input: average power in Watts
-    #     """
-    #     return np.trapz(p, x=f)
 
     def get_channel_power(self, f, p, span=None):
         """ Return total power in band in Watts

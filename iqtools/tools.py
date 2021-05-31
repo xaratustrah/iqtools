@@ -134,6 +134,16 @@ def get_inv_cplx_spectrogram(zz, nframes, lframes):
     return inv_zz
 
 
+def get_root_th2d(xx, yy, zz, name='', title=''):
+    from ROOT import TH2D
+    h = TH2D(name, title, np.shape(xx)[
+             1], xx[0, 0], xx[0, -1], np.shape(yy)[0], yy[0, 0], yy[-1, 0])
+    for j in range(np.shape(yy)[0]):
+        for i in range(np.shape(xx)[1]):
+            h.SetBinContent(i, j, zz[j, i])
+    return h
+
+
 def make_test_signal(f, fs, length=1, nharm=0, noise=False):
     """Make a sine signal with/without noise."""
 
