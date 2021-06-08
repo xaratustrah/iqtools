@@ -278,6 +278,13 @@ class IQBase(object):
         return yy[:, 0], frame_power
 
     @staticmethod
+    def get_frame_sum_vs_time(xx, yy, zz):
+        summ = np.zeros(np.shape(zz)[0])
+        for i in range(len(summ)):
+            summ[i] = np.sum(zz[i, :])
+        return yy[:, 0], summ
+
+    @staticmethod
     def get_fwhm(f, p, skip=None):
         """
         Return the full width at half maximum.
