@@ -95,7 +95,7 @@ def main():
 
     if args.dic:
         log.info('Printing dictionary on the screen.')
-        pprint(iq_data.dictionary)
+        pprint(str(iq_data))
 
     if args.raw:
         log.info('Converting data to raw.')
