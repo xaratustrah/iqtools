@@ -219,7 +219,7 @@ class IQBase(object):
         return xx, yy, zz
 
     @staticmethod
-    def get_averaged_spectrum(xa, ya, za, every):
+    def get_averaged_spectrogram(xa, ya, za, every):
         """
         Averages a spectrogram in time, given every such frames in n_time_frames
         example: a spectrogram with 100 frames in time each 1024 bins in frequency
