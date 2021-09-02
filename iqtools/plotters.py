@@ -8,6 +8,7 @@ Xaratustrah
 from iqtools.tools import *
 from iqtools.iqbase import IQBase
 from matplotlib.ticker import FormatStrFormatter
+from matplotlib.colors import Normalize
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import subprocess
@@ -42,32 +43,55 @@ def plot_frame_power(yy, frame_power):
     plt.title('Frame power')
 
 
-def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram'):
+def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False):
     """
     Plot the calculated spectrogram
-    :param xx:
-    :param yy:
-    :param zz:
-    :param cen:
+    :param xx: first dimension
+    :param yy: second dimension
+    :param zz: third dimension
+    :param cen: center frequency
+    :param cmap: color map
+    :param dbm: if the results should be displayed in dBm scale
+    :param title: this will be the title of the plot
+    :param filename: if provided, the file will be written on disk
+    :zzmin: minimum value for contrast lowest is 0
+    :zzmin: maximum value for contrast highest is 1e6
     :return:
     """
-    delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
-    delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
-    if dbm:
-        sp = plt.pcolormesh(xx, yy, IQBase.get_dbm(zz),
-                            cmap=cmap, shading='auto')
+
+    # Apply threshold if zmin and zmax are provided, they must be different than the default values of 0 and 1e6
+    # otherwise ignore them
+
+    if zzmin >= 0 and zzmax <= 1e6 and zzmin < zzmax:
+        zz = zz / np.max(zz) * 1e6
+        mynorm = Normalize(vmin=zzmin, vmax=zzmax)
+
+        # mask arrays for transparency in pcolormesh
+        if mask:
+            zz = np.ma.masked_less_equal(zz, zzmin)
+
     else:
-        sp = plt.pcolormesh(xx, yy, zz, cmap=cmap, shading='auto')
+        # pcolormesh ignores if norm is None
+        mynorm = None
+
+    if dbm:
+        zz = IQBase.get_dbm(zz)
+
+    sp = plt.pcolormesh(xx, yy, zz, cmap=cmap, norm=mynorm, shading='auto')
     cb = plt.colorbar(sp)
 
     ax = plt.gca()
     ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))
+
+    delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
+    delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
 
     plt.xlabel(
         "Delta f @ {} (resolution = {})".format(get_eng_notation(cen, unit='Hz'), get_eng_notation(delta_f, unit='Hz')))
     plt.ylabel('Time [sec] (resolution = {})'.format(
         get_eng_notation(delta_t, 's')))
     plt.title(title)
+
     if dbm:
         cb.set_label('Power Spectral Density [dBm/Hz]')
     else:
