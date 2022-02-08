@@ -297,9 +297,9 @@ def parse_filename(filename):
     return descr, energy, current
 
 
-def write_timedata_to_npy(iq_obj):
+def write_timedata_to_npy(iq_obj, filename):
     """Saves the dictionary to a numpy file."""
-    np.save(iq_obj.filename_wo_ext + '.npy', vars(iq_obj))
+    np.save(filename + '.npy', vars(iq_obj))
 
 
 def write_timedata_to_root(iq_obj):
