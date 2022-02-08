@@ -5,8 +5,8 @@ Xaratustrah
 2017
 """
 
-from iqtools.tools import *
-from iqtools.iqbase import IQBase
+from .tools import *
+from .iqbase import IQBase
 from matplotlib.ticker import FormatStrFormatter
 from matplotlib.colors import Normalize
 import matplotlib.cm as cm

@@ -8,7 +8,7 @@ Xaratustrah Aug-2015
 
 import logging as log
 import numpy as np
-from iqtools.iqbase import IQBase
+from .iqbase import IQBase
 
 
 class IQTData(IQBase):

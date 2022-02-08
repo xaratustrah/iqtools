@@ -9,7 +9,7 @@ Xaratustrah Aug-2015
 import numpy as np
 import time
 import os
-from iqtools.iqbase import IQBase
+from .iqbase import IQBase
 
 
 class BINData(IQBase):

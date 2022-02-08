@@ -17,15 +17,14 @@ import sys
 from pprint import pprint
 import logging as log
 
-from iqtools.version import __version__
-from iqtools.plotters import *
-from iqtools.tools import *
+from .version import __version__
+from .plotters import *
+from .tools import *
 
 
 # ------------ MAIN ----------------------------
 
 def main():
-    scriptname = 'iqtools'
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", type=str, help="Name of the input file.")
     parser.add_argument("-hdr", "--header-filename", nargs='?', type=str, default=None,
@@ -51,9 +50,14 @@ def main():
     parser.add_argument(
         "-r", "--raw", help="Write file to a raw format.", action="store_true")
 
+    # this one is using argparse %(prog)s for current scrpt name
+    parser.add_argument('--version', action='version',
+                        version=f'%(prog)s {__version__}')
+
     args = parser.parse_args()
 
-    print('{} {}'.format(scriptname, __version__))
+    if args.verbose:
+        log.basicConfig(level=log.DEBUG)
 
     if args.verbose:
         log.basicConfig(level=log.DEBUG)
@@ -61,7 +65,9 @@ def main():
     # here we go:
 
     log.info("File {} passed for processing.".format(args.filename))
+
     iq_data = get_iq_object(args.filename, args.header_filename)
+
     if not iq_data:
         print('Datafile needs an additional header file which was not specified. Nothing to do. Aborting...')
         sys.exit()
@@ -83,15 +89,15 @@ def main():
                       filename='{}_psd_welch'.format(iq_data.filename_wo_ext))
 
     if args.spec:
-        iq_data.method = 'mtm'
+        iq_data.method = 'fft'
         log.info('Generating spectrogram plot.')
-        x, y, z = iq_data.get_spectrogram(iq_data.nframes, iq_data.lframes)
+        x, y, z = iq_data.get_spectrogram(args.nframes, args.lframes)
         plot_spectrogram(x, y, z, iq_data.center, cmap=cm.jet, dpi=300, dbm=False,
                          filename='{}_spectrogram'.format(iq_data.filename_wo_ext))
 
     if args.npy:
         log.info('Saving data dictionary in numpy format.')
-        iq_data.save_npy()
+        write_timedata_to_npy(iq_data)
 
     if args.dic:
         log.info('Printing dictionary on the screen.')
@@ -99,9 +105,9 @@ def main():
 
     if args.raw:
         log.info('Converting data to raw.')
-        write_signal_as_binary(iq_data.filename_wo_ext + '.bin',
-                               iq_data.data_array, iq_data.fs, iq_data.center, write_header=False)
-        print('The sampling frequency is: {}'.format(iq_data.fs))
+        write_signal_to_bin(iq_data.data_array, iq_data.filename_wo_ext,
+                            fs=iq_data.fs, center=iq_data.center, write_header=False)
+        print('FYI: the sampling frequency is: {}'.format(iq_data.fs))
 
 # ----------------------------------------
 

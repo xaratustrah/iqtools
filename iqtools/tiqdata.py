@@ -10,7 +10,7 @@ import os
 import logging as log
 import numpy as np
 import xml.etree.ElementTree as et
-from iqtools.iqbase import IQBase
+from .iqbase import IQBase
 
 
 class TIQData(IQBase):

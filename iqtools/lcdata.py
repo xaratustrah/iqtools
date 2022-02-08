@@ -12,7 +12,7 @@ import numpy as np
 import struct
 import datetime
 import os
-from iqtools.iqbase import IQBase
+from .iqbase import IQBase
 
 
 class LCData(IQBase):

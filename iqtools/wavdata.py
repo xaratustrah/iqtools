@@ -11,7 +11,7 @@ import time
 import os
 from scipy.io import wavfile
 from logging import log
-from iqtools.iqbase import IQBase
+from .iqbase import IQBase
 
 
 class WAVData(IQBase):

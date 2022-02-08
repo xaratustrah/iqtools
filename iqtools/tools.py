@@ -16,15 +16,15 @@ import types
 import uproot3
 import uproot3_methods.classes.TH1
 
-from iqtools.iqbase import IQBase
-from iqtools.tcapdata import TCAPData
-from iqtools.tdmsdata import TDMSData
-from iqtools.bindata import BINData
-from iqtools.iqtdata import IQTData
-from iqtools.tiqdata import TIQData
-from iqtools.csvdata import CSVData
-from iqtools.wavdata import WAVData
-from iqtools.xdatdata import XDATData
+from .iqbase import IQBase
+from .tcapdata import TCAPData
+from .tdmsdata import TDMSData
+from .bindata import BINData
+from .iqtdata import IQTData
+from .tiqdata import TIQData
+from .csvdata import CSVData
+from .wavdata import WAVData
+from .xdatdata import XDATData
 
 
 # ------------ TOOLS ----------------------------

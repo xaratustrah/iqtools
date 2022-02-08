@@ -11,7 +11,7 @@ import os
 import struct
 import logging as log
 import numpy as np
-from iqtools.iqbase import IQBase
+from .iqbase import IQBase
 import xml.etree.ElementTree as et
 
 
