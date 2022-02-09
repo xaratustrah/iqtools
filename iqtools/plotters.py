@@ -43,7 +43,7 @@ def plot_frame_power(yy, frame_power):
     plt.title('Frame power')
 
 
-def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False):
+def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None):
     """
     Plot the calculated spectrogram
     :param xx: first dimension
@@ -59,7 +59,7 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
     :return:
     """
 
-    # Apply threshold if zmin and zmax are provided, they must be different than the default values of 0 and 1e6
+    # Apply display threshold if zmin and zmax are provided, they must be different than the default values of 0 and 1e6
     # otherwise ignore them
 
     if zzmin >= 0 and zzmax <= 1e6 and zzmin < zzmax:
@@ -77,7 +77,14 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
     if dbm:
         zz = IQBase.get_dbm(zz)
 
-    sp = plt.pcolormesh(xx, yy, zz, cmap=cmap, norm=mynorm, shading='auto')
+    # here comes span in [Hz]
+    if not span:
+        spanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
+    else:
+        spanmask = (xx[0, :] <= span / 2) & (xx[0, :] >= -span / 2)
+
+    sp = plt.pcolormesh(xx[:, spanmask], yy[:, spanmask],
+                        zz[:, spanmask], cmap=cmap, norm=mynorm, shading='auto')
     cb = plt.colorbar(sp)
 
     ax = plt.gca()
@@ -106,13 +113,13 @@ def plot_spectrum(f, p, cen=0.0, span=None, dbm=False, filename=None, title='Spe
     """Plot average power in dBm per Hz"""
 
     if not span:
-        mask = (f != 0) | (f == 0)
+        spanmask = (f != 0) | (f == 0)
     else:
-        mask = (f <= span / 2) & (f >= -span / 2)
+        spanmask = (f <= span / 2) & (f >= -span / 2)
     if dbm:
-        plt.plot(f[mask], IQBase.get_dbm(p[mask]))
+        plt.plot(f[spanmask], IQBase.get_dbm(p[spanmask]))
     else:
-        plt.plot(f[mask], p[mask])
+        plt.plot(f[spanmask], p[spanmask])
 
     ax = plt.gca()
     ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))

@@ -39,6 +39,9 @@ def main():
                         help='Number of frames, default is 10.')
     parser.add_argument('-s', '--sframes', nargs='?', type=int, const=1, default=1,
                         help='Starting frame, default is 1.')
+    parser.add_argument('-a', '--span', nargs='?', type=int, default=None,
+                        help='Span in [Hz].')
+
     parser.add_argument(
         '-d', '--dic', help='Print dictionary to screen.', action='store_true')
     parser.add_argument(
@@ -46,7 +49,7 @@ def main():
     parser.add_argument(
         '-p', '--psd', help='Plot PSD to file.', action='store_true')
     parser.add_argument(
-        '-g', '--spec', help='Plot spectrogram to file.', action='store_true')
+        '-g', '--sgram', help='Plot spectrogram to file.', action='store_true')
     parser.add_argument('-v', '--verbose',
                         help='Increase output verbosity', action='store_true')
     parser.add_argument(
@@ -88,20 +91,20 @@ def main():
         log.info('Generating FFT plot.')
         f1, p1, _ = iq_data.get_fft()
         plot_spectrum(f1, p1, iq_data.center, iq_data.span, dbm=False,
-                      filename='{}_fft'.format(outfilename_wo_ext))
+                      span=args.span, filename='{}_fft'.format(outfilename_wo_ext))
 
     if args.psd:
         log.info('Generating PSD plot.')
         f2, p2 = iq_data.get_pwelch()
         plot_spectrum(f2, p2, iq_data.center, iq_data.span, dbm=True,
-                      filename='{}_psd_welch'.format(outfilename_wo_ext))
+                      span=args.span, filename='{}_psd_welch'.format(outfilename_wo_ext))
 
-    if args.spec:
+    if args.sgram:
         iq_data.method = 'fft'
         log.info('Generating spectrogram plot.')
         x, y, z = iq_data.get_spectrogram(args.nframes, args.lframes)
         plot_spectrogram(x, y, z, iq_data.center, cmap=cm.jet, dpi=300, dbm=False,
-                         filename='{}_spectrogram'.format(outfilename_wo_ext))
+                         span=args.span, filename='{}_spectrogram'.format(outfilename_wo_ext))
 
     if args.npy:
         log.info('Saving data dictionary in numpy format.')
