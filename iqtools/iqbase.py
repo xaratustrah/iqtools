@@ -219,6 +219,23 @@ class IQBase(object):
         return xx, yy, zz
 
     @staticmethod
+    def get_zoomed_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None):
+        if not xspan:
+            xspanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
+        else:
+            xspanmask = (xx[0, :] <= xcen + xspan /
+                         2) & (xx[0, :] >= xcen - xspan / 2)
+
+        if not yspan:
+            yspanmask = (yy[:, 0] != 0) | (yy[:, 0] == 0)
+        else:
+            yspanmask = (yy[:, 0] <= ycen + yspan /
+                         2) & (yy[:, 0] >= ycen - yspan / 2)
+
+        # based on https://github.com/numpy/numpy/issues/13255#issuecomment-479529731
+        return xx[yspanmask][:, xspanmask], yy[yspanmask][:, xspanmask], zz[yspanmask][:, xspanmask]
+
+    @staticmethod
     def get_averaged_spectrogram(xa, ya, za, every):
         """
         Averages a spectrogram in time, given every such frames in n_time_frames
