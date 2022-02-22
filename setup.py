@@ -34,7 +34,7 @@ setup(
             'iqtools = iqtools.__main__:main'
         ]
     },
-    license='GPLv2',
+    license='GPLv3',
     keywords=['physics', 'data', 'time series', ],  # arbitrary keywords
     classifiers=classifiers
 )
