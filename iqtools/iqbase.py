@@ -219,6 +219,11 @@ class IQBase(object):
         return xx, yy, zz
 
     @staticmethod
+    def get_concat_spectrogram(x1, y1, z1, x2, y2, z2):
+        delta_y = yy[-1, 0] - yy[0, 0]
+        return np.concatenate((xx, xx), axis=0), np.concatenate((yy, yy + delta_y), axis=0), np.concatenate((zz, zz), axis=0)
+
+    @staticmethod
     def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None, invert=False):
         if not xspan:
             xspanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
