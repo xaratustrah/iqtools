@@ -219,7 +219,7 @@ class IQBase(object):
         return xx, yy, zz
 
     @staticmethod
-    def get_zoomed_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None):
+    def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None, invert=False):
         if not xspan:
             xspanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
         else:
@@ -231,6 +231,10 @@ class IQBase(object):
         else:
             yspanmask = (yy[:, 0] <= ycen + yspan /
                          2) & (yy[:, 0] >= ycen - yspan / 2)
+
+        if invert:
+            xspanmask = np.invert(xspanmask)
+            yspanmask = np.invert(yspanmask)
 
         # based on https://github.com/numpy/numpy/issues/13255#issuecomment-479529731
         return xx[yspanmask][:, xspanmask], yy[yspanmask][:, xspanmask], zz[yspanmask][:, xspanmask]
