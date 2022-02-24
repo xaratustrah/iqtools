@@ -178,6 +178,12 @@ def get_concat_spectrogram(x1, y1, z1, x2, y2, z2):
 
 
 def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None, invert=False):
+    '''
+    here a section will be shown, either positive or negative, but a new meshgrid will be created.
+    the positive version, i.e. invert = False, is similar to the get_zoomed_spectrogram functions
+    with the difference that the mesh will be created anew.
+    '''
+
     if not xspan:
         xspanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
     else:
@@ -208,6 +214,10 @@ def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None
 
 
 def get_zoomed_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None):
+    '''
+    here a section will be shown while original mesh grid remains the same
+    '''
+
     if not xspan:
         xspanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
     else:
