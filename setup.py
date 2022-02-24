@@ -1,7 +1,7 @@
 # PyPI setup file
 
 from setuptools import setup, find_packages
-from barion.version import __version__
+from iqtools.version import __version__
 from pathlib import Path
 
 this_directory = Path(__file__).parent
@@ -25,7 +25,7 @@ setup(
     description='Collection of tools for dealing with in phase / quadrature time series data.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    author='Xaratustra',
+    author='xaratustrah',
     url='https://github.com/xaratustrah/iqtools',  # use the URL to the github repo
     download_url='https://github.com/xaratustrah/iqtools/tarball/{}'.format(
         __version__),

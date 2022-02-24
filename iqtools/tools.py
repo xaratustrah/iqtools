@@ -28,19 +28,16 @@ from .xdatdata import XDATData
 
 
 # ------------ TOOLS ----------------------------
+
+# ----------------------------
+# general functions
+
+
 def get_iq_object(filename, header_filename=None):
     """
     Return suitable object accorting to extension.
 
-    Parameters
-    ----------
-    filename
-
-    Returns
-    -------
-
     """
-    # Object generation
     _, file_extension = os.path.splitext(filename)
 
     iq_data = None
@@ -122,28 +119,6 @@ def get_eng_notation(value, unit='', decimal_place=2):
                              unit)
 
 
-def get_cplx_spectrogram(x, nframes, lframes):
-    sig = np.reshape(x, (nframes, lframes))
-    zz = np.fft.fft(sig, axis=1)
-    return zz
-
-
-def get_inv_cplx_spectrogram(zz, nframes, lframes):
-    inv_zz = np.fft.ifft(zz, axis=1)
-    inv_zz = np.reshape(inv_zz, (1, nframes * lframes))[0]
-    return inv_zz
-
-
-def get_root_th2d(xx, yy, zz, name='', title=''):
-    from ROOT import TH2D
-    h = TH2D(name, title, np.shape(xx)[
-             1], xx[0, 0], xx[0, -1], np.shape(yy)[0], yy[0, 0], yy[-1, 0])
-    for j in range(np.shape(yy)[0]):
-        for i in range(np.shape(xx)[1]):
-            h.SetBinContent(i, j, zz[j, i])
-    return h
-
-
 def make_test_signal(f, fs, length=1, nharm=0, noise=False):
     """Make a sine signal with/without noise."""
 
@@ -170,6 +145,110 @@ def shift_phase(x, phase):
     angle = np.unwrap(np.angle(XX)) + phase
     YY = np.abs(XX) * np.exp(1j * angle)
     return np.fft.ifft(YY)
+
+
+# ----------------------------
+# functions related to spectrograms
+
+def get_cplx_spectrogram(x, nframes, lframes):
+    sig = np.reshape(x, (nframes, lframes))
+    zz = np.fft.fft(sig, axis=1)
+    return zz
+
+
+def get_inv_cplx_spectrogram(zz, nframes, lframes):
+    inv_zz = np.fft.ifft(zz, axis=1)
+    inv_zz = np.reshape(inv_zz, (1, nframes * lframes))[0]
+    return inv_zz
+
+
+def get_root_th2d(xx, yy, zz, name='', title=''):
+    from ROOT import TH2D
+    h = TH2D(name, title, np.shape(xx)[
+             1], xx[0, 0], xx[0, -1], np.shape(yy)[0], yy[0, 0], yy[-1, 0])
+    for j in range(np.shape(yy)[0]):
+        for i in range(np.shape(xx)[1]):
+            h.SetBinContent(i, j, zz[j, i])
+    return h
+
+
+def get_concat_spectrogram(x1, y1, z1, x2, y2, z2):
+    delta_y = yy[-1, 0] - yy[0, 0]
+    return np.concatenate((xx, xx), axis=0), np.concatenate((yy, yy + delta_y), axis=0), np.concatenate((zz, zz), axis=0)
+
+
+def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None, invert=False):
+    if not xspan:
+        xspanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
+    else:
+        xspanmask = (xx[0, :] <= xcen + xspan /
+                     2) & (xx[0, :] >= xcen - xspan / 2)
+
+    if not yspan:
+        yspanmask = (yy[:, 0] != 0) | (yy[:, 0] == 0)
+    else:
+        yspanmask = (yy[:, 0] <= ycen + yspan /
+                     2) & (yy[:, 0] >= ycen - yspan / 2)
+
+    if invert:
+        xspanmask = np.invert(xspanmask)
+        yspanmask = np.invert(yspanmask)
+
+    # need to create a new meshgrid due to cut, otherwise new data won't fit old mesh
+    newz = zz[yspanmask][:, xspanmask]
+    newx, newy = np.meshgrid(
+        np.arange(np.shape(newz)[1]), np.arange(np.shape(newz)[0]))
+    delta_y = yy[1, 0] - yy[0, 0]
+    newy = newy * delta_y
+    delta_x = xx[0, 1] - xx[0, 0]
+    newx = newx - newx[-1, -1] / 2
+    newx = newx * delta_x
+
+    return newx, newy, newz
+
+
+def get_zoomed_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None):
+    if not xspan:
+        xspanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
+    else:
+        xspanmask = (xx[0, :] <= xcen + xspan /
+                     2) & (xx[0, :] >= xcen - xspan / 2)
+
+    if not yspan:
+        yspanmask = (yy[:, 0] != 0) | (yy[:, 0] == 0)
+    else:
+        yspanmask = (yy[:, 0] <= ycen + yspan /
+                     2) & (yy[:, 0] >= ycen - yspan / 2)
+
+    # based on https://github.com/numpy/numpy/issues/13255#issuecomment-479529731
+    return xx[yspanmask][:, xspanmask], yy[yspanmask][:, xspanmask], zz[yspanmask][:, xspanmask]
+
+
+def get_averaged_spectrogram(xa, ya, za, every):
+    """
+    Averages a spectrogram in time, given every such frames in n_time_frames
+    example: a spectrogram with 100 frames in time each 1024 bins in frequency
+    will be averaged every 5 frames in time bin by bin, resulting in a new spectrogram
+    with only 20 frames and same frame length as original.
+
+    """
+    rows, cols = np.shape(za)
+    dim3 = int(rows / every)
+
+    # This is such an ndarray gymnastics I think I would never be
+    # able to figure out ever again how I managed it,
+    # but it works fine!
+
+    zz = np.reshape(za, (dim3, every, cols))
+    zz = np.average(zz, axis=1)
+
+    yy = np.reshape(ya, (dim3, every, cols))
+    yy = np.reshape(yy[:, every - 1, :].flatten(), (dim3, cols))
+
+    return xa[:dim3], yy, zz
+
+# ----------------------------
+# functions related to input and output
 
 
 def write_signal_to_bin(cx, filename, fs=1, center=0, write_header=True):

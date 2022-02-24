@@ -213,60 +213,11 @@ class IQBase(object):
         # create a mesh grid from 0 to nframes -1 in Y direction
         xx, yy = np.meshgrid(np.arange(lframes), np.arange(nframes))
         yy = yy * lframes / self.fs
+        # center the frequencies around zero
         xx = xx - xx[-1, -1] / 2
         xx = xx * self.fs / lframes
 
         return xx, yy, zz
-
-    @staticmethod
-    def get_concat_spectrogram(x1, y1, z1, x2, y2, z2):
-        delta_y = yy[-1, 0] - yy[0, 0]
-        return np.concatenate((xx, xx), axis=0), np.concatenate((yy, yy + delta_y), axis=0), np.concatenate((zz, zz), axis=0)
-
-    @staticmethod
-    def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None, invert=False):
-        if not xspan:
-            xspanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
-        else:
-            xspanmask = (xx[0, :] <= xcen + xspan /
-                         2) & (xx[0, :] >= xcen - xspan / 2)
-
-        if not yspan:
-            yspanmask = (yy[:, 0] != 0) | (yy[:, 0] == 0)
-        else:
-            yspanmask = (yy[:, 0] <= ycen + yspan /
-                         2) & (yy[:, 0] >= ycen - yspan / 2)
-
-        if invert:
-            xspanmask = np.invert(xspanmask)
-            yspanmask = np.invert(yspanmask)
-
-        # based on https://github.com/numpy/numpy/issues/13255#issuecomment-479529731
-        return xx[yspanmask][:, xspanmask], yy[yspanmask][:, xspanmask], zz[yspanmask][:, xspanmask]
-
-    @staticmethod
-    def get_averaged_spectrogram(xa, ya, za, every):
-        """
-        Averages a spectrogram in time, given every such frames in n_time_frames
-        example: a spectrogram with 100 frames in time each 1024 bins in frequency
-        will be averaged every 5 frames in time bin by bin, resulting in a new spectrogram
-        with only 20 frames and same frame length as original.
-
-        """
-        rows, cols = np.shape(za)
-        dim3 = int(rows / every)
-
-        # This is such an ndarray gymnastics I think I would never be
-        # able to figure out ever again how I managed it,
-        # but it works fine!
-
-        zz = np.reshape(za, (dim3, every, cols))
-        zz = np.average(zz, axis=1)
-
-        yy = np.reshape(ya, (dim3, every, cols))
-        yy = np.reshape(yy[:, every - 1, :].flatten(), (dim3, cols))
-
-        return xa[:dim3], yy, zz
 
     def get_dp_p_vs_time(self, xx, yy, zz, eta):
         """
