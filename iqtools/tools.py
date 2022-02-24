@@ -173,8 +173,8 @@ def get_root_th2d(xx, yy, zz, name='', title=''):
 
 
 def get_concat_spectrogram(x1, y1, z1, x2, y2, z2):
-    delta_y = yy[-1, 0] - yy[0, 0]
-    return np.concatenate((xx, xx), axis=0), np.concatenate((yy, yy + delta_y), axis=0), np.concatenate((zz, zz), axis=0)
+    delta_y = y1[-1, 0] - y1[0, 0]
+    return np.concatenate((x1, x2), axis=0), np.concatenate((y1, y2 + delta_y), axis=0), np.concatenate((z1, z2), axis=0)
 
 
 def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None, invert=False):
