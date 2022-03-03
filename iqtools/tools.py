@@ -204,7 +204,10 @@ def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None
     newz = zz[yspanmask][:, xspanmask]
     newx, newy = np.meshgrid(
         np.arange(np.shape(newz)[1]), np.arange(np.shape(newz)[0]))
-    delta_y = yy[1, 0] - yy[0, 0]
+    if np.shape(yy)[0] == 1:
+        delta_y = 0
+    else:
+        delta_y = yy[1, 0] - yy[0, 0]
     newy = newy * delta_y
     delta_x = xx[0, 1] - xx[0, 0]
     newx = newx - newx[-1, -1] / 2
