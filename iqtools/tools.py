@@ -308,7 +308,7 @@ def make_analytical(x):
     return x_bar, ins_ph
 
 
-def read_result_csv(filename):
+def read_rsa_result_csv(filename):
     """
     Read special format CSV result file from RSA5000 series output
     :param filename:
@@ -329,7 +329,7 @@ def read_result_csv(filename):
     return f, p
 
 
-def read_specan_xml(filename):
+def read_rsa_specan_xml(filename):
     """
     Read the resulting saved trace file Specan from the Tektronix RSA5000 series
     these files are produced while saving traces.
