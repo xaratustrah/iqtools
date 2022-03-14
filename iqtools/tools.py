@@ -415,7 +415,7 @@ def write_spectrum_to_csv(ff, pp, filename, center=0):
     a = np.concatenate(
         (ff, pp, IQBase.get_dbm(pp)))
     b = np.reshape(a, (3, -1)).T
-    np.savetxt(filename, b, header='Delta f [Hz] @ {:.2e} [Hz]|Power [W]|Power [dBm]'.format(
+    np.savetxt(filename + '.csv', b, header='Delta f [Hz] @ {:.2e} [Hz]|Power [W]|Power [dBm]'.format(
         center), delimiter='|')
 
 
