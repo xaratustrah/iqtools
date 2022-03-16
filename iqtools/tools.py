@@ -172,8 +172,9 @@ def get_root_th2d(xx, yy, zz, name='', title=''):
     return h
 
 
-def get_concat_spectrogram(x1, y1, z1, x2, y2, z2):
-    delta_y = y1[-1, 0] - y1[0, 0]
+def get_concat_spectrogram(x1, y1, z1, x2, y2, z2, delta_y=None):
+    if not delta_y:
+        delta_y = y1[-1, 0] - y1[0, 0]
     return np.concatenate((x1, x2), axis=0), np.concatenate((y1, y2 + delta_y), axis=0), np.concatenate((z1, z2), axis=0)
 
 
@@ -200,10 +201,13 @@ def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None
         xspanmask = np.invert(xspanmask)
         yspanmask = np.invert(yspanmask)
 
-    # need to create a new meshgrid due to cut, otherwise new data won't fit old mesh
+    # for clarification: this is how to use to masks after each other
     newz = zz[yspanmask][:, xspanmask]
+
+    # need to create a new meshgrid due to cut, otherwise new data won't fit old mesh
     newx, newy = np.meshgrid(
         np.arange(np.shape(newz)[1]), np.arange(np.shape(newz)[0]))
+
     if np.shape(yy)[0] == 1:
         delta_y = 0
     else:
