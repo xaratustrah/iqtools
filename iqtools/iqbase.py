@@ -167,7 +167,7 @@ class IQBase(object):
                          nperseg=data.size, return_onesided=False)
         return np.fft.fftshift(f), np.fft.fftshift(p_avg)
 
-    def get_spectrogram(self, nframes, lframes):
+    def get_power_spectrogram(self, nframes, lframes):
         """
         Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh
         x, y and z are ndarrays and have the same shape. In order to access the contents use these kind of
@@ -193,7 +193,8 @@ class IQBase(object):
 
         if self.method == 'fft':
             sig = np.reshape(self.data_array, (nframes, lframes))
-            zz = np.abs(np.fft.fftshift(np.fft.fft(sig, axis=1), axes=1))
+            # fft must return power, so needs to be squared
+            zz = np.abs(np.fft.fftshift(np.fft.fft(sig, axis=1), axes=1)) ** 2
 
         elif self.method == 'welch':
             # go through the data array section wise and create a results array
