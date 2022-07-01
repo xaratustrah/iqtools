@@ -77,7 +77,7 @@ If you have a flow graph in gnuradio and like to save files, you can use the **f
     filename = './test.bin'
     iqdata = iqtools.GRData(filename, fs = 2.5e6, center=30e6)
     iqdata.read_complete_file()
-    xx, yy, zz = iqdata.get_spectrogram(nframes=2000, lframes=1024)
+    xx, yy, zz = iqdata.get_power_spectrogram(nframes=2000, lframes=1024)
     iqtools.plot_spectrogram(xx, yy, zz)
 
 #### GNURadio: Writing GNURadio files

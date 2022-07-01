@@ -102,7 +102,7 @@ def main():
     if args.sgram:
         iq_data.method = 'fft'
         log.info('Generating spectrogram plot.')
-        x, y, z = iq_data.get_spectrogram(args.nframes, args.lframes)
+        x, y, z = iq_data.get_power_spectrogram(args.nframes, args.lframes)
         plot_spectrogram(x, y, z, iq_data.center, cmap=cm.jet, dpi=300, dbm=False,
                          span=args.span, filename='{}_spectrogram'.format(outfilename_wo_ext))
 
