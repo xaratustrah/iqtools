@@ -294,7 +294,7 @@ def get_cooled_spectrogram(xx, yy, zz, yy_idx, fill_with=0):
 def write_signal_to_bin(cx, filename, fs=1, center=0, write_header=True):
     """
     filename: name of the output filename
-    x: data vector to write to filename
+    cx: complex valued data vector to write to filename
     fs: sampling Frequency
     center: center Frequency
     write_header: if set to true, then the first 4 bytes of the file are 32-bit
@@ -309,7 +309,7 @@ def write_signal_to_bin(cx, filename, fs=1, center=0, write_header=True):
     cx.tofile(filename + '.bin')
 
 
-def write_signal_to_csv(filename, cx, fs=1, center=0):
+def write_signal_to_csv(cx, filename, fs=1, center=0):
     # insert ascii header which looks like a complex number
     cx = np.insert(cx, 0, complex(fs, center))
     with open(filename + '.csv', 'w') as f:
