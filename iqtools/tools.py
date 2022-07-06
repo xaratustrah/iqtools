@@ -264,6 +264,29 @@ def get_averaged_spectrogram(xa, ya, za, every):
 
     return xa[:dim3], yy, zz
 
+def get_cooled_spectrogram(xx, yy, zz, yy_idx, fill_with=0):
+    # shift rows to match the maximum of the selected time row yy_idx
+    # make sure fill_with does not exceed the maximum in the row
+    
+    b = np.argmax(zz[yy_idx])
+    z = np.ones((np.shape(zz)[0],b)) * fill_with
+    w = np.concatenate((zz.T, z.T)).T
+    newarr = np.zeros(np.shape(w))
+    ii = 0
+    # calculate distance and subtract in each row
+    for row in w:
+        diff =np.argmax(row) - b 
+        newarr[ii] = np.roll(row, - diff)
+        ii+=1
+    
+    xc, yc = np.meshgrid(np.arange(np.shape(newarr)[1]), np.arange(np.shape(newarr)[0]))
+    # use the same time axis
+    delta_y = yy[1][0] - yy[0][0]
+
+    # freq. axis will have useless information. so we leave it as just numbers
+    
+    return xc, yc * delta_y, newarr    
+
 # ----------------------------
 # functions related to input and output
 
