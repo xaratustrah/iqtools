@@ -1,6 +1,6 @@
-iqtools
-============
-<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/icon.png" width="128">
+# iqtools
+
+<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/iqtools/rsrc/icon.png" width="128">
 
 Collection of code for working with offline complex valued time series data ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components) or IQ Data) with numpy written in Python.
 
@@ -97,8 +97,8 @@ The *sampling rate* and the *center frequency* will also be printed. Or within y
 
 Later the file can be imported using a `File Source` block in GNU-Radio. Use a `Throttle` block with the sampling rate of the data.
 
-<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/gnuradio1.png">
-<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/gnuradio2.png">
+<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/iqtools/rsrc/gnuradio1.png">
+<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/iqtools/rsrc/gnuradio2.png">
 
 #### CERN ROOT: Writing to CERN ROOT format
 [ROOT](https://root.cern/) is an extensive data analysis framework that is very popular in the physics community. IQTools has possibilities to interface with ROOT using the [uproot](https://uproot.readthedocs.io/en/latest/) library.
@@ -132,32 +132,26 @@ Additionally to *Anaconda* for Windows, we strongly recommend [WinPython](https:
 
 After installing your python distribution you can start installing the dependencies with PIP:
 
-    pip install numpy scipy matplotlib pytdms uproot3
+    pip install numpy scipy matplotlib pytdms uproot3 fortranformat
 
 Finally you need to install the multitaper library. Assuming you have a (temporary) directory called `my_git_repos` you can use `git` command to clone the repository there. If you don't have `git` you can just download the ZIP file from the repository and unpack it there:
 
     cd my_git_repos
     git clone https://github.com/xaratustrah/multitaper
     cd multitaper
-    python setup.py install --record files.txt
+    pip install .
 
 Then you do the same thing for `iqtools`:
 
     cd my_git_repos
     git clone https://github.com/xaratustrah/iqtools
     cd iqtools
-    python setup.py install --record files.txt
+    pip install .
 
 Use of `sudo` is not recommended.
 
 #### Uninstall
 
-Also be careful with this one:
+Just use `pip` for uninstall. e.g.: 
 
-    cat files.txt | sudo xargs rm -rf
-
-You can do this with `multitaper` library as well. Also you can use:
-
-    pip uninstall ...
-
-to get rid of the rest.
+    pip uninstall iqtools multitaper
