@@ -256,7 +256,7 @@ class IQBase(object):
         return yy[:, 0], frame_power
 
     @staticmethod
-    def get_frame_sum_vs_time(xx, yy, zz):
+    def get_frame_sum_vs_time(yy, zz):
         summ = np.zeros(np.shape(zz)[0])
         for i in range(len(summ)):
             summ[i] = np.sum(zz[i, :])
