@@ -27,6 +27,8 @@ class TDMSData(IQBase):
 
         self.rf_att = 0.0
         self.date_time = ''
+        
+        self.read_tdms_information()
 
     def read(self, nframes=10, lframes=1024, sframes=0):
         self.read_samples(nframes * lframes, offset=sframes * lframes)
