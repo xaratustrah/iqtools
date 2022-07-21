@@ -36,7 +36,7 @@ For more information.
 
 ## Supported file formats
 
-#### [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats \*.IQT, \*.TIQ and \*.XDAT
+#### [Tektronix<sup>&reg;</sup>](http://www.tek.com) binary file formats \*.IQT, \*.TIQ, \*.XDAT and \*.R3F
 
 Data format from different generations of real time spectrum analyzers, including the 3000, 5000 and also 600 USB analyzer series.
 
