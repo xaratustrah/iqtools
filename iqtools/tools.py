@@ -25,6 +25,7 @@ from .tiqdata import TIQData
 from .csvdata import CSVData
 from .wavdata import WAVData
 from .xdatdata import XDATData
+from .r3fdata import R3FData
 
 
 # ------------ TOOLS ----------------------------
@@ -69,6 +70,10 @@ def get_iq_object(filename, header_filename=None):
     if file_extension.lower() == '.tdms':
         log.info('This is a TDMS file.')
         iq_data = TDMSData(filename)
+
+    if file_extension.lower() == '.r3f':
+        log.info('This is a R3F file.')
+        iq_data = R3FData(filename)
 
     if file_extension.lower() == '.dat':
         log.info('This is a TCAP file.')
