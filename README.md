@@ -122,7 +122,7 @@ The structure of the root files in this case is like this: there are two trees i
 
 #### Dependencies
 
-This library is written for Python 3 (python 2 is not supported). It depends on `numpy`, `scipy`, `matplotlib`, `pytdms` and `uproot3`, which can be installed via `pip` and the [multitaper](https://github.com/xaratustrah/multitaper) library which can be installed using `python setup`.
+This library is written for Python 3 (python 2 is not supported). It depends on `numpy`, `scipy`, `matplotlib`, `pytdms`, `nibabel` and `uproot3`, which can be installed via `pip` and the [multitaper](https://github.com/xaratustrah/multitaper) library which can be installed using `python setup`.
 
 #### Installation details
 
@@ -132,7 +132,7 @@ Additionally to *Anaconda* for Windows, we strongly recommend [WinPython](https:
 
 After installing your python distribution you can start installing the dependencies with PIP:
 
-    pip install numpy scipy matplotlib pytdms uproot3 fortranformat
+    pip install numpy scipy matplotlib pytdms uproot3 nibabel fortranformat
 
 Finally you need to install the multitaper library. Assuming you have a (temporary) directory called `my_git_repos` you can use `git` command to clone the repository there. If you don't have `git` you can just download the ZIP file from the repository and unpack it there:
 

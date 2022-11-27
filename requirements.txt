@@ -1,0 +1,10 @@
+matplotlib
+multitaper
+nibabel
+numpy
+pyTDMS
+ROOT
+scipy
+setuptools
+uproot3
+uproot3_methods

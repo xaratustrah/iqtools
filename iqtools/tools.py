@@ -11,6 +11,8 @@ from scipy.signal import hilbert
 from scipy.io import wavfile
 import xml.etree.ElementTree as et
 import numpy as np
+import nibabel as nib
+
 
 import types
 import uproot3
@@ -468,3 +470,10 @@ def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
     th1f = MyTH1(center + ff[0], center + ff[-1], pp.tolist(), title=title)
     file = uproot3.recreate(filename + '.root', compression=uproot3.ZLIB(4))
     file["th1f"] = th1f
+
+def write_spectrogram_to_nifti(zz, filename):
+    # normalize to 1
+    b = np.expand_dims(zz, axis=2)
+    b = b/b.max()
+    img = nib.Nifti1Image(b, affine=np.eye(4))
+    nib.save(img, f'{filename}.nii.gz')
