@@ -12,6 +12,7 @@ import logging as log
 import numpy as np
 from .iqbase import IQBase
 import pytdms
+from nptdms import TdmsFile
 
 
 class TDMSData(IQBase):
@@ -117,7 +118,19 @@ class TDMSData(IQBase):
         self.data_array = self.data_array * self.scale
         log.info("TDMS Read finished.")
 
+
     def read_complete_file(self):
+        tdms_file = TdmsFile.read(self.filename) 
+        i_channel = tdms_file['RecordData']['I']
+        q_channel = tdms_file['RecordData']['Q']
+        #timestamp_channel = tdms_file['RecordHeader']['absolute timestamp']
+        gain_channel = tdms_file['RecordHeader']['gain']
+        self.scale = gain_channel[0]
+        data = np.zeros(2 * i_channel[:].size, dtype=np.float32)
+        data[::2], data[1::2] = i_channel[:], q_channel[:]
+        self.data_array = data.view(np.complex64) * self.scale
+
+    def read_complete_file_old(self):
         """
         Read a complete TDMS file. Hope you know what you are doing!
         :return:

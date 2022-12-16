@@ -2,7 +2,8 @@ matplotlib
 multitaper
 nibabel
 numpy
-pyTDMS
+pytdms
+nptdms
 ROOT
 scipy
 setuptools
