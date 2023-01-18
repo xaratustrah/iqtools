@@ -43,7 +43,7 @@ def plot_frame_power(yy, frame_power):
     plt.title('Frame power')
 
 
-def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None):
+def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None, decimal_place=2):
     """
     Plot the calculated spectrogram
     :param xx: first dimension
@@ -85,24 +85,24 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
 
     sp = plt.pcolormesh(xx[:, spanmask], yy[:, spanmask],
                         zz[:, spanmask], cmap=cmap, norm=mynorm, shading='auto')
-    cb = plt.colorbar(sp)
+    cb = plt.colorbar(sp, format=f'%.{decimal_place}e')
 
     ax = plt.gca()
-    ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))
+    ax.xaxis.set_major_formatter(FormatStrFormatter(f'%.{decimal_place}e'))
 
     delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
     delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
 
     plt.xlabel(
-        "Delta f @ {} (resolution = {})".format(get_eng_notation(cen, unit='Hz'), get_eng_notation(delta_f, unit='Hz')))
+        "Delta f [Hz] @ {} (resolution = {})".format(get_eng_notation(cen, unit='Hz', decimal_place=decimal_place), get_eng_notation(delta_f, unit='Hz', decimal_place=decimal_place)))
     plt.ylabel('Time [sec] (resolution = {})'.format(
-        get_eng_notation(delta_t, 's')))
+        get_eng_notation(delta_t, 's', decimal_place=decimal_place)))
     plt.title(title)
 
     if dbm:
-        cb.set_label('Power Spectral Density [dBm/Hz]')
+        cb.set_label('Power Spectral Density a.u. [dBm/Hz]')
     else:
-        cb.set_label('Power Spectral Density')
+        cb.set_label('Power Spectral Density a.u.')
 
     if filename is not None:
         plt.savefig(filename + '.png', dpi=dpi, bbox_inches='tight')
