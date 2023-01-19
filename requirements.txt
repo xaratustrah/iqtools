@@ -9,3 +9,5 @@ scipy
 setuptools
 uproot3
 uproot3_methods
+beautifulsoup4
+lxml

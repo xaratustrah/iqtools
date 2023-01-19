@@ -12,6 +12,7 @@ from scipy.io import wavfile
 import xml.etree.ElementTree as et
 import numpy as np
 import nibabel as nib
+from bs4 import BeautifulSoup
 
 
 import types
@@ -477,3 +478,14 @@ def write_spectrogram_to_nifti(zz, filename):
     b = b/b.max()
     img = nib.Nifti1Image(b, affine=np.eye(4))
     nib.save(img, f'{filename}.nii.gz')
+
+def remove_plot_content_from_spectrogram_svg(input_filename, output_filename):
+    """
+    This function is specifically useful if you like to have an empty spectrogram plot for publication purposes.
+    """
+    soup = BeautifulSoup(open(input_filename).read(),features="xml")
+    for element in soup.find_all('g', {"id" : "QuadMesh_1"}):
+        element.decompose()
+    f = open(output_filename, 'w')
+    f.write(str(soup))
+    f.close()
