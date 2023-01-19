@@ -486,6 +486,6 @@ def remove_plot_content_from_spectrogram_svg(input_filename, output_filename):
     soup = BeautifulSoup(open(input_filename).read(),features="xml")
     for element in soup.find_all('g', {"id" : "QuadMesh_1"}):
         element.decompose()
-    f = open(output_filename, 'w')
-    f.write(str(soup))
-    f.close()
+    with open(output_filename, "w") as file:
+        file.write(str(soup))
+        
