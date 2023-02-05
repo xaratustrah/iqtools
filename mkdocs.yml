@@ -2,7 +2,9 @@ site_name: iqtools Documentation
 site_description: "Library and CLI/GUI for processing IQ data"
 site_url: "https://xaratustrah.github.io/iqtools"
 repo_url: "https://github.com/xaratustrah/iqtools"
+edit_uri: "blob/main/docs/"
 repo_name: "xaratustrah/iqtools"
+site_dir: "site"
 watch: [README.md]
 
 theme:
