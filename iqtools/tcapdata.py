@@ -1,37 +1,7 @@
 """
-Class for IQ Data
-TCAP format
+Class for IQ Data TCAP format
 
-Xaratustrah Aug-2015
-
-
-
-TCAP format information:
-
-- Each file contains 15625 blocks equivalent of 27min 18 seconds of recording
-
-- Each block is 2^17=131072 BYTES of data + 88 bytes of header
-
-- Each sample is 4 bytes = 32bits (2 I + 2 Q bytes), hence each block contains
-32768 complex valued samples
-
-- Sampling frequency is 312500 sps, thus the data of a block are each 0.105s
-worth of data and a resolution frequency of 312500 / 32768 = 9.5 Hz per block
-
-- To double the frequency resolution one can take two consecutive blocks which
-mean 4.77 Hz for two consecutive blocks which is 0.210 s of time.
-
-- Either from one block or two blocks a frame can be created.
-
-- An FFT is done on each frame. 10 such FFTs can be averaged to reduce noise.
-e.g. a 2-block frame would correspond to 2.12s data.
-
-- 400 such averaged groups of 10 frames can be plotted on a single spectrogram
-
-- each picture of a single spectrogram would then correspond to 14m and 8 sec.
-
-
-
+xaratustrah@github Aug-2015
 """
 
 import datetime
@@ -73,9 +43,28 @@ class TCAPData(IQBase):
         self.read_samples(nframes * lframes, offset=sframes * lframes)
 
     def read_samples(self, nsamples, offset=0):
-        """
-        Read TCAP files *.dat
-        """
+        """Reads TCAP data.
+        
+        TCAP format information:
+
+            - Each file contains 15625 blocks equivalent of 27min 18 seconds of recording
+            - Each block is 2^17=131072 BYTES of data + 88 bytes of header
+            - Each sample is 4 bytes = 32bits (2 I + 2 Q bytes), hence each block contains
+            32768 complex valued samples
+            - Sampling frequency is 312500 sps, thus the data of a block are each 0.105s
+            worth of data and a resolution frequency of 312500 / 32768 = 9.5 Hz per block
+            - To double the frequency resolution one can take two consecutive blocks which
+            mean 4.77 Hz for two consecutive blocks which is 0.210 s of time.
+            - Either from one block or two blocks a frame can be created.
+            - An FFT is done on each frame. 10 such FFTs can be averaged to reduce noise.
+            e.g. a 2-block frame would correspond to 2.12s data.
+            - 400 such averaged groups of 10 frames can be plotted on a single spectrogram
+            - each picture of a single spectrogram would then correspond to 14m and 8 sec.
+
+        Args:
+            nsamples (int): Number of samples to read
+            offset (int, optional): Starting sample. Defaults to 0.
+        """        
 
         BLOCK_HEADER_SIZE = 88
         BLOCK_DATA_SIZE = 2 ** 17
@@ -168,15 +157,26 @@ class TCAPData(IQBase):
         return self.data_array
 
     def get_frame(self, first, second):
-        """
-        Make a frame by connecting two blocks
-        """
+        """Make a frame by connecting two blocks
+
+        Args:
+            first: first frame
+            second: second frame
+
+        Returns:
+            array: Connected frames
+        """        
         array = np.zeros(2 * 32768, dtype=np.complex64)
         array[0:32768] = self.read_block(first)
         array[32768:] = self.read_block(second)
         return array
 
     def parse_binary_tcap_header(self, ba):
+        """Parses binary header of TCAP
+
+        Args:
+            ba (bytearray): Binary header
+        """        
         version = ba[0:8]
         center_freq_np = np.fromstring(ba[8:16], dtype='>f8')[0]
         center_freq = struct.unpack('>d', ba[8:16])[0]
@@ -191,24 +191,26 @@ class TCAPData(IQBase):
         # self.fs = 10**7 / 2 ** decimation
 
     def parse_tcap_tfp(self, ba):
-        """
-        Parses the TFP Header of TCAP DAT Files. This information is coded in BCD. The
+        """Parses the TFP Header of TCAP DAT Files. This information is coded in BCD. The
         following table was taken form the original TCAP processing files in C.
-         * +------------+---------------+---------------+---------------+---------------+
-         * | bit #      | 15 - 12       | 11 - 8        | 7 - 4         | 3 - 0         |
-         * +------------+---------------+---------------+---------------+---------------+
-         * | timereg[0] | not defined   | not defined   | status        | days hundreds |
-         * | timereg[1] | days tens     | days units    | hours tens    | hours units   |
-         * | timereg[2] | minutes tens  | minutes units | seconds tens  | seconds units |
-         * | timereg[3] | 1E-1 seconds  | 1E-2 seconds  | 1E-3 seconds  | 1E-4 seconds  |
-         * | timereg[4] | 1E-5 seconds  | 1E-6 seconds  | 1E-7 seconds  | not defined   |
-         * +------------+---------------+---------------+---------------+---------------+
+
+        | ** bit #      ** | ** 15 - 12       ** | ** 11 - 8        ** | ** 7 - 4         ** | ** 3 - 0         ** |
+        |------------------|---------------------|---------------------|---------------------|---------------------|
+        |  timereg[0]      |  not defined        |  not defined        |  status             |  days hundreds      |
+        |  timereg[1]      |  days tens          |  days units         |  hours tens         |  hours units        |
+        |  timereg[2]      |  minutes tens       |  minutes units      |  seconds tens       |  seconds units      |
+        |  timereg[3]      |  1E-1 seconds       |  1E-2 seconds       |  1E-3 seconds       |  1E-4 seconds       |
+        |  timereg[4]      |  1E-5 seconds       |  1E-6 seconds       |  1E-7 seconds       |  not defined        |
 
          here we read the first 12 bytes ( 24 nibbles ) in the tfp byte array list. First 2 bytes
          should be ignored.
+         
+        Args:
+            ba (bytearray): Binary header
 
-        :return:
-        """
+        Returns:
+            datetime: Time stamp
+        """        
         tfp = list(ba)
 
         dh = (tfp[3] >> 0) & 0x0f
@@ -246,12 +248,11 @@ class TCAPData(IQBase):
         return ts.strftime('%Y-%m-%d %H:%M:%S')
 
     def read_header(self):
-        """
-        Parse text headers
-        Returns
-        -------
+        """Parses text header part.
 
-        """
+        Returns:
+            dictionary: Dictionary of values
+        """        
         dic = {}
         with open(self.header_filename) as f:
             for line in f:

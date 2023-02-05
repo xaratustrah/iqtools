@@ -1,7 +1,7 @@
 """
 Class for R3F Data
 
-Xaratustrah Jul-2022
+xaratustrah@github Jul-2022
 
 """
 
@@ -25,21 +25,46 @@ class R3FData(IQBase):
 
     
     def read(self, nframes=10, lframes=1024, sframes=0):
+        """Read a section of the file.
+
+        Args:
+            nframes (int, optional): Number of frames to be read. Defaults to 10.
+            lframes (int, optional): Length of each frame. Defaults to 1024.
+            sframes (int, optional): Starting frame. Defaults to 0.
+        """        
         self.read_samples(nframes * lframes, offset=sframes * lframes)
 
     def read_samples(self, nsamples, offset=0):
+        """Reads a certain number of samples
+
+        Args:
+            nsamples (int): Number of samples to read
+            offset (int, optional): Starting frame. Defaults to 0.
+        """        
         self.data_array = self.cplx_adc_data[offset : offset + nsamples]
     
     
     def read_all_blocks(self):
+        """Reads all data blocks at once
+
+        Returns:
+            numpy.ndarray: Complex valued block
+        """        
         return self.read_blocks(self.nblocks)
 
         
     def read_blocks(self, nblocks=1):
+        """Reads a number of data blocks. Each block contains 8178 samples each 2 bytes + an additional 28
+        byte footer making a total size of 16384, since fs is fixed to 112msps, each block will
+        be ca. 73us long
 
-        # each block contains 8178 samples each 2 bytes + an additional 28 byte footer making a total size of 16384
-        # since fs is fixed to 112msps, each block will be ca. 73us long
-        
+        Args:
+            nblocks (int, optional): Number of blocks to read. Defaults to 1.
+
+        Returns:
+            numpy.ndarray: Complex valued block
+        """        
+       
         adc_data = np.zeros(nblocks * 8178)
         f = open(self.filename, 'rb')
         f.seek(16384) # jump header
@@ -64,30 +89,31 @@ class R3FData(IQBase):
         return result
 
     def read_header(self):
+        """Reads the header and sets the value in the objects.
+        """          
+        size = os.path.getsize(self.filename)
+
+        # file size must be multiple integer of 16384
+        assert not size % 2**14
+
+        # first block is header
+        self.nblocks = int(size / 2**14) - 1
+
+        self.nsamples_total = self.nblocks * 8178
+
+        f = open(self.filename, 'rb')
         
-            size = os.path.getsize(self.filename)
-
-            # file size must be multiple integer of 16384
-            assert not size % 2**14
-
-            # first block is header
-            self.nblocks = int(size / 2**14) - 1
-
-            self.nsamples_total = self.nblocks * 8178
-
-            f = open(self.filename, 'rb')
-            
-            f.seek(1024)
-            ref_level = np.frombuffer(f.read(8), dtype='<f8')[0] # dBm
-            self.center = np.frombuffer(f.read(8), dtype='<f8')[0] # Hz
-            
-            f.seek(2048 + 4+ 6*4 + 8)
-            self.fs = np.frombuffer(f.read(8), dtype='<f8')[0] # samples / s
-            self.acq_bw = np.frombuffer(f.read(8), dtype='<f8')[0]
-            f.seek(2048 + 4 + 6*4 + 8 + 8 + 8 + 4 + 4 + 7*4 + 8 + 8 + 7* 4 + 4 + 8)
-            
-            dt = np.frombuffer(f.read(7 * 4), dtype='<i4')
-            self.date_time = f'{dt[0]}y{dt[1]}m{dt[2]}d{dt[3]}h{dt[4]}m{dt[5]}s{dt[6]}'
-            f.close()
+        f.seek(1024)
+        ref_level = np.frombuffer(f.read(8), dtype='<f8')[0] # dBm
+        self.center = np.frombuffer(f.read(8), dtype='<f8')[0] # Hz
+        
+        f.seek(2048 + 4+ 6*4 + 8)
+        self.fs = np.frombuffer(f.read(8), dtype='<f8')[0] # samples / s
+        self.acq_bw = np.frombuffer(f.read(8), dtype='<f8')[0]
+        f.seek(2048 + 4 + 6*4 + 8 + 8 + 8 + 4 + 4 + 7*4 + 8 + 8 + 7* 4 + 4 + 8)
+        
+        dt = np.frombuffer(f.read(7 * 4), dtype='<i4')
+        self.date_time = f'{dt[0]}y{dt[1]}m{dt[2]}d{dt[3]}h{dt[4]}m{dt[5]}s{dt[6]}'
+        f.close()
         
         

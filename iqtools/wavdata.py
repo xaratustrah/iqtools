@@ -1,8 +1,7 @@
 """
-Class for IQ Data
-WAV formats
+Class for IQ Data WAV formats
 
-Xaratustrah Aug-2015
+xaratustrah@github Aug-2015
 
 """
 
@@ -22,9 +21,26 @@ class WAVData(IQBase):
         self.date_time = time.ctime(os.path.getctime(self.filename))
 
     def read(self, nframes=10, lframes=1024, sframes=0):
+        """Read a section of the file.
+
+        Args:
+            nframes (int, optional): Number of frames to be read. Defaults to 10.
+            lframes (int, optional): Length of each frame. Defaults to 1024.
+            sframes (int, optional): Starting frame. Defaults to 0.
+        """        
+
         self.read_samples(nframes * lframes, offset=sframes * lframes)
 
     def read_samples(self, nsamples, offset=0):
+        """Read samples.
+
+        Args:
+            nsamples (int): Number of samples to read from file
+            offset (int, optional): _description_. Defaults to 0.
+
+        Raises:
+            ValueError: Raises if the requested number of samples is larger than available
+        """        
 
         # activate memory map
         try:

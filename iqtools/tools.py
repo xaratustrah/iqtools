@@ -1,8 +1,7 @@
 """
-Collection of tools for the IQTools library
+Collection of tools for the iqtools library
 
-Xaratustrah
-2017
+xaratustrah@github 2017
 """
 
 import os
@@ -38,10 +37,15 @@ from .r3fdata import R3FData
 
 
 def get_iq_object(filename, header_filename=None):
-    """
-    Return suitable object accorting to extension.
+    """Return suitable object accorting to extension.
 
-    """
+    Args:
+        filename (str): File name
+        header_filename (str, optional): Name of header file. Defaults to None.
+
+    Returns:
+        (iqbase): A derivative of a the iqbase class
+    """    
     _, file_extension = os.path.splitext(filename)
 
     iq_data = None
@@ -98,18 +102,17 @@ def get_iq_object(filename, header_filename=None):
 
 
 def get_eng_notation(value, unit='', decimal_place=2):
-    """
-    Convert numbers to scientific notation
-    Parameters
-    ----------
-    value input number float or integer
-    decimal_place How many decimal places should be left
-    unit The unit will be shown, otherwise powers of ten
+    """Convert numbers to scientific notation
 
-    Returns
-    -------
+    Args:
+        value (_type_): Input numher float or integer
+        unit (str, optional): String showing the unit. Defaults to ''.
+        decimal_place (int, optional): How many decimal places should be left
+    unit The unit will be shown, otherwise powers of ten. Defaults to 2.
 
-    """
+    Returns:
+        (string): Formatted string of engineering notation
+    """    
     ref = {24: 'Y', 21: 'Z', 18: 'E', 15: 'P',
            12: 'T', 9: 'G', 6: 'M', 3: 'k', 0: '',
            -3: 'm', -6: 'u', -9: 'n', -12: 'p',
@@ -128,7 +131,18 @@ def get_eng_notation(value, unit='', decimal_place=2):
 
 
 def make_test_signal(f, fs, length=1, nharm=0, noise=False):
-    """Make a sine signal with/without noise."""
+    """Make a sine signal with/without noise.
+
+    Args:
+        f (float): Desired signal frequency
+        fs (float): Desired sampling frequency
+        length (int, optional): Length in seconds. Defaults to 1.
+        nharm (int, optional): No. of harmonics. Defaults to 0.
+        noise (bool, optional): Add noise. Defaults to False.
+
+    Returns:
+        (tuple): tuple of ndarrays, time and frequency
+    """    
 
     t = np.arange(0, length, 1 / fs)
     x = np.zeros(len(t))
@@ -141,14 +155,15 @@ def make_test_signal(f, fs, length=1, nharm=0, noise=False):
 
 
 def shift_phase(x, phase):
-    """
-    Shift phase in frequency domain
-    x: complex or analytical signal
-    phase: amount in radians
+    """Shift phase in frequency domain
 
-    returns: shifted complex signal
-    """
+    Args:
+        x (ndarray): Complex or analytical signal
+        phase (ndarray): Desired phase shift
 
+    Returns:
+        (ndarray): Shifted complex signal
+    """    
     XX = np.fft.fft(x)
     angle = np.unwrap(np.angle(XX)) + phase
     YY = np.abs(XX) * np.exp(1j * angle)
@@ -159,18 +174,51 @@ def shift_phase(x, phase):
 # functions related to spectrograms
 
 def get_cplx_spectrogram(x, nframes, lframes):
+    """Make a 2D FFT of complex valued data array
+
+    Args:
+        x (ndarray): Data array
+        nframes (int, optional): Number of frames.
+        lframes (int, optional): Length of each frame.
+
+    Returns:
+        (ndarray): Power meshgrid
+    """    
     sig = np.reshape(x, (nframes, lframes))
     zz = np.fft.fft(sig, axis=1)
     return zz
 
 
 def get_inv_cplx_spectrogram(zz, nframes, lframes):
+    """Make an inverse 2D FFT of complex valued data array
+
+    Args:
+        zz (ndarray): Power meshgrid
+        nframes (int, optional): Number of frames.
+        lframes (int, optional): Length of each frame.
+
+    Returns:
+        (ndarray): Data array
+    """    
+
     inv_zz = np.fft.ifft(zz, axis=1)
     inv_zz = np.reshape(inv_zz, (1, nframes * lframes))[0]
     return inv_zz
 
 
 def get_root_th2d(xx, yy, zz, name='', title=''):
+    """Convert spectrpgram to CERN ROOT TH2 Object
+
+    Args:
+        xx (ndarray): Frequency meshgrid
+        yy (ndarray): Time meshgrid
+        zz (ndarray): Power meshgrid
+        name (str, optional): Name of TH object. Defaults to ''.
+        title (str, optional): Title of TH object. Defaults to ''.
+
+    Returns:
+        (TH-object): ROOT Histogram
+    """    
     from ROOT import TH2D
     h = TH2D(name, title, np.shape(xx)[
              1], xx[0, 0], xx[0, -1], np.shape(yy)[0], yy[0, 0], yy[-1, 0])
@@ -181,17 +229,44 @@ def get_root_th2d(xx, yy, zz, name='', title=''):
 
 
 def get_concat_spectrogram(x1, y1, z1, x2, y2, z2, delta_y=None):
+    """Concatenate two spectrograms
+
+    Args:
+        x1 (ndarray): Frequency meshgrid
+        y1 (ndarray): Time meshgrid
+        z1 (ndarray): Power meshgrid
+        x2 (ndarray): Frequency meshgrid
+        y2 (ndarray): Time meshgrid
+        z2 (ndarray): Power meshgrid
+        delta_y (int, optional): Start offset. Defaults to None.
+
+    Returns:
+        (tuple): Tuple of meshgrids
+    """    
     if not delta_y:
         delta_y = y1[-1, 0] - y1[0, 0]
     return np.concatenate((x1, x2), axis=0), np.concatenate((y1, y2 + delta_y), axis=0), np.concatenate((z1, z2), axis=0)
 
 
 def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None, invert=False):
-    '''
-    here a section will be shown, either positive or negative, but a new meshgrid will be created.
+    """Show a section of the spectrogram.
+    Here a section will be shown, either positive or negative, but a new meshgrid will be created.
     the positive version, i.e. invert = False, is similar to the get_zoomed_spectrogram functions
     with the difference that the mesh will be created anew.
-    '''
+    
+    Args:
+        xx (ndarray): Frequency meshgrid
+        yy (ndarray): Time meshgrid
+        zz (ndarray): Power meshgrid
+        xcen (_type_, optional): Center in frequency. Defaults to None.
+        xspan (_type_, optional): Frequency window. Defaults to None.
+        ycen (_type_, optional): Center in time. Defaults to None.
+        yspan (_type_, optional): Time window. Defaults to None.
+        invert (bool, optional): Inverted section. Defaults to False.
+
+    Returns:
+        (tuple): Tuple of meshgrids
+    """    
 
     if not xspan:
         xspanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
@@ -229,9 +304,20 @@ def get_cut_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None
 
 
 def get_zoomed_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=None):
-    '''
-    here a section will be shown while original mesh grid remains the same
-    '''
+    """Zoom into a section of the spectrogram
+
+    Args:
+        xx (ndarray): Frequency meshgrid
+        yy (ndarray): Time meshgrid
+        zz (ndarray): Power meshgrid
+        xcen (_type_, optional): Center in frequency. Defaults to None.
+        xspan (_type_, optional): Frequency window. Defaults to None.
+        ycen (_type_, optional): Center in time. Defaults to None.
+        yspan (_type_, optional): Time window. Defaults to None.
+
+    Returns:
+        (tuple): Tuple of meshgrids
+    """    
 
     if not xspan:
         xspanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
@@ -250,13 +336,22 @@ def get_zoomed_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=N
 
 
 def get_averaged_spectrogram(xa, ya, za, every):
-    """
-    Averages a spectrogram in time, given every such frames in n_time_frames
-    example: a spectrogram with 100 frames in time each 1024 bins in frequency
-    will be averaged every 5 frames in time bin by bin, resulting in a new spectrogram
+    """Averages a spectrogram in time, given every such frames in n_time_frames
+    example:
+        
+    * a spectrogram with 100 frames in time each 1024 bins in frequency will be averaged every 5 frames in time bin by bin, resulting in a new spectrogram
     with only 20 frames and same frame length as original.
 
-    """
+    Args:
+        xx (ndarray): Frequency meshgrid
+        yy (ndarray): Time meshgrid
+        zz (ndarray): Power meshgrid
+        every (int): Averaging step
+
+    Returns:
+        (tuple): Tuple of meshgrids
+
+    """    
     rows, cols = np.shape(za)
     dim3 = int(rows / every)
 
@@ -273,7 +368,20 @@ def get_averaged_spectrogram(xa, ya, za, every):
     return xa[:dim3], yy, zz
 
 def get_cooled_spectrogram(xx, yy, zz, yy_idx, fill_with=0):
-    # shift rows to match the maximum of the selected time row yy_idx
+    """Software cool the spectrogram. Shifts rows to match the maximum of the selected time frame.
+    After cooling / shifting, the frequency axis will have useless information. so it is left as just numbers.
+
+    Args:
+        xx (ndarray): Frequency meshgrid
+        yy (ndarray): Time meshgrid
+        zz (ndarray): Power meshgrid
+        yy_idx (int): Selected time frame for searching the maximum
+        fill_with (int, optional): Fill with this instead of zeros. Defaults to 0.
+
+    Returns:
+        (tuple): Tuple of meshgrids
+    """    
+
     # make sure fill_with does not exceed the maximum in the row
     
     b = np.argmax(zz[yy_idx])
@@ -291,24 +399,27 @@ def get_cooled_spectrogram(xx, yy, zz, yy_idx, fill_with=0):
     # use the same time axis
     delta_y = yy[1][0] - yy[0][0]
 
-    # freq. axis will have useless information. so we leave it as just numbers
+    # 
     
     return xc, yc * delta_y, newarr    
 
-# ----------------------------
+# -----------------------------------------#
 # functions related to input and output
 
 
 def write_signal_to_bin(cx, filename, fs=1, center=0, write_header=True):
-    """
-    filename: name of the output filename
-    cx: complex valued data vector to write to filename
-    fs: sampling Frequency
-    center: center Frequency
-    write_header: if set to true, then the first 4 bytes of the file are 32-bit
+    """Write complex valued signal to raw binary file
+    If write header is set to true, then the first 4 bytes of the file are 32-bit
     sampling Frequency and then follows the center frequency also in 32-bit. the
     Data follows afterwards in I, Q format each 32-bit as well.
-    """
+    
+    Args:
+        cx (ndarray): Complex valued data array
+        filename (string): File name
+        fs (int, optional): Sampling frequency. Defaults to 1.
+        center (int, optional): Center frequency. Defaults to 0.
+        write_header (bool, optional): Whether the header should be written or not. Defaults to True.
+    """    
     # 32-bit little endian floats
     # insert header
     if write_header:
@@ -318,6 +429,14 @@ def write_signal_to_bin(cx, filename, fs=1, center=0, write_header=True):
 
 
 def write_signal_to_csv(cx, filename, fs=1, center=0):
+    """Write complex valued signal to CSV text file
+    
+    Args:
+        cx (ndarray): Complex valued data array
+        filename (string): File name
+        fs (int, optional): Sampling frequency. Defaults to 1.
+        center (int, optional): Center frequency. Defaults to 0.
+    """    
     # insert ascii header which looks like a complex number
     cx = np.insert(cx, 0, complex(fs, center))
     with open(filename + '.csv', 'w') as f:
@@ -326,14 +445,27 @@ def write_signal_to_csv(cx, filename, fs=1, center=0):
                 np.real(cx[i]), np.imag(cx[i])))
 
 
-def write_signal_to_wav(filename, cx, fs=1):
-    """ Save the singal as an audio wave """
+def write_signal_to_wav(cx, filename, fs=1):
+    """Write complex valued signal as audio WAV file
+    
+    Args:
+        cx (ndarray): Complex valued data array
+        filename (string): File name
+        fs (int, optional): Sampling frequency. Defaults to 1.
+    """    
     wavfile.write(filename + '.wav', fs,
                   abs(cx) / max(abs(cx)))
 
 
 def make_analytical(x):
-    """Make an analytical signal from the real signal"""
+    """Makes an analytical signal using Hilbert transformation
+
+    Args:
+        x (ndarray): Real valued data array
+
+    Returns:
+        (ndarray): Complex valued data array
+    """    
 
     yy = hilbert(x)
     ii = np.real(yy)
@@ -344,11 +476,14 @@ def make_analytical(x):
 
 
 def read_rsa_result_csv(filename):
-    """
-    Read special format CSV result file from RSA5000 series output
-    :param filename:
-    :return:
-    """
+    """Read special format CSV result file from RSA5000 series output
+
+    Args:
+        filename (string): File name
+
+    Returns:
+        (tuple): Arrays of frequency and power
+    """    
     p = np.genfromtxt(filename, skip_header=63)
     with open(filename) as f:
         cont = f.readlines()
@@ -365,12 +500,15 @@ def read_rsa_result_csv(filename):
 
 
 def read_rsa_specan_xml(filename):
-    """
-    Read the resulting saved trace file Specan from the Tektronix RSA5000 series
+    """Read the resulting saved trace file Specan from the Tektronix RSA5000 series
     these files are produced while saving traces.
-    :param filename:
-    :return:
-    """
+
+    Args:
+        filename (string): File name
+
+    Returns:
+        (tuple): Arrays of frequency, power, and values of units
+    """    
     with open(filename, 'rb') as f:
         ba = f.read()
     xml_tree_root = et.fromstring(ba)
@@ -397,13 +535,16 @@ def read_rsa_specan_xml(filename):
 
 
 def read_data_csv(filename):
-    """
-    Read special format CSV data file from RSA5100 series output.
+    """Read special format CSV data file from RSA5100 series output.
     Please note that 50 ohm power termination is already considered
     for these data.
-    :param filename:
-    :return:
-    """
+
+    Args:
+        filename (string): File name
+
+    Returns:
+        (ndarray): ndarray of data
+    """    
     data = np.genfromtxt(filename, skip_header=10, delimiter=",")
     # has one dimension more, should use ravel
     data = np.ravel(data).view(dtype='c16')
@@ -411,12 +552,16 @@ def read_data_csv(filename):
 
 
 def parse_filename(filename):
-    """
-    Parses filenames of experimental data in the following format:
-    58Ni26+_374MeVu_250uA_pos_0_0.tiq
-    :param filename:
-    :return:
-    """
+    """Parses filenames of experimental data in the following format:
+    
+        58Ni26+_374MeVu_250uA_pos_0_0.tiq
+
+    Args:
+        filename (string): File name
+
+    Returns:
+        (tuple): Tuple of strings for description, energy and current
+    """    
     filename = filename.split('_')
     descr = filename[0]
     energy = float(filename[1].replace('MeVu', 'e6'))
@@ -425,11 +570,28 @@ def parse_filename(filename):
 
 
 def write_timedata_to_npy(iq_obj, filename):
-    """Saves the dictionary to a numpy file."""
+    """Saves the iq object to a npy format.
+
+    Args:
+        iq_obj (iqbase): iq object
+        filename (string): Output file name
+    """    
     np.save(filename + '.npy', vars(iq_obj))
 
 
 def write_timedata_to_root(iq_obj):
+    """Writes time data to a root TTree.
+    The structure of the root files in this case is like this: there are two
+    trees inside, one tree has only one branch with an integer in it, which
+    is the sampling rate, and another tree with a branch which is the center
+    frequency. the other tree also has a branch in it, which contains the time
+    series, which correspond to the power of the signal, meaning **(I^2+Q^2)**.
+    The distance between the time samples is **1/(sampling_rate)**.
+
+    Args:
+        iq_obj (iqbase): iq object
+    """    
+    
     with uproot3.recreate(iq_obj.filename_wo_ext + '.root') as f:
         f['t_f_samp'] = uproot3.newtree(
             {'f_samp': uproot3.newbranch(np.int32, title='Sampling frequency'),
@@ -447,6 +609,14 @@ def write_timedata_to_root(iq_obj):
 
 
 def write_spectrum_to_csv(ff, pp, filename, center=0):
+    """Writes 1D spectrum to text CSV format. First column will be frequency, second linear power and third logarithmic power.
+
+    Args:
+        ff (ndarray): Frequency data array
+        pp (ndarray): Power data array
+        filename (string): Output file name
+        center (float, optional): Center frequency. Defaults to 0.
+    """    
     a = np.concatenate(
         (ff, pp, IQBase.get_dbm(pp)))
     b = np.reshape(a, (3, -1)).T
@@ -455,6 +625,15 @@ def write_spectrum_to_csv(ff, pp, filename, center=0):
 
 
 def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
+    """Write spectrum to a ROOT file using objects of TH class
+
+    Args:
+        ff (ndarray): Frequency data array
+        pp (ndarray): Power data array
+        filename (string): Output file name
+        center (float, optional): Center frequency. Defaults to 0.
+        title (str, optional): Title of ROOT histogram. Defaults to ''.
+    """    
     class MyTH1(uproot3_methods.classes.TH1.Methods, list):
         def __init__(self, low, high, values, title=""):
             self._fXaxis = types.SimpleNamespace()
@@ -473,6 +652,12 @@ def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
     file["th1f"] = th1f
 
 def write_spectrogram_to_nifti(zz, filename):
+    """Writes spectrogram to a NIFTI file.
+
+    Args:
+        zz (ndarray): Power meshgrid
+        filename (string): File name
+    """    
     # normalize to 1
     b = np.expand_dims(zz, axis=2)
     b = b/b.max()
@@ -480,9 +665,12 @@ def write_spectrogram_to_nifti(zz, filename):
     nib.save(img, f'{filename}.nii.gz')
 
 def remove_plot_content_from_spectrogram_svg(input_filename, output_filename):
-    """
-    This function is specifically useful if you like to have an empty spectrogram plot for publication purposes.
-    """
+    """Removes plot content from an existing SVG file. This function is specifically useful if you like to have an empty spectrogram plot for publication purposes.
+
+    Args:
+        input_filename (string): Input file name
+        output_filename (string): Output file name
+    """    
     soup = BeautifulSoup(open(input_filename).read(),features="xml")
     for element in soup.find_all('g', {"id" : "QuadMesh_1"}):
         element.decompose()

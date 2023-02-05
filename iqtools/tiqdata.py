@@ -1,8 +1,7 @@
 """
-Class for IQ Data
-TIQ format
+Class for TIQ format
 
-Xaratustrah Aug-2015
+xaratustrah@github Aug-2015
 
 """
 
@@ -30,21 +29,26 @@ class TIQData(IQBase):
         self.read_header()
 
     def read(self, nframes=10, lframes=1024, sframes=0):
+        """Read a section of the file.
+
+        Args:
+            nframes (int, optional): Number of frames to be read. Defaults to 10.
+            lframes (int, optional): Length of each frame. Defaults to 1024.
+            sframes (int, optional): Starting frame. Defaults to 0.
+        """        
+
         self.read_samples(nframes * lframes, offset=sframes * lframes)
 
     def read_samples(self, nsamples, offset=0):
-        """
-        Read a specific number of samples
+        """Read samples.
 
-        Parameters
-        ----------
-        nsamples How many samples to read
-        offset Either start from the beginning, i.e. 0 or start at a different offset.
+        Args:
+            nsamples (int): Number of samples to read from file
+            offset (int, optional): _description_. Defaults to 0.
 
-        Returns
-        -------
-
-        """
+        Raises:
+            ValueError: Raises if the requested number of samples is larger than available
+        """ 
         if nsamples > self.nsamples_total - offset:
             raise ValueError(
                 'Requested number of samples is larger than the available {} samples.'.format(self.nsamples_total))
@@ -74,9 +78,8 @@ class TIQData(IQBase):
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
 
     def read_header(self):
-        """
-        Parse TIQ header
-        Following information are extracted. Data needs to be normalized over 50 ohm.
+        """Parse TIQ header
+        The following information are extracted. Data needs to be normalized over 50 ohm.
 
         AcquisitionBandwidth
         Frequency
@@ -131,7 +134,9 @@ class TIQData(IQBase):
                 self.rbw = float(elem.find('Value').text)
 
     def save_header(self):
-        """Saves the header byte array into a txt tile."""
+        """Saves the header byte array into a txt tile.
+        """        
+
         with open(self.filename_wo_ext + '.xml', 'wb') as f3:
             f3.write(self.header)
         log.info("Header saved in an xml file.")

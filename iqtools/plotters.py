@@ -1,7 +1,7 @@
 """
 Collection of plotters
 
-Xaratustrah
+xaratustrah@github
 2017
 """
 
@@ -22,7 +22,11 @@ matplotlib.use('Agg')
 
 
 def plot_hilbert(x_bar):
-    """Show Hilbert plot."""
+    """Shows the Hilbert plot
+
+    Args:
+        x_bar (ndarray): Complex valued data array
+    """    
 
     plt.plot(np.real(x_bar), np.imag(x_bar))
     plt.grid(True)
@@ -31,12 +35,12 @@ def plot_hilbert(x_bar):
 
 
 def plot_frame_power(yy, frame_power):
-    """
-    Plot frame power, i.e. trapezoid along each time frame
-    :param yy:
-    :param frame_power:
-    :return:
-    """
+    """Plot frame power, i.e. trapezoid along each time frame
+
+    Args:
+        yy (ndarray): Time meshgrid
+        frame_power (ndarray): Array describing the frame power
+    """    
     plt.plot(yy[:, 0], IQBase.get_dbm(frame_power))
     plt.ylabel('Power [dBm]')
     plt.xlabel('Time [sec]')
@@ -44,21 +48,25 @@ def plot_frame_power(yy, frame_power):
 
 
 def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None, decimal_place=2):
-    """
-    Plot the calculated spectrogram
-    :param xx: first dimension
-    :param yy: second dimension
-    :param zz: third dimension
-    :param cen: center frequency
-    :param cmap: color map
-    :param dbm: if the results should be displayed in dBm scale
-    :param title: this will be the title of the plot
-    :param filename: if provided, the file will be written on disk
-    :zzmin: minimum value for contrast lowest is 0
-    :zzmin: maximum value for contrast highest is 1e6
-    :return:
-    """
+    """Plot the calculated spectrogram
 
+
+    Args:
+        xx (ndarray): Frequency meshgrid
+        yy (ndarray): Time meshgrid
+        zz (ndarray): Power meshgrid
+        cen (float, optional): Center frequency. Defaults to 0.0.
+        cmap (string, optional): Matplotlib.colormap. Defaults to cm.jet.
+        dpi (int, optional): Resolution for PNG output. Defaults to 300.
+        dbm (bool, optional): Display in dBm scale. Defaults to False.
+        filename (str, optional): File name. Defaults to None, in which case nothing will be saved to file.
+        title (str, optional): Title of the plot. Defaults to 'Spectrogram'.
+        zzmin (int, optional): Color contrast min. Defaults to 0.
+        zzmax (int, optional): Color contrast max. Defaults to 1e6.
+        mask (bool, optional): Mask out values less than this, for cleaner histograms. Defaults to False.
+        span (float, optional): Show only a frequency window. Defaults to None.
+        decimal_place (int, optional): Limit display of decimal places of all numbers in the plot. Defaults to 2.
+    """    
     # Apply display threshold if zmin and zmax are provided, they must be different than the default values of 0 and 1e6
     # otherwise ignore them
 
@@ -110,7 +118,17 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
 
 
 def plot_spectrum(f, p, cen=0.0, span=None, dbm=False, filename=None, title='Spectrum'):
-    """Plot average power in dBm per Hz"""
+    """Plots 2D spectrum in dBm per Hz
+
+    Args:
+        f (ndarray): Frequency array
+        p (ndarray): Power array
+        cen (float, optional): Center frequency. Defaults to 0.0.
+        span (float, optional): Frequency window. Defaults to None.
+        dbm (bool, optional): Display in dBm scale. Defaults to False.
+        filename (str, optional): File name. Defaults to None, in which case nothing will be saved to file.
+        title (str, optional): Title of the plot. Defaults to 'Spectrogram'.
+    """    
 
     if not span:
         spanmask = (f != 0) | (f == 0)
@@ -138,12 +156,11 @@ def plot_spectrum(f, p, cen=0.0, span=None, dbm=False, filename=None, title='Spe
 
 
 def plot_spectrogram_with_gnuplot(zz):
-    """
-    zz: reshaped data in form of a matrix for plotting
+    """Plots using external instance of [GNUPlot](http://www.gnuplot.info/). Data is reshaped in form of a matrix for plotting. Idea based on [this post on SO](https://stackoverflow.com/a/15885230/5177935)
 
-    based on https://stackoverflow.com/a/15885230/5177935
-
-    """
+    Args:
+        zz (ndarray): Power meshgrid
+    """    
     temp_file = 'foo.bin'
     with open(temp_file, 'wb') as foo:
         for (i, j), dat in np.ndenumerate(np.rot90(zz, 3)):
@@ -175,9 +192,12 @@ def plot_spectrogram_with_gnuplot(zz):
 
 
 def plot_phase_shift(x, phase):
-    """
-    Plots the signal before and after the phase shift
-    """
+    """Plots the signal before and after the phase shift
+
+    Args:
+        x (ndarray): Data array
+        phase (float): Phase shift
+    """    
     plt.rcParams['axes.grid'] = True
     fig, axs = plt.subplots(2, 2, sharex=True, sharey=True)
     axs[0, 0].plot(np.real(x))

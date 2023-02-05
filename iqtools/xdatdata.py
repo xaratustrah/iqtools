@@ -2,7 +2,7 @@
 Class for IQ Data
 Tektronix (TM) X-COM XDATData
 
-Xaratustrah Juli 2020
+xaratustrah@github Juli 2020
 
 """
 
@@ -28,21 +28,26 @@ class XDATData(IQBase):
         self.read_header()
 
     def read(self, nframes=10, lframes=1024, sframes=0):
+        """Read a section of the file.
+
+        Args:
+            nframes (int, optional): Number of frames to be read. Defaults to 10.
+            lframes (int, optional): Length of each frame. Defaults to 1024.
+            sframes (int, optional): Starting frame. Defaults to 0.
+        """        
+
         self.read_samples(nframes * lframes, offset=sframes * lframes)
 
     def read_samples(self, nsamples, offset=0):
-        """
-        Read a specific number of samples
-        Parameters
-        ----------
-        nsamples How many samples to read
-        offset Either start from the beginning, i.e. 0 or start at a different offset.
-        The X-COM XDAT format can be described as a 16 integer interlaced I & Q file. I and Q are each a 16 bit little endian integer. I & Q are interlaced together in a single file or memory buffer with order being I,Q.
+        """Read samples. The X-COM XDAT format can be described as a 16 integer interlaced
+        I & Q file. I and Q are each a 16 bit little endian integer. I & Q are interlaced 
+        together in a single file or memory buffer with order being I,Q.
 
-        Returns
-        -------
+        Args:
+            nsamples (int): Number of samples to read from file
+            offset (int, optional): _description_. Defaults to 0.
 
-        """
+        """        
         filesize = os.path.getsize(self.filename)
         # each file contains 15625 blocks
         if not filesize == 4 * self.nsamples_total:
@@ -77,12 +82,8 @@ class XDATData(IQBase):
         # in order to read you may use: data = x.item()['data'] or data = x[()]['data'] other wise you get 0-d error
 
     def read_header(self):
-        """
-        Parse XDAT header file
-        Returns
-        -------
-
-        """
+        """Parse XDAT header file
+        """        
         tree = et.parse(self.header_filename)
         root = tree.getroot()
         for feature in root.iter('recording'):

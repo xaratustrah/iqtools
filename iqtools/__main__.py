@@ -3,7 +3,7 @@
 Collection of tools for dealing with IQ data. This code converts data in TIQ
 format and extracts the data in numpy format
 
-xaratustrah oct-2014
+xaratustrah@github oct-2014
             mar-2015
             aug-2015
             jan-2016

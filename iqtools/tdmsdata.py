@@ -2,7 +2,7 @@
 Class for IQ Data
 TDMS format
 
-Xaratustrah Aug-2015
+xaratustrah@github Aug-2015
 
 """
 

@@ -2,7 +2,7 @@
 Class for IQ Data
 GNU Radio simple binary format reader
 
-Xaratustrah Aug-2018
+xaratustrah@github Aug-2018
 
 """
 
@@ -22,9 +22,12 @@ class GRData(IQBase):
         self.nsamples_total = os.path.getsize(filename) / 8
 
     def read(self, nframes=10, lframes=1024, sframes=0):
+        """Read a section of the file.
+
+        Args:
+            nframes (int, optional): Number of frames to be read. Defaults to 10.
+            lframes (int, optional): Length of each frame. Defaults to 1024.
+            sframes (int, optional): Starting frame. Defaults to 0.
+        """        
+
         self.read_samples(nframes * lframes, offset=sframes * lframes)
-
-    def read_samples(self, nsamples, offset=0):
-
-        # TODO:
-        pass

@@ -1,9 +1,9 @@
 """
 Class for reading LeCroy 584AM files
 
-Xaratustrah Sep-2018
+xaratustrah@github Sep-2018
 
-many thanks to github.com/nerdull for reverse engineering
+Many thanks to [github.com/nerdull](https://www.github.com/nerdull) for reverse engineering
 an old code by M. Hausmann from 1992
 
 """
@@ -27,17 +27,22 @@ class LCData(IQBase):
         self.date_time = time.ctime(os.path.getctime(self.filename))
 
     def read(self, nframes=10, lframes=1024, sframes=0):
+        """Read a section of the file.
+
+        Args:
+            nframes (int, optional): Number of frames to be read. Defaults to 10.
+            lframes (int, optional): Length of each frame. Defaults to 1024.
+            sframes (int, optional): Starting frame. Defaults to 0.
+        """        
+
         self.read_samples(nframes * lframes, offset=sframes * lframes)
 
-    def read_samples(self, nsamples, offset=0):
-        # TODO:
-        pass
-
     def read_complete_file(self):
-        """
-        Read a complete LeCroy file
-        :return:
-        """
+        """Reads a complete file.
+
+        Returns:
+            ndarray: Returns the complete data array
+        """        
 
         filesize = os.path.getsize(self.filename)
         with open(self.filename, 'rb') as f:

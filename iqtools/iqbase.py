@@ -1,7 +1,7 @@
 """
-The fundamental class for IQ Data
+The base class for all other IQ Data
 
-Xaratustrah Aug-2015
+xaratustrah@github Aug-2015
 
 """
 
@@ -14,9 +14,7 @@ from multitaper import *
 
 
 class IQBase(object):
-    """
-    The main class definition
-    """
+    # Abstract class
     __metaclass__ = ABCMeta
 
     def __init__(self, filename):
@@ -40,6 +38,14 @@ class IQBase(object):
         return self.dic2htmlstring(vars(self))
 
     def dic2htmlstring(self, dic):
+        """Converts a dictionary to an HTML string
+
+        Args:
+            dic (dictionary): Dictionary of values
+
+        Returns:
+            (string): HTML String
+        """        
         outstr = ''
         if 'filename' in dic:
             outstr += '<font size="4" color="green">File name:</font> {} <font size="4" color="green"></font><br>\n'.format(
@@ -74,17 +80,34 @@ class IQBase(object):
             return outstr
 
     def get_record_length(self):
+        """Returns the record length
+
+        Returns:
+            (float): record length
+        """        
         return self.nsamples_total / self.fs
 
     @abstractmethod
     def read(self, nframes, lframes, sframes):
+        """Abstract method
+        """        
         pass
 
     @abstractmethod
     def read_samples(self, nsamples, offset):
+        """Abstract method
+        """        
         pass
 
     def get_window(self, n=None):
+        """Return a suitable windowing function for FFT
+
+        Args:
+            n (int, optional): Window length. Defaults to None.
+
+        Returns:
+            (ndarray): FFT Window
+        """        
         if not n:
             n = self.lframes
         assert self.window in ['rectangular',
@@ -101,9 +124,15 @@ class IQBase(object):
             return np.hanning(n)
 
     def get_fft_freqs_only(self, x=None):
-        """
-        Deliver the FFT frequencies only
-        """
+        """Return FFT frequencies only
+
+        Args:
+            x (ndarray, optional): Complex valued data array. Defaults to None, in which 
+            case object's own data_array is used.
+
+        Returns:
+            (ndarray): Frequency values
+        """        
         if x is None:
             data = self.data_array
         else:
@@ -114,8 +143,7 @@ class IQBase(object):
         return np.fft.fftshift(f)
 
     def get_fft(self, x=None, nframes=0, lframes=0):
-        """
-        If nframes and lframes are provided then it
+        """Calculate FFT. If nframes and lframes are provided then it
         Reshapes the data to a 2D matrix, performs FFT in the horizontal
         direction i.e. for each row, then averages in frequency domain in the
         vertical direction, for every bin. The result is a flattened 1D
@@ -123,8 +151,14 @@ class IQBase(object):
 
         Otherwise it is just the standard 1D FFT
 
-        :return: frequency, power and voltage
-        """
+        Args:
+            x (ndarray, optional): Complex valued data array. Defaults to None.
+            nframes (int, optional): Number of frames. Defaults to 0.
+            lframes (int, optional): Length of frames. Defaults to 0.
+
+        Returns:
+            (tuple): Tuple of ndarrays, frequency, power and voltage
+        """        
 
         if nframes and lframes:
             nf = nframes
@@ -153,11 +187,14 @@ class IQBase(object):
         return freqs, np.fft.fftshift(p_avg), np.fft.fftshift(v_peak_iq)
 
     def get_pwelch(self, x=None):
-        """
-        Create the power spectral density using Welch method
-        :param x: if available the data segment, otherwise the whole data will be taken
-        :return: fft and power in Watts
-        """
+        """ Create the power spectral density using Welch method
+
+        Args:
+            x (ndarray, optional): if available the data segment, otherwise the whole data will be taken. Defaults to None.
+
+        Returns:
+            (tuple): FFT and power in Watts
+        """        
         if x is None:
             data = self.data_array
         else:
@@ -168,11 +205,11 @@ class IQBase(object):
         return np.fft.fftshift(f), np.fft.fftshift(p_avg)
 
     def get_power_spectrogram(self, nframes, lframes):
-        """
-        Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh
+        """Get power spectrogram. Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh
         x, y and z are ndarrays and have the same shape. In order to access the contents use these kind of
         indexing as below:
-
+        
+        ```
         #Slices parallel to frequency axis
         nrows = np.shape(x)[0]
         for i in range (nrows):
@@ -182,8 +219,14 @@ class IQBase(object):
         ncols = np.shape(y)[1]
         for i in range (ncols):
             plt.plot(y[:,i], z[:, i])
+        ```
 
-        :return: frequency, time and power for XYZ plot,
+        Args:
+            nframes (int): _description_
+            lframes (int): _description_
+
+        Returns:
+            (tuple): time, frequency and power as mesh grids
         """
 
         assert self.method in ['fft', 'welch', 'mtm']
@@ -221,13 +264,17 @@ class IQBase(object):
         return xx, yy, zz
 
     def get_dp_p_vs_time(self, xx, yy, zz, eta):
-        """
-        Returns two arrays for plotting dp_p vs time
-        :param xx: from spectrogram
-        :param yy: from spectrogram
-        :param zz: from spectrogram
-        :return: Flattened array for 2D plot
-        """
+        """Returns two arrays for plotting dp_p vs time
+
+        Args:
+            xx (ndarray): Frequency meshgrid
+            yy (ndarray): Time meshgrid
+            zz (ndarray): Power meshgrid
+            eta (float): _description_
+
+        Returns:
+            (ndarray): Flattened array for 2D plot
+        """        
         # Slices parallel to frequency axis
         n_time_frames = np.shape(xx)[0]
         dp_p = np.zeros(n_time_frames)
@@ -239,13 +286,17 @@ class IQBase(object):
         return yy[:, 0], dp_p
 
     def get_frame_power_vs_time(self, xx, yy, zz):
-        """
-        Returns two arrays for plotting frame power vs time
-        :param xx: from spectrogram
-        :param yy: from spectrogram
-        :param zz: from spectrogram
-        :return: Flattened array for 2D plot
-        """
+        """Returns two arrays for plotting frame power vs time
+
+        Args:
+            xx (ndarray): Frequency meshgrid
+            yy (ndarray): Time meshgrid
+            zz (ndarray): Power meshgrid
+            eta (float): _description_
+
+        Returns:
+            (ndarray): Flattened array for 2D plot
+        """        
         # Slices parallel to frequency axis
         n_time_frames = np.shape(xx)[0]
         frame_power = np.zeros(n_time_frames)
@@ -257,6 +308,15 @@ class IQBase(object):
 
     @staticmethod
     def get_frame_sum_vs_time(yy, zz):
+        """Return sum of the values in frame
+
+        Args:
+            yy (ndarray): Time meshgrid
+            zz (ndarray): Power meshgrid
+
+        Returns:
+            (float): Sum
+        """        
         summ = np.zeros(np.shape(zz)[0])
         for i in range(len(summ)):
             summ[i] = np.sum(zz[i, :])
@@ -264,15 +324,18 @@ class IQBase(object):
 
     @staticmethod
     def get_fwhm(f, p, skip=None):
-        """
-        Return the full width at half maximum.
+        """Return the full width at half maximum.
         f and p are arrays of points corresponding to the original data, whereas
         the f_peak and p_peak are arrays of containing the coordinates of the peaks only
-        :param f:
-        :param p:
-        :param skip: Sometimes peaks have a dip, skip this number of bins, use with care or visual inspection
-        :return:
-        """
+
+        Args:
+            f (ndarray): _description_
+            p (ndarray): _description_
+            skip (int, optional): Sometimes peaks have a dip, skip this number of bins, use with care or visual inspection. Defaults to None.
+
+        Returns:
+            (float): Full width at half maximum
+        """        
         p_dbm = IQBase.get_dbm(p)
         f_peak = p_dbm.max()
         f_p3db = 0
@@ -304,6 +367,15 @@ class IQBase(object):
 
     @staticmethod
     def get_sigma_estimate(f, p):
+        """Gets an estimate for sigma. Could be used for more precise fitting.
+
+        Args:
+            f (ndarray): ndarray of frequencies
+            p (ndarray): ndarray of powers
+
+        Returns:
+            (float): Estimage of sigma
+        """        
         p_peak = p.max()
         f_peak_index = p.argmax()
         f_peak = f[f_peak_index]
@@ -326,13 +398,16 @@ class IQBase(object):
 
     @staticmethod
     def get_narrow_peaks_dbm(f, p, accuracy=50):
-        """
-        Find narrow peaks and return them
-        :param f:
-        :param p:
-        :param accuracy:
-        :return:
-        """
+        """Find narrow peaks and return them
+
+        Args:
+            f (ndarray): ndarray of frequencies
+            p (ndarray): ndarray of powers
+            accuracy (int, optional): A number to adjust sensitivity of the peak finder. Defaults to 50.
+
+        Returns:
+            (ndarray): ndarray of peaks and their indexes
+        """        
         # convert to dbm for convenience
         p_dbm = IQBase.get_dbm(p)
         peak_ind = find_peaks_cwt(p_dbm, np.arange(1, accuracy))
@@ -341,37 +416,55 @@ class IQBase(object):
 
     @staticmethod
     def get_broad_peak_dbm(f, p):
-        """
-        Returns the maximum usually useful for a broad peak
-        :param f:
-        :param p:
-        :return:
-        """
+        """Returns the maximum usually useful for a broad peak
+
+        Args:
+            f (ndarray): ndarray of frequencies
+            p (ndarray): ndarray of powers
+
+        Returns:
+            (ndarray): Coordinates of the peak
+        """        
         # return as an array for compatibility
         return np.array([f[p.argmax()]]), np.array([p.max()])
 
     @staticmethod
     def get_dbm(watt):
-        """ Converter
-        :param watt: value in Watt
-        :return: value in dBm
-        """
+        """Convert Watt to dBm
+
+        Args:
+            watt (float): Value in Watts
+
+        Returns:
+            (float): Value in dBm
+        """        
         if isinstance(watt, np.ndarray):
             watt[watt <= 0] = 10 ** -30
         return 10 * np.log10(np.array(watt) * 1000)
 
     @staticmethod
     def get_watt(dbm):
-        """ Converter
-        :param watt: value in dBm
-        :return: value in Watt
-        """
+        """Convert dBm to Watts
+
+        Args:
+            dbm (float): Value in dBm
+
+        Returns:
+            (float): Value in Watts
+        """        
         return 10 ** (np.array(dbm) / 10) / 1000
 
     def get_channel_power(self, f, p, span=None):
-        """ Return total power in band in Watts
-        Input: average power in Watts
-        """
+        """Return total power in band in Watts, considering noise bandwidth
+
+        Args:
+            f (ndarray): ndarray of frequencies
+            p (ndarray): ndarray of powers
+            span (float, optional): Frequency window. Defaults to None.
+
+        Returns:
+            (float): Channel power
+        """        
         if not span:
             mask = (f != 0) | (f == 0)
         else:
@@ -390,14 +483,17 @@ class IQBase(object):
 
     @staticmethod
     def zoom_in_freq(f, p, center=0, span=1000):
-        """
-        Cut the frequency domain data
-        :param f:
-        :param p:
-        :param center:
-        :param span:
-        :return:
-        """
+        """Cut the frequency domain data
+
+        Args:
+            f (ndarray): ndarray of frequencies
+            p (ndarray): ndarray of powers
+            center (float, optional): Center index. Defaults to 0.
+            span (float, optional): Frequency window. Defaults to 1000.
+
+        Returns:
+            (tuple): Frequency and power
+        """        
         low = center - span / 2
         high = center + span / 2
         mask = (f > low) & (f < high)
@@ -405,20 +501,26 @@ class IQBase(object):
 
     @staticmethod
     def shift_cut_data_time(x, val):
-        """
-        Handy tool to shift and cut data in time domain
-        :param f:
-        :param center:
-        :return:
-        """
+        """Handy tool to shift and cut data in time domain
+
+        Args:
+            x (ndarray): Data array
+            val (int): Shift index
+
+        Returns:
+            (tuple): Shift and cut version
+        """        
         return x[:-val], x[val:]
 
     @staticmethod
     def shift_to_center_frequency(f, center):
-        """
-        Handy tool to shift frequency to center
-        :param f:
-        :param center:
-        :return:
-        """
+        """Just return the shifted frequency to center
+
+        Args:
+            f (ndarray): Array of frequencies
+            center (float): Center frequency
+
+        Returns:
+            (ndarray): Shifted array of frequencies
+        """        
         return center + f
