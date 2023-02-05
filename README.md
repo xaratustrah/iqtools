@@ -2,7 +2,7 @@
 [![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://xaratustrah.github.io/iqtools)
 
 <div style="margin-left:auto;margin-right:auto;text-align:center">
-<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/master/iqtools/rsrc/icon.png" width="128">
+<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/main/docs/img/icon.png" width="128">
 </div>
 
 Collection of code for working with offline complex valued time series data ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components) or IQ Data) with numpy written for Python3.
