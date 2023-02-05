@@ -1,0 +1,2174 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Library and CLI/GUI for processing IQ data">
+      
+      
+      
+        <link rel="canonical" href="https://xaratustrah.github.io/iqtools/references/tcapdata/">
+      
+      
+        <link rel="prev" href="../r3fdata/">
+      
+      
+        <link rel="next" href="../tiqdata/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.6">
+    
+    
+      
+        <title>TCAPData - iqtools Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.558e4712.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="purple">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#iqtools.tcapdata" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="iqtools Documentation" class="md-header__button md-logo" aria-label="iqtools Documentation" data-md-component="logo">
+      
+  <img src="../../img/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            iqtools Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TCAPData
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+            </label>
+          
+        
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/xaratustrah/iqtools" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    xaratustrah/iqtools
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="iqtools Documentation" class="md-nav__button md-logo" aria-label="iqtools Documentation" data-md-component="logo">
+      
+  <img src="../../img/icon.png" alt="logo">
+
+    </a>
+    iqtools Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/xaratustrah/iqtools" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    xaratustrah/iqtools
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Main page
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" tabindex="0" aria-expanded="true">
+          Code Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Code Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Code Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotters/" class="md-nav__link">
+        Plotters
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/" class="md-nav__link">
+        Tools
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iqbase/" class="md-nav__link">
+        IQBase
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_4_4" type="checkbox" id="__nav_4_4" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_4" tabindex="0" aria-expanded="true">
+          Sub classes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Sub classes" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          Sub classes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bindata/" class="md-nav__link">
+        BINData
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../csvdata/" class="md-nav__link">
+        CSVData
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grdata/" class="md-nav__link">
+        GRData
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iqtdata/" class="md-nav__link">
+        IQTData
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lcdata/" class="md-nav__link">
+        LCData
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../r3fdata/" class="md-nav__link">
+        R3Data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          TCAPData
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        TCAPData
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#iqtools.tcapdata" class="md-nav__link">
+    iqtools.tcapdata
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData" class="md-nav__link">
+    TCAPData
+  </a>
+  
+    <nav class="md-nav" aria-label="TCAPData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.get_frame" class="md-nav__link">
+    get_frame()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.parse_binary_tcap_header" class="md-nav__link">
+    parse_binary_tcap_header()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.parse_tcap_tfp" class="md-nav__link">
+    parse_tcap_tfp()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.read_block" class="md-nav__link">
+    read_block()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.read_header" class="md-nav__link">
+    read_header()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.read_samples" class="md-nav__link">
+    read_samples()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tiqdata/" class="md-nav__link">
+        TIQData
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wavdata/" class="md-nav__link">
+        WAVData
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xdatdata/" class="md-nav__link">
+        XDATData
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#iqtools.tcapdata" class="md-nav__link">
+    iqtools.tcapdata
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData" class="md-nav__link">
+    TCAPData
+  </a>
+  
+    <nav class="md-nav" aria-label="TCAPData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.get_frame" class="md-nav__link">
+    get_frame()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.parse_binary_tcap_header" class="md-nav__link">
+    parse_binary_tcap_header()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.parse_tcap_tfp" class="md-nav__link">
+    parse_tcap_tfp()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.read_block" class="md-nav__link">
+    read_block()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.read_header" class="md-nav__link">
+    read_header()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iqtools.tcapdata.TCAPData.read_samples" class="md-nav__link">
+    read_samples()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+
+  <h1>TCAPData</h1>
+
+<div class="doc doc-object doc-module">
+
+
+<a id="iqtools.tcapdata"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Class for IQ Data TCAP format</p>
+<p>xaratustrah@github Aug-2015</p>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="iqtools.tcapdata.TCAPData" class="doc doc-heading">
+        <code>TCAPData</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="iqtools.iqbase.IQBase" href="../iqbase/#iqtools.iqbase.IQBase">IQBase</a></code></p>
+
+
+
+        <details class="quote">
+          <summary>Source code in <code>iqtools/tcapdata.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">TCAPData</span><span class="p">(</span><span class="n">IQBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">header_filename</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">header_filename</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No TCAP header filename provided.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_filename</span> <span class="o">=</span> <span class="n">header_filename</span>
+
+        <span class="c1"># Additional fields in this subclass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tcap_scalers</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tcap_pio</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adc_range</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decimation</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segment_blocks</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mf">10e6</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimation</span><span class="p">)</span>  <span class="c1"># usually fixed to 312500</span>
+        <span class="c1"># center is usually fixed to 1.6e5</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_header</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nframes</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">lframes</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">sframes</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_samples</span><span class="p">(</span><span class="n">nframes</span> <span class="o">*</span> <span class="n">lframes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">sframes</span> <span class="o">*</span> <span class="n">lframes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">read_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nsamples</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reads TCAP data.</span>
+
+<span class="sd">        TCAP format information:</span>
+
+<span class="sd">            - Each file contains 15625 blocks equivalent of 27min 18 seconds of recording</span>
+<span class="sd">            - Each block is 2^17=131072 BYTES of data + 88 bytes of header</span>
+<span class="sd">            - Each sample is 4 bytes = 32bits (2 I + 2 Q bytes), hence each block contains</span>
+<span class="sd">            32768 complex valued samples</span>
+<span class="sd">            - Sampling frequency is 312500 sps, thus the data of a block are each 0.105s</span>
+<span class="sd">            worth of data and a resolution frequency of 312500 / 32768 = 9.5 Hz per block</span>
+<span class="sd">            - To double the frequency resolution one can take two consecutive blocks which</span>
+<span class="sd">            mean 4.77 Hz for two consecutive blocks which is 0.210 s of time.</span>
+<span class="sd">            - Either from one block or two blocks a frame can be created.</span>
+<span class="sd">            - An FFT is done on each frame. 10 such FFTs can be averaged to reduce noise.</span>
+<span class="sd">            e.g. a 2-block frame would correspond to 2.12s data.</span>
+<span class="sd">            - 400 such averaged groups of 10 frames can be plotted on a single spectrogram</span>
+<span class="sd">            - each picture of a single spectrogram would then correspond to 14m and 8 sec.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nsamples (int): Number of samples to read</span>
+<span class="sd">            offset (int, optional): Starting sample. Defaults to 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+
+        <span class="n">BLOCK_HEADER_SIZE</span> <span class="o">=</span> <span class="mi">88</span>
+        <span class="n">BLOCK_DATA_SIZE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">17</span>
+        <span class="n">BLOCK_SIZE</span> <span class="o">=</span> <span class="n">BLOCK_HEADER_SIZE</span> <span class="o">+</span> <span class="n">BLOCK_DATA_SIZE</span>
+
+        <span class="n">filesize</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="c1"># each file contains 15625 blocks</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filesize</span> <span class="o">==</span> <span class="mi">15625</span> <span class="o">*</span> <span class="n">BLOCK_SIZE</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;File size does not match block sizes times total number of blocks. Aborting...&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># read header section</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">tfp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+            <span class="n">pio</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+            <span class="n">scalers</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_tcap_tfp</span><span class="p">(</span><span class="n">tfp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tcap_pio</span> <span class="o">=</span> <span class="n">pio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tcap_scalers</span> <span class="o">=</span> <span class="n">scalers</span>
+
+        <span class="n">data_section_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span> <span class="o">-</span> <span class="n">BLOCK_HEADER_SIZE</span>
+        <span class="n">n_iq_samples</span> <span class="o">=</span> <span class="n">data_section_size</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># two bytes for I and two bytes for Q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nsamples_total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segment_blocks</span> <span class="o">*</span> <span class="n">n_iq_samples</span>
+
+        <span class="c1"># 4 comes from 2 times 2 byte integer for I and Q</span>
+        <span class="n">total_n_bytes</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">nsamples</span>
+        <span class="n">start_n_bytes</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">offset</span>
+
+        <span class="n">ba</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">BLOCK_HEADER_SIZE</span> <span class="o">+</span> <span class="n">start_n_bytes</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">total_n_bytes</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">%</span> <span class="n">BLOCK_SIZE</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="s1">&#39;File pointer before jump: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()))</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="s2">&quot;Reached end of block </span><span class="si">{}</span><span class="s2">. Now skipoing header of block </span><span class="si">{}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">/</span> <span class="n">BLOCK_SIZE</span><span class="p">),</span>
+                                <span class="nb">int</span><span class="p">(</span>
+                                    <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">/</span> <span class="n">BLOCK_SIZE</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">88</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;File pointer after jump: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()))</span>
+                    <span class="c1"># using bytearray.extend is much faster than using +=</span>
+                    <span class="n">ba</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;File seems to end here!&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Total bytes read: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ba</span><span class="p">)))</span>
+
+        <span class="c1"># big endian 16 bit for I and 16 bit for Q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">ba</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">read_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_no</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the specified block between 1 and 15625.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">BLOCK_HEADER_SIZE</span> <span class="o">=</span> <span class="mi">88</span>
+        <span class="n">BLOCK_DATA_SIZE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">17</span>
+        <span class="n">BLOCK_SIZE</span> <span class="o">=</span> <span class="n">BLOCK_HEADER_SIZE</span> <span class="o">+</span> <span class="n">BLOCK_DATA_SIZE</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">((</span><span class="n">block_no</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">BLOCK_SIZE</span><span class="p">)</span>
+                <span class="n">tfp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+                <span class="n">pio</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+                <span class="n">scalers</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+                <span class="n">ba</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">131072</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;File seems to end here!&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_tcap_tfp</span><span class="p">(</span><span class="n">tfp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tcap_pio</span> <span class="o">=</span> <span class="n">pio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tcap_scalers</span> <span class="o">=</span> <span class="n">scalers</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Total bytes read: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ba</span><span class="p">)))</span>
+
+        <span class="c1"># big endian 16 bit for I and 16 bit for Q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">ba</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span>
+
+    <span class="k">def</span> <span class="nf">get_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make a frame by connecting two blocks</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            first: first frame</span>
+<span class="sd">            second: second frame</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array: Connected frames</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">32768</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+        <span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">32768</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_block</span><span class="p">(</span><span class="n">first</span><span class="p">)</span>
+        <span class="n">array</span><span class="p">[</span><span class="mi">32768</span><span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_block</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">array</span>
+
+    <span class="k">def</span> <span class="nf">parse_binary_tcap_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ba</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses binary header of TCAP</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ba (bytearray): Binary header</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="n">version</span> <span class="o">=</span> <span class="n">ba</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+        <span class="n">center_freq_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">ba</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">16</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&gt;f8&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">center_freq</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;d&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">16</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">adc_range</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;d&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">24</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">data_scale</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;d&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">24</span><span class="p">:</span><span class="mi">32</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">block_count</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;Q&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">32</span><span class="p">:</span><span class="mi">40</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">block_size</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;I&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">40</span><span class="p">:</span><span class="mi">44</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">frame_size</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;I&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">44</span><span class="p">:</span><span class="mi">48</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">decimation</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">48</span><span class="p">:</span><span class="mi">50</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">config_flags</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">50</span><span class="p">:</span><span class="mi">52</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">trigger_time</span> <span class="o">=</span> <span class="n">ba</span><span class="p">[</span><span class="mi">500</span><span class="p">:</span><span class="mi">512</span><span class="p">]</span>
+        <span class="c1"># self.fs = 10**7 / 2 ** decimation</span>
+
+    <span class="k">def</span> <span class="nf">parse_tcap_tfp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ba</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses the TFP Header of TCAP DAT Files. This information is coded in BCD. The</span>
+<span class="sd">        following table was taken form the original TCAP processing files in C.</span>
+
+<span class="sd">        | ** bit #      ** | ** 15 - 12       ** | ** 11 - 8        ** | ** 7 - 4         ** | ** 3 - 0         ** |</span>
+<span class="sd">        |------------------|---------------------|---------------------|---------------------|---------------------|</span>
+<span class="sd">        |  timereg[0]      |  not defined        |  not defined        |  status             |  days hundreds      |</span>
+<span class="sd">        |  timereg[1]      |  days tens          |  days units         |  hours tens         |  hours units        |</span>
+<span class="sd">        |  timereg[2]      |  minutes tens       |  minutes units      |  seconds tens       |  seconds units      |</span>
+<span class="sd">        |  timereg[3]      |  1E-1 seconds       |  1E-2 seconds       |  1E-3 seconds       |  1E-4 seconds       |</span>
+<span class="sd">        |  timereg[4]      |  1E-5 seconds       |  1E-6 seconds       |  1E-7 seconds       |  not defined        |</span>
+
+<span class="sd">         here we read the first 12 bytes ( 24 nibbles ) in the tfp byte array list. First 2 bytes</span>
+<span class="sd">         should be ignored.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ba (bytearray): Binary header</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            datetime: Time stamp</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="n">tfp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ba</span><span class="p">)</span>
+
+        <span class="n">dh</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+        <span class="n">du</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+        <span class="n">ht</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+        <span class="n">hu</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+        <span class="n">mt</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+        <span class="n">st</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+        <span class="n">su</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+        <span class="n">sem1</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+        <span class="n">sem2</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+        <span class="n">sem3</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+        <span class="n">sem4</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+        <span class="n">sem5</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+        <span class="n">sem6</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+        <span class="c1">#sem7 = (tfp[11] &gt;&gt; 4) &amp; 0x0f</span>
+
+        <span class="n">year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_basename</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+        <span class="n">days</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dh</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">du</span><span class="p">)</span>
+        <span class="n">hours</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ht</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">hu</span><span class="p">)</span>
+        <span class="n">minutes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mt</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">mu</span><span class="p">)</span>
+        <span class="n">seconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">st</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">su</span><span class="p">)</span>
+        <span class="n">microseconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1000</span> <span class="o">*</span> <span class="p">(</span><span class="n">sem1</span> <span class="o">*</span> <span class="mf">1e-1</span> <span class="o">+</span> <span class="n">sem2</span> <span class="o">*</span> <span class="mf">1e-2</span> <span class="o">+</span> <span class="n">sem3</span> <span class="o">*</span>
+                                   <span class="mf">1e-3</span> <span class="o">+</span> <span class="n">sem4</span> <span class="o">*</span> <span class="mf">1e-4</span> <span class="o">+</span> <span class="n">sem5</span> <span class="o">*</span> <span class="mf">1e-5</span> <span class="o">+</span> <span class="n">sem6</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">))</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">hours</span><span class="p">,</span> <span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span><span class="p">,</span>
+                               <span class="n">microseconds</span><span class="p">)</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">read_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses text header part.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dictionary: Dictionary of values</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="n">dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">name</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">dic</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">var</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;center_freq&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adc_range</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;adc_range&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;data_scale&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;block_count&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;block_size&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;frame_size&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decimation</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;decimation&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;trigger_time&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segment_blocks</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;segment_blocks&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">dic</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iqtools.tcapdata.TCAPData.get_frame" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_frame</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Make a frame by connecting two blocks</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>first</code></td>
+          <td>
+          </td>
+          <td><p>first frame</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>second</code></td>
+          <td>
+          </td>
+          <td><p>second frame</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>array</code></td>          <td>
+          </td>
+          <td><p>Connected frames</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iqtools/tcapdata.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a frame by connecting two blocks</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        first: first frame</span>
+<span class="sd">        second: second frame</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        array: Connected frames</span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">32768</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+    <span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">32768</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_block</span><span class="p">(</span><span class="n">first</span><span class="p">)</span>
+    <span class="n">array</span><span class="p">[</span><span class="mi">32768</span><span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_block</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">array</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iqtools.tcapdata.TCAPData.parse_binary_tcap_header" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_binary_tcap_header</span><span class="p">(</span><span class="n">ba</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Parses binary header of TCAP</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>ba</code></td>
+          <td>
+                <code>bytearray</code>
+          </td>
+          <td><p>Binary header</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iqtools/tcapdata.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parse_binary_tcap_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ba</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses binary header of TCAP</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ba (bytearray): Binary header</span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    <span class="n">version</span> <span class="o">=</span> <span class="n">ba</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+    <span class="n">center_freq_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">ba</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">16</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&gt;f8&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">center_freq</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;d&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">16</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">adc_range</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;d&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">24</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">data_scale</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;d&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">24</span><span class="p">:</span><span class="mi">32</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">block_count</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;Q&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">32</span><span class="p">:</span><span class="mi">40</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">block_size</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;I&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">40</span><span class="p">:</span><span class="mi">44</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">frame_size</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;I&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">44</span><span class="p">:</span><span class="mi">48</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">decimation</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">48</span><span class="p">:</span><span class="mi">50</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">config_flags</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">[</span><span class="mi">50</span><span class="p">:</span><span class="mi">52</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">trigger_time</span> <span class="o">=</span> <span class="n">ba</span><span class="p">[</span><span class="mi">500</span><span class="p">:</span><span class="mi">512</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iqtools.tcapdata.TCAPData.parse_tcap_tfp" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_tcap_tfp</span><span class="p">(</span><span class="n">ba</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Parses the TFP Header of TCAP DAT Files. This information is coded in BCD. The
+following table was taken form the original TCAP processing files in C.</p>
+<table>
+<thead>
+<tr>
+<th><strong> bit #      </strong></th>
+<th><strong> 15 - 12       </strong></th>
+<th><strong> 11 - 8        </strong></th>
+<th><strong> 7 - 4         </strong></th>
+<th><strong> 3 - 0         </strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>timereg[0]</td>
+<td>not defined</td>
+<td>not defined</td>
+<td>status</td>
+<td>days hundreds</td>
+</tr>
+<tr>
+<td>timereg[1]</td>
+<td>days tens</td>
+<td>days units</td>
+<td>hours tens</td>
+<td>hours units</td>
+</tr>
+<tr>
+<td>timereg[2]</td>
+<td>minutes tens</td>
+<td>minutes units</td>
+<td>seconds tens</td>
+<td>seconds units</td>
+</tr>
+<tr>
+<td>timereg[3]</td>
+<td>1E-1 seconds</td>
+<td>1E-2 seconds</td>
+<td>1E-3 seconds</td>
+<td>1E-4 seconds</td>
+</tr>
+<tr>
+<td>timereg[4]</td>
+<td>1E-5 seconds</td>
+<td>1E-6 seconds</td>
+<td>1E-7 seconds</td>
+<td>not defined</td>
+</tr>
+</tbody>
+</table>
+<p>here we read the first 12 bytes ( 24 nibbles ) in the tfp byte array list. First 2 bytes
+ should be ignored.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>ba</code></td>
+          <td>
+                <code>bytearray</code>
+          </td>
+          <td><p>Binary header</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>datetime</code></td>          <td>
+          </td>
+          <td><p>Time stamp</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iqtools/tcapdata.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parse_tcap_tfp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ba</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses the TFP Header of TCAP DAT Files. This information is coded in BCD. The</span>
+<span class="sd">    following table was taken form the original TCAP processing files in C.</span>
+
+<span class="sd">    | ** bit #      ** | ** 15 - 12       ** | ** 11 - 8        ** | ** 7 - 4         ** | ** 3 - 0         ** |</span>
+<span class="sd">    |------------------|---------------------|---------------------|---------------------|---------------------|</span>
+<span class="sd">    |  timereg[0]      |  not defined        |  not defined        |  status             |  days hundreds      |</span>
+<span class="sd">    |  timereg[1]      |  days tens          |  days units         |  hours tens         |  hours units        |</span>
+<span class="sd">    |  timereg[2]      |  minutes tens       |  minutes units      |  seconds tens       |  seconds units      |</span>
+<span class="sd">    |  timereg[3]      |  1E-1 seconds       |  1E-2 seconds       |  1E-3 seconds       |  1E-4 seconds       |</span>
+<span class="sd">    |  timereg[4]      |  1E-5 seconds       |  1E-6 seconds       |  1E-7 seconds       |  not defined        |</span>
+
+<span class="sd">     here we read the first 12 bytes ( 24 nibbles ) in the tfp byte array list. First 2 bytes</span>
+<span class="sd">     should be ignored.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ba (bytearray): Binary header</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        datetime: Time stamp</span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    <span class="n">tfp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ba</span><span class="p">)</span>
+
+    <span class="n">dh</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+    <span class="n">du</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+    <span class="n">ht</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+    <span class="n">hu</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+    <span class="n">mt</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+    <span class="n">st</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+    <span class="n">su</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+    <span class="n">sem1</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+    <span class="n">sem2</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+    <span class="n">sem3</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+    <span class="n">sem4</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+
+    <span class="n">sem5</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+    <span class="n">sem6</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfp</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+    <span class="c1">#sem7 = (tfp[11] &gt;&gt; 4) &amp; 0x0f</span>
+
+    <span class="n">year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_basename</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dh</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">du</span><span class="p">)</span>
+    <span class="n">hours</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ht</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">hu</span><span class="p">)</span>
+    <span class="n">minutes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mt</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">mu</span><span class="p">)</span>
+    <span class="n">seconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">st</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">su</span><span class="p">)</span>
+    <span class="n">microseconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1000</span> <span class="o">*</span> <span class="p">(</span><span class="n">sem1</span> <span class="o">*</span> <span class="mf">1e-1</span> <span class="o">+</span> <span class="n">sem2</span> <span class="o">*</span> <span class="mf">1e-2</span> <span class="o">+</span> <span class="n">sem3</span> <span class="o">*</span>
+                               <span class="mf">1e-3</span> <span class="o">+</span> <span class="n">sem4</span> <span class="o">*</span> <span class="mf">1e-4</span> <span class="o">+</span> <span class="n">sem5</span> <span class="o">*</span> <span class="mf">1e-5</span> <span class="o">+</span> <span class="n">sem6</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">))</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">hours</span><span class="p">,</span> <span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span><span class="p">,</span>
+                           <span class="n">microseconds</span><span class="p">)</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iqtools.tcapdata.TCAPData.read_block" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">read_block</span><span class="p">(</span><span class="n">block_no</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Read the specified block between 1 and 15625.</p>
+
+      <details class="quote">
+        <summary>Source code in <code>iqtools/tcapdata.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_no</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the specified block between 1 and 15625.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">BLOCK_HEADER_SIZE</span> <span class="o">=</span> <span class="mi">88</span>
+    <span class="n">BLOCK_DATA_SIZE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">17</span>
+    <span class="n">BLOCK_SIZE</span> <span class="o">=</span> <span class="n">BLOCK_HEADER_SIZE</span> <span class="o">+</span> <span class="n">BLOCK_DATA_SIZE</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">((</span><span class="n">block_no</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">BLOCK_SIZE</span><span class="p">)</span>
+            <span class="n">tfp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+            <span class="n">pio</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+            <span class="n">scalers</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+            <span class="n">ba</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">131072</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;File seems to end here!&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">date_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_tcap_tfp</span><span class="p">(</span><span class="n">tfp</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tcap_pio</span> <span class="o">=</span> <span class="n">pio</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tcap_scalers</span> <span class="o">=</span> <span class="n">scalers</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Total bytes read: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ba</span><span class="p">)))</span>
+
+    <span class="c1"># big endian 16 bit for I and 16 bit for Q</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">ba</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iqtools.tcapdata.TCAPData.read_header" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">read_header</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Parses text header part.</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>dictionary</code></td>          <td>
+          </td>
+          <td><p>Dictionary of values</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iqtools/tcapdata.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses text header part.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dictionary: Dictionary of values</span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    <span class="n">dic</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">dic</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">var</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;center_freq&#39;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">adc_range</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;adc_range&#39;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;data_scale&#39;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">block_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;block_count&#39;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">block_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;block_size&#39;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;frame_size&#39;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">decimation</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;decimation&#39;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">trigger_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;trigger_time&#39;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">segment_blocks</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s1">&#39;segment_blocks&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">dic</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="iqtools.tcapdata.TCAPData.read_samples" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">read_samples</span><span class="p">(</span><span class="n">nsamples</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Reads TCAP data.</p>
+
+<details class="tcap-format-information">
+  <summary>TCAP format information</summary>
+  <ul>
+<li>Each file contains 15625 blocks equivalent of 27min 18 seconds of recording</li>
+<li>Each block is 2^17=131072 BYTES of data + 88 bytes of header</li>
+<li>Each sample is 4 bytes = 32bits (2 I + 2 Q bytes), hence each block contains
+32768 complex valued samples</li>
+<li>Sampling frequency is 312500 sps, thus the data of a block are each 0.105s
+worth of data and a resolution frequency of 312500 / 32768 = 9.5 Hz per block</li>
+<li>To double the frequency resolution one can take two consecutive blocks which
+mean 4.77 Hz for two consecutive blocks which is 0.210 s of time.</li>
+<li>Either from one block or two blocks a frame can be created.</li>
+<li>An FFT is done on each frame. 10 such FFTs can be averaged to reduce noise.
+e.g. a 2-block frame would correspond to 2.12s data.</li>
+<li>400 such averaged groups of 10 frames can be plotted on a single spectrogram</li>
+<li>each picture of a single spectrogram would then correspond to 14m and 8 sec.</li>
+</ul>
+</details>
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>nsamples</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Number of samples to read</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>offset</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Starting sample. Defaults to 0.</p></td>
+          <td>
+                <code>0</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>iqtools/tcapdata.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nsamples</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads TCAP data.</span>
+
+<span class="sd">    TCAP format information:</span>
+
+<span class="sd">        - Each file contains 15625 blocks equivalent of 27min 18 seconds of recording</span>
+<span class="sd">        - Each block is 2^17=131072 BYTES of data + 88 bytes of header</span>
+<span class="sd">        - Each sample is 4 bytes = 32bits (2 I + 2 Q bytes), hence each block contains</span>
+<span class="sd">        32768 complex valued samples</span>
+<span class="sd">        - Sampling frequency is 312500 sps, thus the data of a block are each 0.105s</span>
+<span class="sd">        worth of data and a resolution frequency of 312500 / 32768 = 9.5 Hz per block</span>
+<span class="sd">        - To double the frequency resolution one can take two consecutive blocks which</span>
+<span class="sd">        mean 4.77 Hz for two consecutive blocks which is 0.210 s of time.</span>
+<span class="sd">        - Either from one block or two blocks a frame can be created.</span>
+<span class="sd">        - An FFT is done on each frame. 10 such FFTs can be averaged to reduce noise.</span>
+<span class="sd">        e.g. a 2-block frame would correspond to 2.12s data.</span>
+<span class="sd">        - 400 such averaged groups of 10 frames can be plotted on a single spectrogram</span>
+<span class="sd">        - each picture of a single spectrogram would then correspond to 14m and 8 sec.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nsamples (int): Number of samples to read</span>
+<span class="sd">        offset (int, optional): Starting sample. Defaults to 0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+
+    <span class="n">BLOCK_HEADER_SIZE</span> <span class="o">=</span> <span class="mi">88</span>
+    <span class="n">BLOCK_DATA_SIZE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">17</span>
+    <span class="n">BLOCK_SIZE</span> <span class="o">=</span> <span class="n">BLOCK_HEADER_SIZE</span> <span class="o">+</span> <span class="n">BLOCK_DATA_SIZE</span>
+
+    <span class="n">filesize</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+    <span class="c1"># each file contains 15625 blocks</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">filesize</span> <span class="o">==</span> <span class="mi">15625</span> <span class="o">*</span> <span class="n">BLOCK_SIZE</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;File size does not match block sizes times total number of blocks. Aborting...&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># read header section</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">tfp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+        <span class="n">pio</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+        <span class="n">scalers</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">date_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_tcap_tfp</span><span class="p">(</span><span class="n">tfp</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tcap_pio</span> <span class="o">=</span> <span class="n">pio</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tcap_scalers</span> <span class="o">=</span> <span class="n">scalers</span>
+
+    <span class="n">data_section_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span> <span class="o">-</span> <span class="n">BLOCK_HEADER_SIZE</span>
+    <span class="n">n_iq_samples</span> <span class="o">=</span> <span class="n">data_section_size</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># two bytes for I and two bytes for Q</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">nsamples_total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segment_blocks</span> <span class="o">*</span> <span class="n">n_iq_samples</span>
+
+    <span class="c1"># 4 comes from 2 times 2 byte integer for I and Q</span>
+    <span class="n">total_n_bytes</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">nsamples</span>
+    <span class="n">start_n_bytes</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">offset</span>
+
+    <span class="n">ba</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">BLOCK_HEADER_SIZE</span> <span class="o">+</span> <span class="n">start_n_bytes</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">total_n_bytes</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">%</span> <span class="n">BLOCK_SIZE</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s1">&#39;File pointer before jump: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()))</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;Reached end of block </span><span class="si">{}</span><span class="s2">. Now skipoing header of block </span><span class="si">{}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">/</span> <span class="n">BLOCK_SIZE</span><span class="p">),</span>
+                            <span class="nb">int</span><span class="p">(</span>
+                                <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">/</span> <span class="n">BLOCK_SIZE</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">88</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;File pointer after jump: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()))</span>
+                <span class="c1"># using bytearray.extend is much faster than using +=</span>
+                <span class="n">ba</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;File seems to end here!&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Total bytes read: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ba</span><span class="p">)))</span>
+
+    <span class="c1"># big endian 16 bit for I and 16 bit for Q</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">ba</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/xaratustrah" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.51d95adb.min.js"></script>
+      
+    
+  </body>
+</html>
