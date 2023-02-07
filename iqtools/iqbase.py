@@ -10,8 +10,27 @@ import numpy as np
 from scipy.signal import welch, find_peaks_cwt
 from abc import ABCMeta, abstractmethod
 from scipy.signal.windows import dpss
-from multitaper import *
+#from multitaper import *
 
+def pmtm(signal, dpss, axis=-1):
+    """Estimate the power spectral density of the input signal. This function is adopted from [this project](https://github.com/xaratustrah/multitaper) which was in turn a fork of [this project](https://github.com/nerdull/multitaper).
+
+    Args:
+        signal (ndarray): n-dimensional array of real or complex values
+        dpss (ndarray): The Slepian matrix
+        axis (int, optional): Axis along which to apply the Slepian windows. Default is the last one. Defaults to -1.
+
+    Returns:
+        (ndarray): The multitaper frame, shifted in the correct order
+    """    
+    # conversion to positive-only index
+    axis_p = (axis + signal.ndim) % signal.ndim
+    sig_exp_shape = list(signal.shape[:axis]) + [1] + list(signal.shape[axis:])
+    tap_exp_shape = [1] * axis_p + \
+        list(dpss.shape) + [1] * (signal.ndim - 1 - axis_p)
+    signal_tapered = signal.reshape(
+        sig_exp_shape) * dpss.reshape(tap_exp_shape)
+    return np.fft.fftshift(np.mean(np.absolute(np.fft.fft(signal_tapered, axis=axis_p + 1))**2, axis=axis_p), axes=axis_p)
 
 class IQBase(object):
     # Abstract class

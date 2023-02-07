@@ -1,11 +1,9 @@
 beautifulsoup4
 matplotlib
-multitaper
 nibabel
 npTDMS
 numpy
 pyTDMS
 scipy
-setuptools
 uproot3
 uproot3_methods
