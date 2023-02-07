@@ -1,5 +1,5 @@
 # Welcome to `iqtools`
-[![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://xaratustrah.github.io/iqtools)
+[![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://xaratustrah.github.io/iqtools)[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7615693.svg)](https://doi.org/10.5281/zenodo.7615693)
 
 <div style="margin-left:auto;margin-right:auto;text-align:center">
 <img src="https://raw.githubusercontent.com/xaratustrah/iqtools/main/docs/img/icon.png" width="128">
@@ -26,3 +26,10 @@ If you like to use `iqtools` with ROOT features within PyROOT, please make sure 
 
 For more information please refer to the [documentation page](https://xaratustrah.github.io/iqtools).
 
+## Citation for publications
+
+If you are using this code in your publications, please refer to [DOI:10.5281/zenodo.7615693](https://doi.org/10.5281/zenodo.7615693) for citation, or cite as:
+
+<small>
+Shahab Sanjari. (2023). <i>iqtools: Collection of code for working with offline complex valued time series data in Python.</i> Zenodo. <a href="https://doi.org/10.5281/zenodo.7615693">https://doi.org/10.5281/zenodo.7615693</a>
+</small>
