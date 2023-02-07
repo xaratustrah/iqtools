@@ -718,48 +718,48 @@
 <h1 id="examples">Examples</h1>
 <p>In case you need some data file to work through these examples you can take <a href="../files/p_400_MeV_u_332_uA_0.tiq">this one</a>.</p>
 <h2 id="example-histogram-using-matplotlib">Example histogram using <code>matplotlib</code></h2>
-<pre><code>from iqtools import *
+<p><div class="highlight"><pre><span></span><code>from iqtools import *
 
-filename = 'p_400_MeV_u_332_uA_0.tiq'
+filename = &#39;p_400_MeV_u_332_uA_0.tiq&#39;
 iq = get_iq_object(filename)
 
 iq.read_samples(200*1024)
-iq.method='fft'
+iq.method=&#39;fft&#39;
 xx, yy, zz = iq.get_power_spectrogram(lframes=1024, nframes=200)
 
 # change font
-font = {'family' : 'normal',
-        'weight' : 'bold',
-        'size'   : 12}
+font = {&#39;family&#39; : &#39;normal&#39;,
+        &#39;weight&#39; : &#39;bold&#39;,
+        &#39;size&#39;   : 12}
 
-plt.rc('font', **font)
+plt.rc(&#39;font&#39;, **font)
 
 # reduce number of ticks
-plt.locator_params(axis='x', nbins=3)
+plt.locator_params(axis=&#39;x&#39;, nbins=3)
 
 plot_spectrogram(xx, yy, zz, cen=iq.center, title=iq.file_basename, decimal_place=1, zzmin=0, zzmax=50000, cmap=cm.jet)
-</code></pre>
-<p><img alt="" src="../img/histo.png" /></p>
+</code></pre></div>
+<img alt="" src="../img/histo.png" /></p>
 <p>You can use numpy slicing of indexes in order to plot a certain region</p>
-<pre><code>sly = slice(412, 512)
+<div class="highlight"><pre><span></span><code>sly = slice(412, 512)
 slx = slice(84000,110000)
 plot_spectrogram(xx[sly,slx], yy[sly,slx], zz[sly,slx], ...)
-</code></pre>
+</code></pre></div>
 <h2 id="interface-with-cern-root">Interface with CERN ROOT</h2>
-<pre><code>from iqtools import *
+<p><div class="highlight"><pre><span></span><code>from iqtools import *
 from ROOT import TCanvas, TFile
 %matplotlib inline
 
-filename = 'p_400_MeV_u_332_uA_0.tiq'
+filename = &#39;p_400_MeV_u_332_uA_0.tiq&#39;
 iq = get_iq_object(filename)
 
 iq.read_samples(200*1024)
-iq.method='fft'
+iq.method=&#39;fft&#39;
 xx, yy, zz = iq.get_power_spectrogram(lframes=1024, nframes=200)
 
 h3 = get_root_th2d(xx, yy, zz, name=filename, title=filename)
 
-ff = TFile( f'{filename}.root', 'RECREATE' )
+ff = TFile( f&#39;{filename}.root&#39;, &#39;RECREATE&#39; )
 h3.Write()
 h3.ProjectionX().Write()
 ff.Close()
@@ -767,23 +767,23 @@ ff.Close()
 c = TCanvas(filename,filename,800,600)
 c.Divide(1,2)
 c.cd(1)
-h3.Draw('zcol')
+h3.Draw(&#39;zcol&#39;)
 c.cd(2)
 h3.ProjectionX().DrawClone()
 c.Draw()
-</code></pre>
-<p><img alt="" src="../img/rootplot.png" /></p>
+</code></pre></div>
+<img alt="" src="../img/rootplot.png" /></p>
 <p>Also 1D spectra can be exported to ROOT histograms for later analysis in ROOT:</p>
-<pre><code>ff, pp, _ = iq.get_fft()
-write_spectrum_to_root(ff, pp, filename, center=iq.center, title='spectrum')
-</code></pre>
+<div class="highlight"><pre><span></span><code>ff, pp, _ = iq.get_fft()
+write_spectrum_to_root(ff, pp, filename, center=iq.center, title=&#39;spectrum&#39;)
+</code></pre></div>
 <p>the resulting ROOT file will contain a histogram. Also time domain data can be written to a ROOT file:</p>
-<pre><code>write_timedata_to_root(iq)
-</code></pre>
+<div class="highlight"><pre><span></span><code>write_timedata_to_root(iq)
+</code></pre></div>
 <h2 id="spectrum-plot-over-time">Spectrum plot over time</h2>
 <p>Example of spectrum plot over time (not to be confused with a spectrogram plot)</p>
-<pre><code>from iqtools import *
-filename = 'cooler_off-2022.06.24.11.12.57.427.tiq'
+<div class="highlight"><pre><span></span><code>from iqtools import *
+filename = &#39;cooler_off-2022.06.24.11.12.57.427.tiq&#39;
 iq = get_iq_object(filename)
 lframes = 1024
 nframes=3000
@@ -791,22 +791,22 @@ for ii in range(6):
     sframes = ii * nframes
     iq.read(nframes = nframes, lframes = lframes, sframes = sframes)
     ff, pp, _ = iq.get_fft()
-    plot_spectrum(ff, pp / pp.max() + ii, title='Beam spectra vs time.')
-</code></pre>
+    plot_spectrum(ff, pp / pp.max() + ii, title=&#39;Beam spectra vs time.&#39;)
+</code></pre></div>
 <p><img alt="Beam vs Time" src="../img/beamvstime.png" /></p>
 <h2 id="creating-a-synthetic-signal">Creating a synthetic signal</h2>
 <p>You can create a synthetic signal like the following:</p>
-<pre><code>fs = 22050
+<p><div class="highlight"><pre><span></span><code>fs = 22050
 f = 400
 center = 133
 t, x = make_test_signal(400, 22050, noise=False, nharm=2)
 xbar , insph = make_analytical(x)
-write_signal_to_bin(xbar, 'results', fs=fs, center=center)
-write_signal_to_csv(xbar, 'results', fs=fs, center=center)
+write_signal_to_bin(xbar, &#39;results&#39;, fs=fs, center=center)
+write_signal_to_csv(xbar, &#39;results&#39;, fs=fs, center=center)
 plt.plot(t[:100], x[:100])
 plot_hilbert(xbar)
-</code></pre>
-<p><img alt="" src="../img/time.png" />
+</code></pre></div>
+<img alt="" src="../img/time.png" />
 <img alt="" src="../img/hilbert.png" /></p>
 <p>The files with names <code>results.csv</code> and <code>results.bin</code> can now be read back into the code using <code>iqtools</code>.</p>
 <h2 id="gnuradio-interface">GNURadio interface</h2>
@@ -824,12 +824,12 @@ iqtools.plot_spectrogram(xx, yy, zz)
 <pre><code>iqtools --verbose --lframes 1024 --nframes 1 --raw p_400_MeV_u_332_uA_0.tiq
 </code></pre>
 <p>The <em>sampling rate</em> and the <em>center frequency</em> will also be printed. Or within your program like:</p>
-<pre><code>from iqtools import *
-filename = 'p_400_MeV_u_332_uA_0.tiq'
+<div class="highlight"><pre><span></span><code>from iqtools import *
+filename = &#39;p_400_MeV_u_332_uA_0.tiq&#39;
 iq=TIQData(filename)
 iq.read_samples(1024*100)
-write_signal_to_bin( iq.data_array, 'p_400_MeV_u_332_uA_0', fs=iq.fs, center = iq.center, write_header=False)
-</code></pre>
+write_signal_to_bin( iq.data_array, &#39;p_400_MeV_u_332_uA_0&#39;, fs=iq.fs, center = iq.center, write_header=False)
+</code></pre></div>
 <p>Later the file can be imported using a <code>File Source</code> block in GNU-Radio. Use a <code>Throttle</code> block with the sampling rate of the data.</p>
 <p><img alt="" src="../img/gnuradio1.png" />
 <img alt="" src="../img/gnuradio2.png" /></p>

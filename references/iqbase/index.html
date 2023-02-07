@@ -3459,7 +3459,7 @@ the f_peak and p_peak are arrays of containing the coordinates of the peaks only
       <p>Get power spectrogram. Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh
 x, y and z are ndarrays and have the same shape. In order to access the contents use these kind of
 indexing as below:</p>
-<pre><code>#Slices parallel to frequency axis
+<div class="highlight"><pre><span></span><code>#Slices parallel to frequency axis
 nrows = np.shape(x)[0]
 for i in range (nrows):
     plt.plot(x[i,:], z[i,:])
@@ -3468,7 +3468,7 @@ for i in range (nrows):
 ncols = np.shape(y)[1]
 for i in range (ncols):
     plt.plot(y[:,i], z[:, i])
-</code></pre>
+</code></pre></div>
 
   <p><strong>Parameters:</strong></p>
   <table>
