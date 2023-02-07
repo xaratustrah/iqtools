@@ -8,27 +8,39 @@ site_dir: "site"
 watch: [README.md]
 
 theme:
-    name: material
-    logo: img/icon.png
-    highlightjs: true
-    features:
-      - content.code.copy
-      - content.code.annotate
-    palette:
-      - media: "(prefers-color-scheme: light)"
-        scheme: default
-        primary: red
-        accent: purple
-        toggle:
-          icon: material/weather-sunny
-          name: Switch to dark mode
-      - media: "(prefers-color-scheme: dark)"
-        scheme: slate
-        primary: black
-        accent: lime
-        toggle:
-          icon: material/weather-night
-          name: Switch to light mode
+  name: material
+  logo: img/icon.png
+  highlightjs: true
+  features:
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: red
+      accent: purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: lime
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.magiclink
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist
 
 plugins:
   - search
