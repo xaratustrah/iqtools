@@ -5,6 +5,7 @@ authors:
   given-names: "Shahab"
   orcid: "https://orcid.org/0000-0001-7321-0429"
 title: "iqtools: Collection of code for working with offline complex valued time series data in Python"
+version: 3.6.4
 doi: 10.5281/ZENODO.7615693
 date-released: 2023-02-08
 url: "https://github.com/xaratustrah/iqtools"
