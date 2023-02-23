@@ -58,9 +58,9 @@ class TDMSData(IQBase):
                          nsamples) / self.tdms_nSamplesPerRecord) + 1
 
         # that would be too much
-        if start_record + n_records > self.tdms_nRecordsPerFile:
+        if start_record + n_records - 1> self.tdms_nRecordsPerFile:
             raise ValueError(
-                'Requested number of samples requires {} records, which is larger than the available {} records in this file.'.format(start_record + n_records, self.tdms_nRecordsPerFile))
+                f'Requested number of records is larger than the available {self.tdms_nRecordsPerFile} records.')
 
         # instead of real file size find out where to stop
         absolute_size = self.tdms_first_rec_size + \
@@ -208,3 +208,21 @@ class TDMSData(IQBase):
         self.nsamples_total = self.tdms_nSamplesPerRecord * self.tdms_nRecordsPerFile
 
         self.information_read = True
+
+
+# ---------
+# Test functions
+
+def test_reader_functions(filename, first, last):
+    # complete file contains 1073741824 samples
+    lframes = 2**18
+    nframes = 4096
+    iq1 = get_iq_object(filename)
+    iq2 = get_iq_object(filename)
+    iq1.read_complete_file()
+    for i in range(first, last, 1):
+        iq2.read_samples(lframes, offset=i * lframes)
+        a = iq1.data_array[i * lframes: (i+1) * lframes]
+        b = iq2.data_array
+        assert(np.array_equal(a,b))
+        
