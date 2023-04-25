@@ -1,3 +1,39 @@
+[tool.poetry]
+name = "iqtools"
+version = "3.6.5"
+description = ""
+authors = ["xaratustrah <xaratustrah@users.noreply.github.com>"]
+license = "GPL-3.0"
+readme = "README.md"
+
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+matplotlib = "^3.7.1"
+beautifulsoup4 = "^4.12.2"
+nibabel = "^5.1.0"
+nptdms = "^1.6.2"
+pytdms = "^0.0.3"
+scipy = "^1.10.1"
+uproot3 = "^3.14.4"
+uproot3-methods = "^0.10.1"
+
+
+[tool.poetry.group.docu.dependencies]
+mkdocs = "^1.4.2"
+mkdocs-material = "^9.1.8"
+mkdocstrings = "^0.21.2"
+mkdocstrings-python = "^0.9.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.12.0"
+
+
+[tool.poetry.scripts]
+iqtools = "iqtools.__main__:main"
+
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
