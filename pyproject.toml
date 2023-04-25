@@ -19,12 +19,18 @@ uproot3 = "^3.14.4"
 uproot3-methods = "^0.10.1"
 
 
-[tool.poetry.group.docu.dependencies]
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.2"
 mkdocs-material = "^9.1.8"
 mkdocstrings = "^0.21.2"
 mkdocstrings-python = "^0.9.0"
 
+
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.12.0"
@@ -37,3 +43,4 @@ iqtools = "iqtools.__main__:main"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
