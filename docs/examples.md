@@ -28,7 +28,13 @@ plot_spectrogram(xx, yy, zz, cen=iq.center, title=iq.file_basename, decimal_plac
 ```
 ![](img/histo.png)
 
-You can use numpy slicing of indexes in order to plot a certain region
+The above command is for a jupyter notebook environment. If you like to make a stand alone script from it, one needs to change the last command to:
+
+```
+plot_spectrogram(xx, yy, zz, cen=iq.center, title=iq.file_basename, decimal_place=1, zzmin=0, zzmax=50000, cmap=cm.jet, filename='myfile')
+```
+
+You can also use numpy slicing of indexes in order to plot a certain region
 
 ```
 sly = slice(412, 512)
