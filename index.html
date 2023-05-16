@@ -282,6 +282,26 @@
     Installation
   </a>
   
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#preparation" class="md-nav__link">
+    Preparation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-packages" class="md-nav__link">
+    Installing packages
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -625,6 +645,26 @@
     Installation
   </a>
   
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#preparation" class="md-nav__link">
+    Preparation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-packages" class="md-nav__link">
+    Installing packages
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -674,11 +714,22 @@
 
 <p>Collection of code for working with offline complex valued time series data (<a href="https://en.wikipedia.org/wiki/In-phase_and_quadrature_components">inphase and quadrature</a> or IQ Data) with numpy written for Python3.</p>
 <h2 id="installation">Installation</h2>
+<h3 id="preparation">Preparation</h3>
+<p>If you do not need to use <code>iqtools</code> with ROOT features, you can skip to the next section. If you like to use <code>iqtools</code> with ROOT features within PyROOT, please make sure you have a proper installation of ROOT and PyROOT in your python environment. There are several alternatives of how to install ROOT:</p>
+<ul>
+<li>System wide installation on Linux (Please refer to the web site of <a href="https://root.cern/manual/python/">PyROOT</a> ). This approach is not recommended</li>
+<li>An easier way is to install ROOT using <code>conda-forge</code> as described <a href="https://anaconda.org/conda-forge/root/">here</a> or <a href="https://iscinumpy.gitlab.io/post/root-conda/">here</a>.</li>
+<li>Most recommended is to use <code>mamba</code>. For that just install <a href="https://mamba.readthedocs.io/en/latest/installation.html">mamba</a>. Before installing, it is recommended to create a new mamba env and do your work there:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>mamba create -n my_env
+mamba activate my_env
+mamba install root pyqt
+</code></pre></div>
+<h3 id="installing-packages">Installing packages</h3>
 <p>Clone the repository or download the source from <a href="https://github.com/xaratustrah/iqtools">GitHUB</a>. Then use <code>pip</code> for installing and uninstalling <code>iqtools</code>.</p>
 <pre><code>pip install -r requirements.txt
 pip install .
 </code></pre>
-<p>If you like to use <code>iqtools</code> with ROOT features within PyROOT, please make sure you have a proper installation of ROOT and PyROOT in your python environment. Please refer to the web site of <a href="https://root.cern/manual/python/">PyROOT</a>. An alternative, much easier way is to install ROOT using <code>conda-forge</code> as described <a href="https://anaconda.org/conda-forge/root/">here</a> or <a href="https://iscinumpy.gitlab.io/post/root-conda/">here</a>.</p>
 <h2 id="quick-usage">Quick usage</h2>
 <p><code>iqtools</code> is a library that can be embedded in data analysis projects. It also has a GUI and CLI for quick access or conversions, so it can be run as a command line program for processing data file as well. Type:</p>
 <pre><code>iqtools --help
