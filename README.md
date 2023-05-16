@@ -9,12 +9,28 @@ Collection of code for working with offline complex valued time series data ([in
 
 
 ## Installation
+
+### Preparation
+
+If you do not need to use `iqtools` with ROOT features, you can skip to the next section. If you like to use `iqtools` with ROOT features within PyROOT, please make sure you have a proper installation of ROOT and PyROOT in your python environment. There are several alternatives of how to install ROOT:
+
+* System wide installation on Linux (Please refer to the web site of [PyROOT](https://root.cern/manual/python/) ). This approach is not recommended
+* An easier way is to install ROOT using `conda-forge` as described [here](https://anaconda.org/conda-forge/root/) or [here](https://iscinumpy.gitlab.io/post/root-conda/).
+* Most recommended is to use `mamba`. For that just install [mamba](https://mamba.readthedocs.io/en/latest/installation.html). Before installing, it is recommended to create a new mamba env and do your work there:
+
+```
+mamba create -n my_env
+mamba activate my_env
+mamba install root pyqt
+```
+
+### Installing packages
+
 Clone the repository or download the source from [GitHUB](https://github.com/xaratustrah/iqtools). Then use `pip` for installing and uninstalling `iqtools`.
 
     pip install -r requirements.txt
     pip install .
 
-If you like to use `iqtools` with ROOT features within PyROOT, please make sure you have a proper installation of ROOT and PyROOT in your python environment. Please refer to the web site of [PyROOT](https://root.cern/manual/python/). An alternative, much easier way is to install ROOT using `conda-forge` as described [here](https://anaconda.org/conda-forge/root/) or [here](https://iscinumpy.gitlab.io/post/root-conda/).
 
 ## Quick usage
 
