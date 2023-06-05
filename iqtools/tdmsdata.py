@@ -185,7 +185,7 @@ class TDMSData(IQBase):
         self.fs = float(objects[b'/'][3][b'IQRate'][1])
         self.rf_att = float(objects[b'/'][3][b'RFAttentuation'][1])
         self.center = float(objects[b'/'][3][b'IQCarrierFrequency'][1])
-        self.date_time = time.ctime(os.path.getctime(self.filename))
+        self.date_time = time.ctime(os.path.getmtime(self.filename))
         self.tdms_nSamplesPerRecord = int(
             objects[b'/'][3][b'NSamplesPerRecord'][1])
         self.tdms_nRecordsPerFile = int(
