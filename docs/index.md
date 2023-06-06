@@ -8,9 +8,9 @@
 Collection of code for working with offline complex valued time series data ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components) or IQ Data) with numpy written for Python3.
 
 
-## Installation
+## Installation and usage
 
-### Preparation
+#### Preparation
 
 If you do not need to use `iqtools` with ROOT features, you can skip to the next section. If you like to use `iqtools` with ROOT features within PyROOT, please make sure you have a proper installation of ROOT and PyROOT in your python environment. There are several alternatives of how to install ROOT:
 
@@ -24,7 +24,7 @@ mamba activate my_env
 mamba install root pyqt
 ```
 
-### Installing packages
+#### Installing packages
 
 Clone the repository or download the source from [GitHUB](https://github.com/xaratustrah/iqtools). Then use `pip` for installing and uninstalling `iqtools`.
 
