@@ -10,6 +10,21 @@ Collection of code for working with offline complex valued time series data ([in
 
 ## Installation and usage
 
+#### TL;DR
+
+Quick installation if you have mamba installed. Tested on Linux and Mac.
+
+```
+mamba create -n my_env
+mamba activate my_env
+mamba install root pyqt
+pip install -r requirements.txt
+pip install .
+```
+
+Where `my_env` can be any name you like.
+
+
 #### Preparation
 
 If you do not need to use `iqtools` with ROOT features, you can skip to the next section. If you like to use `iqtools` with ROOT features within PyROOT, please make sure you have a proper installation of ROOT and PyROOT in your python environment. There are several alternatives of how to install ROOT:
