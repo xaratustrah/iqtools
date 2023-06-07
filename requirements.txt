@@ -1,10 +1,10 @@
-beautifulsoup4
+numpy
+scipy
 matplotlib
+beautifulsoup4
 nibabel
 npTDMS
-numpy
 pyTDMS
-scipy
 uproot3
 uproot3_methods
 mkdocs

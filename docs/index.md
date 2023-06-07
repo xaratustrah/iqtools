@@ -10,9 +10,11 @@ Collection of code for working with offline complex valued time series data ([in
 
 ## Installation and usage
 
+### Quick instructions
+
 #### TL;DR
 
-Quick installation if you have mamba installed. Tested on Linux and Mac.
+Quick but full installation if you have mamba installed. Tested on Linux and Mac.
 
 ```
 mamba create -n my_env
@@ -24,6 +26,19 @@ pip install .
 
 Where `my_env` can be any name you like.
 
+
+#### Test installation
+
+You can test your installation by typing:
+
+```bash
+python3 -c 'import ROOT;import PyQt5;from iqtools import*'
+```
+
+If the command returns without any error, then you are good, i.e. you should be able to use the library, or run one of the user interfaces.
+
+
+### Detailed installation instructions
 
 #### Preparation
 
@@ -39,6 +54,8 @@ mamba activate my_env
 mamba install root pyqt
 ```
 
+Same goes with the installation of `pyqt`. If you are not interested in the GUI script, you can just ignore its installation in the previous step. You can still use the CLI and of course the library itself.
+
 #### Installing packages
 
 Clone the repository or download the source from [GitHUB](https://github.com/xaratustrah/iqtools). Then use `pip` for installing and uninstalling `iqtools`.
@@ -47,11 +64,31 @@ Clone the repository or download the source from [GitHUB](https://github.com/xar
     pip install .
 
 
-## Quick usage
+### Quick usage
 
-`iqtools` is a library that can be embedded in data analysis projects. It also has a GUI and CLI for quick access or conversions, so it can be run as a command line program for processing data file as well. Type:
+`iqtools` is a library that can be embedded in data analysis projects. You can use its full functionality in your own codes by importing it:
+
+```python
+from iqtools import *
+```
+
+and use it accordingly.
+
+`iqtools` offers user interface which do not implement the full functionality of the library, but can be useful for quick access or conversions, so it can be run as a command line program for processing data file as well. For example:
 
     iqtools --help
+
+The `iqgui` script is a graphical user interface (GUI) written in Qt with limited functionality, but nevertheless interesting features. You can run it by simply typing:
+
+```bash
+iqgui
+```
+
+A simple window will appear, where you can accesss some quick feartures. For more information on the GUI frontend please refer to the [documentation page](https://xaratustrah.github.io/iqtools).
+
+<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/main/docs/img/iqgui.png" width="128">
+
+Some stand alone versions of the `iqgui` for windows may be made available in the future in the release section for the corresponding tags.
 
 ## Documentation
 

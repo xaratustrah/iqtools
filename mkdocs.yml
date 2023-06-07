@@ -65,7 +65,7 @@ nav:
       - TIQData: references/tiqdata.md
       - WAVData: references/wavdata.md
       - XDATData: references/xdatdata.md
-
+  - IQGUI: iqgui.md
 
 extra:
   social:
