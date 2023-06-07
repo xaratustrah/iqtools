@@ -2,7 +2,7 @@
 
 `iqgui` is a simple GUI front end for the `iqtools` library. It offers only limited set of features of the library, nevertheless these features may come in handy for quick checks. The main window looks like this:
 
-<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/main/docs/img/iqgui.png" width="256">
+<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/main/docs/img/iqgui.png" width="1024">
 
 ## Features:
 

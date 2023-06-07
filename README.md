@@ -86,7 +86,7 @@ iqgui
 
 A simple window will appear, where you can accesss some quick feartures. For more information on the GUI frontend please refer to the [documentation page](https://xaratustrah.github.io/iqtools).
 
-<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/main/docs/img/iqgui.png" width="128">
+<img src="https://raw.githubusercontent.com/xaratustrah/iqtools/main/docs/img/iqgui.png" width="512">
 
 Some stand alone versions of the `iqgui` for windows may be made available in the future in the release section for the corresponding tags.
 
