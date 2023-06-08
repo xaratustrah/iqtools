@@ -14,12 +14,12 @@ Collection of code for working with offline complex valued time series data ([in
 
 #### TL;DR
 
-Quick but full installation if you have mamba installed. Tested on Linux and Mac.
+Quick but full installation if you have mamba installed. Tested on Linux and Mac. First clone the repo, then go to the directory and run these commands.
 
 ```
 mamba create -n my_env
 mamba activate my_env
-mamba install root pyqt
+mamba install -y root pyqt
 pip install -r requirements.txt
 pip install .
 ```
