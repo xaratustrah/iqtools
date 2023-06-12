@@ -114,4 +114,4 @@ Please see the file [LICENSE.md](./LICENSE.md) for further information about how
 
 ## Acknowledgements
 
-Many thanks to @tfoerst3r for providing help with the project structure and licensing issues and to @@carlkl for helping with creating a static Windows version of the GUI.
+Many thanks to @tfoerst3r for providing help with the project structure and licensing issues and to @carlkl for helping with creating a static Windows version of the GUI.
