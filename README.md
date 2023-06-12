@@ -7,14 +7,15 @@
 
 Collection of code for working with offline complex valued time series data ([inphase and quadrature](https://en.wikipedia.org/wiki/In-phase_and_quadrature_components) or IQ Data) with numpy written for Python3.
 
-
 ## Installation and usage
 
 ### Quick instructions
 
-#### TL;DR
+There are many ways to install `iqtools` either fully or partly. One way to do a complete install is this:
 
-Quick but full installation if you have mamba installed. Tested on Linux and Mac. First clone the repo, then go to the directory and run these commands.
+#### TL;DR (for Linux and Mac):
+
+Quick but full installation if you have `mamba` installed. Tested on Linux and Mac. First clone the repo, then go to the directory and run these commands.
 
 ```
 mamba create -n my_env
@@ -27,7 +28,7 @@ pip install .
 Where `my_env` can be any name you like.
 
 
-#### Test installation
+#### Test your installation
 
 You can test your installation by typing:
 
@@ -36,7 +37,6 @@ python3 -c 'import ROOT;import PyQt5;from iqtools import*'
 ```
 
 If the command returns without any error, then you are good, i.e. you should be able to use the library, or run one of the user interfaces.
-
 
 ### Detailed installation instructions
 
@@ -54,7 +54,7 @@ mamba activate my_env
 mamba install root pyqt
 ```
 
-Same goes with the installation of `pyqt`. If you are not interested in the GUI script, you can just ignore its installation in the previous step. You can still use the CLI and of course the library itself.
+Same goes with the installation of `pyqt`. If you are not interested in the GUI script, you can just ignore the installation of `pyqt` in the previous step. You will not be able to use the GUI, but you can still use the CLI and of course the library itself.
 
 #### Installing packages
 
@@ -63,6 +63,12 @@ Clone the repository or download the source from [GitHUB](https://github.com/xar
     pip install -r requirements.txt
     pip install .
 
+
+### Windows
+
+Under windows, ROOT / PyROOT needs to be installed in a different manner. Please refer to the installation instructions on the corresponding [web page](https://root.cern/) of the ROOT project. If you do not need the ROOT functions, you can still run the library, CLI and GUI under Windows. Specifically, it is recommended to download the latest version of [WinPython](https://winpython.github.io/) which contains the `PyQt` library. Just unpacking WinPython is enough, no installation is needed. After this, you can just follow the instructions above to install the requirements and packages via `pip`.
+
+Some stand alone static versions of the `iqgui` for windows may be made available in the future in the release section for the corresponding tags.
 
 ### Quick usage
 
@@ -88,8 +94,6 @@ A simple window will appear, where you can accesss some quick feartures. For mor
 
 <img src="https://raw.githubusercontent.com/xaratustrah/iqtools/main/docs/img/iqgui.png" width="512">
 
-Some stand alone versions of the `iqgui` for windows may be made available in the future in the release section for the corresponding tags.
-
 ## Documentation
 
 For more information please refer to the [documentation page](https://xaratustrah.github.io/iqtools).
@@ -101,3 +105,13 @@ If you are using this code in your publications, please refer to [DOI:10.5281/ze
 <small>
 Shahab Sanjari. (2023). <i>iqtools: Collection of code for working with offline complex valued time series data in Python.</i> Zenodo. <a href="https://doi.org/10.5281/zenodo.7615693">https://doi.org/10.5281/zenodo.7615693</a>
 </small>
+
+
+## Licensing
+
+Please see the file [LICENSE.md](./LICENSE.md) for further information about how the content is licensed.
+
+
+## Acknowledgements
+
+Many thanks to @tfoerst3r for providing help with the project structure and licensing issues and to @@carlkl for helping with creating a static Windows version of the GUI.

@@ -1,4 +1,5 @@
-# -*- mode: python -*-
+# -*- mode: python -*- ; coding: utf-8 -*-
+
 # SPEC File for PyInstaller
 
 block_cipher = None
@@ -6,9 +7,8 @@ block_cipher = None
 import sys
 sys.setrecursionlimit(5000)
 from iqgui.version import __version__
-#__version__ = "3.0.0"
 
-a = Analysis(['iqgui.py'],
+a = Analysis(['iqgui/__main__.py'],
              pathex=['F:\\git\\iqgui'],
              binaries=[],
              datas=[],
