@@ -294,15 +294,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
-    TL;DR
+  <a href="#tldr-for-linux-and-mac" class="md-nav__link">
+    TL;DR (for Linux and Mac):
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#test-installation" class="md-nav__link">
-    Test installation
+  <a href="#test-your-installation" class="md-nav__link">
+    Test your installation
   </a>
   
 </li>
@@ -340,6 +340,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#windows" class="md-nav__link">
+    Windows
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#quick-usage" class="md-nav__link">
     Quick usage
   </a>
@@ -361,6 +368,20 @@
         <li class="md-nav__item">
   <a href="#citation-for-publications" class="md-nav__link">
     Citation for publications
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#licensing" class="md-nav__link">
+    Licensing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acknowledgements" class="md-nav__link">
+    Acknowledgements
   </a>
   
 </li>
@@ -712,15 +733,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
-    TL;DR
+  <a href="#tldr-for-linux-and-mac" class="md-nav__link">
+    TL;DR (for Linux and Mac):
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#test-installation" class="md-nav__link">
-    Test installation
+  <a href="#test-your-installation" class="md-nav__link">
+    Test your installation
   </a>
   
 </li>
@@ -758,6 +779,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#windows" class="md-nav__link">
+    Windows
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#quick-usage" class="md-nav__link">
     Quick usage
   </a>
@@ -779,6 +807,20 @@
         <li class="md-nav__item">
   <a href="#citation-for-publications" class="md-nav__link">
     Citation for publications
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#licensing" class="md-nav__link">
+    Licensing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acknowledgements" class="md-nav__link">
+    Acknowledgements
   </a>
   
 </li>
@@ -810,8 +852,9 @@
 <p>Collection of code for working with offline complex valued time series data (<a href="https://en.wikipedia.org/wiki/In-phase_and_quadrature_components">inphase and quadrature</a> or IQ Data) with numpy written for Python3.</p>
 <h2 id="installation-and-usage">Installation and usage</h2>
 <h3 id="quick-instructions">Quick instructions</h3>
-<h4 id="tldr">TL;DR</h4>
-<p>Quick but full installation if you have mamba installed. Tested on Linux and Mac. First clone the repo, then go to the directory and run these commands.</p>
+<p>There are many ways to install <code>iqtools</code> either fully or partly. One way to do a complete install is this:</p>
+<h4 id="tldr-for-linux-and-mac">TL;DR (for Linux and Mac):</h4>
+<p>Quick but full installation if you have <code>mamba</code> installed. Tested on Linux and Mac. First clone the repo, then go to the directory and run these commands.</p>
 <div class="highlight"><pre><span></span><code>mamba create -n my_env
 mamba activate my_env
 mamba install -y root pyqt
@@ -819,7 +862,7 @@ pip install -r requirements.txt
 pip install .
 </code></pre></div>
 <p>Where <code>my_env</code> can be any name you like.</p>
-<h4 id="test-installation">Test installation</h4>
+<h4 id="test-your-installation">Test your installation</h4>
 <p>You can test your installation by typing:</p>
 <div class="highlight"><pre><span></span><code>python3<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;import ROOT;import PyQt5;from iqtools import*&#39;</span>
 </code></pre></div>
@@ -836,12 +879,15 @@ pip install .
 mamba activate my_env
 mamba install root pyqt
 </code></pre></div>
-<p>Same goes with the installation of <code>pyqt</code>. If you are not interested in the GUI script, you can just ignore its installation in the previous step. You can still use the CLI and of course the library itself.</p>
+<p>Same goes with the installation of <code>pyqt</code>. If you are not interested in the GUI script, you can just ignore the installation of <code>pyqt</code> in the previous step. You will not be able to use the GUI, but you can still use the CLI and of course the library itself.</p>
 <h4 id="installing-packages">Installing packages</h4>
 <p>Clone the repository or download the source from <a href="https://github.com/xaratustrah/iqtools">GitHUB</a>. Then use <code>pip</code> for installing and uninstalling <code>iqtools</code>.</p>
 <pre><code>pip install -r requirements.txt
 pip install .
 </code></pre>
+<h3 id="windows">Windows</h3>
+<p>Under windows, ROOT / PyROOT needs to be installed in a different manner. Please refer to the installation instructions on the corresponding <a href="https://root.cern/">web page</a> of the ROOT project. If you do not need the ROOT functions, you can still run the library, CLI and GUI under Windows. Specifically, it is recommended to download the latest version of <a href="https://winpython.github.io/">WinPython</a> which contains the <code>PyQt</code> library. Just unpacking WinPython is enough, no installation is needed. After this, you can just follow the instructions above to install the requirements and packages via <code>pip</code>.</p>
+<p>Some stand alone static versions of the <code>iqgui</code> for windows may be made available in the future in the release section for the corresponding tags.</p>
 <h3 id="quick-usage">Quick usage</h3>
 <p><code>iqtools</code> is a library that can be embedded in data analysis projects. You can use its full functionality in your own codes by importing it:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">iqtools</span> <span class="kn">import</span> <span class="o">*</span>
@@ -855,7 +901,6 @@ pip install .
 </code></pre></div>
 <p>A simple window will appear, where you can accesss some quick feartures. For more information on the GUI frontend please refer to the <a href="https://xaratustrah.github.io/iqtools">documentation page</a>.</p>
 <p><img src="https://raw.githubusercontent.com/xaratustrah/iqtools/main/docs/img/iqgui.png" width="512"></p>
-<p>Some stand alone versions of the <code>iqgui</code> for windows may be made available in the future in the release section for the corresponding tags.</p>
 <h2 id="documentation">Documentation</h2>
 <p>For more information please refer to the <a href="https://xaratustrah.github.io/iqtools">documentation page</a>.</p>
 <h2 id="citation-for-publications">Citation for publications</h2>
@@ -863,6 +908,10 @@ pip install .
 <p><small>
 Shahab Sanjari. (2023). <i>iqtools: Collection of code for working with offline complex valued time series data in Python.</i> Zenodo. <a href="https://doi.org/10.5281/zenodo.7615693"><a href="https://doi.org/10.5281/zenodo.7615693">https://doi.org/10.5281/zenodo.7615693</a></a>
 </small></p>
+<h2 id="licensing">Licensing</h2>
+<p>Please see the file <a href="./LICENSE.md">LICENSE.md</a> for further information about how the content is licensed.</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>Many thanks to @tfoerst3r for providing help with the project structure and licensing issues and to @@carlkl for helping with creating a static Windows version of the GUI.</p>
 
 
 
