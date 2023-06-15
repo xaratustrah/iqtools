@@ -206,28 +206,6 @@ def get_inv_cplx_spectrogram(zz, nframes, lframes):
     return inv_zz
 
 
-def get_root_th2d(xx, yy, zz, name='', title=''):
-    """Convert spectrpgram to CERN ROOT TH2 Object
-
-    Args:
-        xx (ndarray): Frequency meshgrid
-        yy (ndarray): Time meshgrid
-        zz (ndarray): Power meshgrid
-        name (str, optional): Name of TH object. Defaults to ''.
-        title (str, optional): Title of TH object. Defaults to ''.
-
-    Returns:
-        (TH-object): ROOT Histogram
-    """    
-    from ROOT import TH2D
-    h = TH2D(name, title, np.shape(xx)[
-             1], xx[0, 0], xx[0, -1], np.shape(yy)[0], yy[0, 0], yy[-1, 0])
-    for j in range(np.shape(yy)[0]):
-        for i in range(np.shape(xx)[1]):
-            h.SetBinContent(i, j, zz[j, i])
-    return h
-
-
 def get_concat_spectrogram(x1, y1, z1, x2, y2, z2, delta_y=None):
     """Concatenate two spectrograms
 
@@ -579,6 +557,52 @@ def write_timedata_to_npy(iq_obj, filename):
     np.save(filename + '.npy', vars(iq_obj))
 
 
+def write_spectrum_to_csv(ff, pp, filename, center=0):
+    """Writes 1D spectrum to text CSV format. First column will be frequency, second linear power and third logarithmic power.
+
+    Args:
+        ff (ndarray): Frequency data array
+        pp (ndarray): Power data array
+        filename (string): Output file name
+        center (float, optional): Center frequency. Defaults to 0.
+    """    
+    a = np.concatenate(
+        (ff, pp, IQBase.get_dbm(pp)))
+    b = np.reshape(a, (3, -1)).T
+    np.savetxt(filename + '.csv', b, header='Delta f [Hz] @ {:.2e} [Hz]|Power [W]|Power [dBm]'.format(
+        center), delimiter='|')
+
+
+def write_spectrogram_to_nifti(zz, filename):
+    """Writes spectrogram to a NIFTI file.
+
+    Args:
+        zz (ndarray): Power meshgrid
+        filename (string): File name
+    """    
+    # normalize to 1
+    b = np.expand_dims(zz, axis=2)
+    b = b/b.max()
+    img = nib.Nifti1Image(b, affine=np.eye(4))
+    nib.save(img, f'{filename}.nii.gz')
+
+def remove_plot_content_from_spectrogram_svg(input_filename, output_filename):
+    """Removes plot content from an existing SVG file. This function is specifically useful if you like to have an empty spectrogram plot for publication purposes.
+
+    Args:
+        input_filename (string): Input file name
+        output_filename (string): Output file name
+    """    
+    soup = BeautifulSoup(open(input_filename).read(),features="xml")
+    for element in soup.find_all('g', {"id" : "QuadMesh_1"}):
+        element.decompose()
+    with open(output_filename, "w") as file:
+        file.write(str(soup))
+
+
+# --------------------------------
+# ROOT related functions
+
 def write_timedata_to_root(iq_obj):
     """Writes time data to a root TTree.
     The structure of the root files in this case is like this: there are two
@@ -608,22 +632,6 @@ def write_timedata_to_root(iq_obj):
         f['t_timedata'].extend({'timedata': np.abs(iq_obj.data_array)**2})
 
 
-def write_spectrum_to_csv(ff, pp, filename, center=0):
-    """Writes 1D spectrum to text CSV format. First column will be frequency, second linear power and third logarithmic power.
-
-    Args:
-        ff (ndarray): Frequency data array
-        pp (ndarray): Power data array
-        filename (string): Output file name
-        center (float, optional): Center frequency. Defaults to 0.
-    """    
-    a = np.concatenate(
-        (ff, pp, IQBase.get_dbm(pp)))
-    b = np.reshape(a, (3, -1)).T
-    np.savetxt(filename + '.csv', b, header='Delta f [Hz] @ {:.2e} [Hz]|Power [W]|Power [dBm]'.format(
-        center), delimiter='|')
-
-
 def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
     """Write spectrum to a ROOT file using objects of TH class
 
@@ -651,29 +659,24 @@ def write_spectrum_to_root(ff, pp, filename, center=0, title=''):
     file = uproot3.recreate(filename + '.root', compression=uproot3.ZLIB(4))
     file["th1f"] = th1f
 
-def write_spectrogram_to_nifti(zz, filename):
-    """Writes spectrogram to a NIFTI file.
+def get_root_th2d(xx, yy, zz, name='', title=''):
+    """Convert spectrpgram to CERN ROOT TH2 Object
 
     Args:
+        xx (ndarray): Frequency meshgrid
+        yy (ndarray): Time meshgrid
         zz (ndarray): Power meshgrid
-        filename (string): File name
-    """    
-    # normalize to 1
-    b = np.expand_dims(zz, axis=2)
-    b = b/b.max()
-    img = nib.Nifti1Image(b, affine=np.eye(4))
-    nib.save(img, f'{filename}.nii.gz')
+        name (str, optional): Name of TH object. Defaults to ''.
+        title (str, optional): Title of TH object. Defaults to ''.
 
-def remove_plot_content_from_spectrogram_svg(input_filename, output_filename):
-    """Removes plot content from an existing SVG file. This function is specifically useful if you like to have an empty spectrogram plot for publication purposes.
-
-    Args:
-        input_filename (string): Input file name
-        output_filename (string): Output file name
+    Returns:
+        (TH-object): ROOT Histogram
     """    
-    soup = BeautifulSoup(open(input_filename).read(),features="xml")
-    for element in soup.find_all('g', {"id" : "QuadMesh_1"}):
-        element.decompose()
-    with open(output_filename, "w") as file:
-        file.write(str(soup))
-        
+    from ROOT import TH2D
+    h = TH2D(name, title, np.shape(xx)[
+             1], xx[0, 0], xx[0, -1], np.shape(yy)[0], yy[0, 0], yy[-1, 0])
+    for j in range(np.shape(yy)[0]):
+        for i in range(np.shape(xx)[1]):
+            h.SetBinContent(i, j, zz[j, i])
+    return h
+

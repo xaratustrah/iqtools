@@ -43,11 +43,15 @@ This is the standard Matplotlib plot widget that allows different operations, in
 
 ## Advanced hints:
 
-Some additional information, in case you are interested in creating a Windows binary from scratch, you can achieve this by using the [PyInstaller](https://pyinstaller.org/en/stable/) package. The best result can be achieved by using the [WinPython](http://winpython.github.io/) package, which already includes PyQt library. Since none of the ROOT functions are needed from within `iqgui`, this variant of WinPython should be enough for building a static windows binary of `iqgui`. The rest is done using PyInstaller. First install it:
+Some additional information, in case you are interested in creating a Windows binary from scratch, you can achieve this by using the [PyInstaller](https://pyinstaller.org/en/stable/) package. The best result can be achieved by using the [WinPython](http://winpython.github.io/) package, which already includes PyQt5 library. Since none of the ROOT functions are needed from within `iqgui`, this variant of WinPython should be enough for running or building a static windows binary of `iqgui`. The rest is done using PyInstaller.
+
+Note that WinPython is a huge package, so in order to make a smaller binary, you might like to first create an empty virtual environment. Run the Power Shell from the WinPython directory, `cd`to the place you have unpacked `iqtools`, then:
 
 ```bash
-pip install pyinstaller
+virtualenv VIR1
+.\VIR1\Scripts\activate
+pip install --upgrade pyinstaller==5.7.0 -r requirements.txt 
 pyinstaller iqgui.spec
+deactivate
 ```
-
-The resulting files will be in the `dist` directory, somehow really huge, approx. 1.5 GB. But then you have a static Windows binary.
+Where `VIR1` could actually be any name. The resulting files and the EXE file will be in the `dist` directory.
