@@ -47,7 +47,7 @@ def plot_frame_power(yy, frame_power):
     plt.title('Frame power')
 
 
-def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None, xlabel = None, ylabel = None):
+def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None, decimal_place=2, xlabel = None, ylabel = None):
     """
     Plot the calculated spectrogram
     :param xx: first dimension
