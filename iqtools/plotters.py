@@ -47,7 +47,7 @@ def plot_frame_power(yy, frame_power):
     plt.title('Frame power')
 
 
-def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None, decimal_place=2, xlabel = None, ylabel = None):
+def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None, xlabel = None, ylabel = None):
     """
     Plot the calculated spectrogram
     :param xx: first dimension
@@ -78,7 +78,6 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
         zzmax (int, optional): Color contrast max. Defaults to 1e6.
         mask (bool, optional): Mask out values less than this, for cleaner histograms. Defaults to False.
         span (float, optional): Show only a frequency window. Defaults to None.
-        decimal_place (int, optional): Limit display of decimal places of all numbers in the plot. Defaults to 2.
         xlabel (str, optional): String with the x-label.
         ylabel (str, optional): String with the y-label.
     """    
@@ -108,10 +107,9 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
 
     sp = plt.pcolormesh(xx[:, spanmask], yy[:, spanmask],
                         zz[:, spanmask], cmap=cmap, norm=mynorm, shading='auto')
-    cb = plt.colorbar(sp, format=f'%.{decimal_place}e')
+    cb = plt.colorbar(sp)
 
     ax = plt.gca()
-    ax.xaxis.set_major_formatter(FormatStrFormatter(f'%.{decimal_place}e'))
 
     delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
     delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
@@ -119,13 +117,11 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
     if xlabel:
         plt.xlabel(xlabel)
     else:
-        plt.xlabel(
-        r"$\Delta f$ @ {} (resolution = {})".format(get_eng_notation(cen, unit='Hz'), get_eng_notation(delta_f, unit='Hz')))
+        plt.xlabel(rf"$\Delta f$ @ {cen} [Hz]  ($\delta f$ = {delta_f:.1f} [Hz])")
     if ylabel:
         plt.ylabel(ylabel)
     else:
-        plt.ylabel('Time [sec] (resolution = {})'.format(
-            get_eng_notation(delta_t, 's')))
+        plt.ylabel(rf'Time [s] ($\delta t$ = {delta_t:.3f} [s])')
 
     plt.title(title)
 
