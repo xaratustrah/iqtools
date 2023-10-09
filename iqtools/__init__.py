@@ -10,5 +10,6 @@ from .wavdata import WAVData
 from .grdata import GRData
 from .lcdata import LCData
 from .xdatdata import XDATData
+from .r3fdata import R3FData
 from .plotters import *
 from .tools import *

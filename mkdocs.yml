@@ -1,0 +1,73 @@
+site_name: iqtools Documentation
+site_description: "Library and CLI/GUI for processing IQ data"
+site_url: "https://xaratustrah.github.io/iqtools"
+repo_url: "https://github.com/xaratustrah/iqtools"
+edit_uri: "blob/main/docs/"
+repo_name: "xaratustrah/iqtools"
+site_dir: "site"
+watch: [README.md]
+
+theme:
+  name: material
+  logo: img/icon.png
+  highlightjs: true
+  features:
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: red
+      accent: purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: lime
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.magiclink
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist
+
+plugins:
+  - search
+  - mkdocstrings
+
+nav:
+  - Main page: index.md
+  - Overview: overview.md
+  - Examples: examples.md
+  - Code Reference:
+    - Plotters: references/plotters.md
+    - Tools: references/tools.md
+    - IQBase: references/iqbase.md
+    - Sub classes:
+      - BINData: references/bindata.md
+      - CSVData: references/csvdata.md
+      - GRData: references/grdata.md
+      - IQTData: references/iqtdata.md
+      - LCData: references/lcdata.md
+      - R3Data: references/r3fdata.md
+      - TCAPData: references/tcapdata.md
+      - TIQData: references/tiqdata.md
+      - WAVData: references/wavdata.md
+      - XDATData: references/xdatdata.md
+  - IQGUI: iqgui.md
+
+extra:
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/xaratustrah

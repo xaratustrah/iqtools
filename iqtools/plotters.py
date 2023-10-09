@@ -1,7 +1,7 @@
 """
 Collection of plotters
 
-Xaratustrah
+xaratustrah@github
 2017
 """
 
@@ -22,7 +22,11 @@ matplotlib.use('Agg')
 
 
 def plot_hilbert(x_bar):
-    """Show Hilbert plot."""
+    """Shows the Hilbert plot
+
+    Args:
+        x_bar (ndarray): Complex valued data array
+    """    
 
     plt.plot(np.real(x_bar), np.imag(x_bar))
     plt.grid(True)
@@ -31,12 +35,12 @@ def plot_hilbert(x_bar):
 
 
 def plot_frame_power(yy, frame_power):
-    """
-    Plot frame power, i.e. trapezoid along each time frame
-    :param yy:
-    :param frame_power:
-    :return:
-    """
+    """Plot frame power, i.e. trapezoid along each time frame
+
+    Args:
+        yy (ndarray): Time meshgrid
+        frame_power (ndarray): Array describing the frame power
+    """    
     plt.plot(yy[:, 0], IQBase.get_dbm(frame_power))
     plt.ylabel('Power [dBm]')
     plt.xlabel('Time [sec]')
@@ -59,6 +63,25 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
     :return:
     """
 
+    """
+    Args:
+        xx (ndarray): Frequency meshgrid
+        yy (ndarray): Time meshgrid
+        zz (ndarray): Power meshgrid
+        cen (float, optional): Center frequency. Defaults to 0.0.
+        cmap (string, optional): Matplotlib.colormap. Defaults to cm.jet.
+        dpi (int, optional): Resolution for PNG output. Defaults to 300.
+        dbm (bool, optional): Display in dBm scale. Defaults to False.
+        filename (str, optional): File name. Defaults to None, in which case nothing will be saved to file.
+        title (str, optional): Title of the plot. Defaults to 'Spectrogram'.
+        zzmin (int, optional): Color contrast min. Defaults to 0.
+        zzmax (int, optional): Color contrast max. Defaults to 1e6.
+        mask (bool, optional): Mask out values less than this, for cleaner histograms. Defaults to False.
+        span (float, optional): Show only a frequency window. Defaults to None.
+        decimal_place (int, optional): Limit display of decimal places of all numbers in the plot. Defaults to 2.
+        xlabel (str, optional): String with the x-label.
+        ylabel (str, optional): String with the y-label.
+    """    
     # Apply display threshold if zmin and zmax are provided, they must be different than the default values of 0 and 1e6
     # otherwise ignore them
 
@@ -85,10 +108,10 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
 
     sp = plt.pcolormesh(xx[:, spanmask], yy[:, spanmask],
                         zz[:, spanmask], cmap=cmap, norm=mynorm, shading='auto')
-    cb = plt.colorbar(sp)
+    cb = plt.colorbar(sp, format=f'%.{decimal_place}e')
 
     ax = plt.gca()
-    ax.xaxis.set_major_formatter(FormatStrFormatter('%.0e'))
+    ax.xaxis.set_major_formatter(FormatStrFormatter(f'%.{decimal_place}e'))
 
     delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
     delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
@@ -103,12 +126,13 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
     else:
         plt.ylabel('Time [sec] (resolution = {})'.format(
             get_eng_notation(delta_t, 's')))
+
     plt.title(title)
 
     if dbm:
-        cb.set_label('Power Spectral Density [dBm/Hz]')
+        cb.set_label('Power Spectral Density a.u. [dBm/Hz]')
     else:
-        cb.set_label('Power Spectral Density')
+        cb.set_label('Power Spectral Density a.u.')
 
     if filename is not None:
         plt.savefig(filename + '.png', dpi=dpi, bbox_inches='tight')
@@ -116,7 +140,17 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
 
 
 def plot_spectrum(f, p, cen=0.0, span=None, dbm=False, filename=None, title='Spectrum'):
-    """Plot average power in dBm per Hz"""
+    """Plots 2D spectrum in dBm per Hz
+
+    Args:
+        f (ndarray): Frequency array
+        p (ndarray): Power array
+        cen (float, optional): Center frequency. Defaults to 0.0.
+        span (float, optional): Frequency window. Defaults to None.
+        dbm (bool, optional): Display in dBm scale. Defaults to False.
+        filename (str, optional): File name. Defaults to None, in which case nothing will be saved to file.
+        title (str, optional): Title of the plot. Defaults to 'Spectrogram'.
+    """    
 
     if not span:
         spanmask = (f != 0) | (f == 0)
@@ -144,12 +178,11 @@ def plot_spectrum(f, p, cen=0.0, span=None, dbm=False, filename=None, title='Spe
 
 
 def plot_spectrogram_with_gnuplot(zz):
-    """
-    zz: reshaped data in form of a matrix for plotting
+    """Plots using external instance of [GNUPlot](http://www.gnuplot.info/). Data is reshaped in form of a matrix for plotting. Idea based on [this post on SO](https://stackoverflow.com/a/15885230/5177935)
 
-    based on https://stackoverflow.com/a/15885230/5177935
-
-    """
+    Args:
+        zz (ndarray): Power meshgrid
+    """    
     temp_file = 'foo.bin'
     with open(temp_file, 'wb') as foo:
         for (i, j), dat in np.ndenumerate(np.rot90(zz, 3)):
@@ -181,76 +214,15 @@ def plot_spectrogram_with_gnuplot(zz):
 
 
 def plot_phase_shift(x, phase):
-    """
-    Plots the signal before and after the phase shift
-    """
+    """Plots the signal before and after the phase shift
+
+    Args:
+        x (ndarray): Data array
+        phase (float): Phase shift
+    """    
     plt.rcParams['axes.grid'] = True
     fig, axs = plt.subplots(2, 2, sharex=True, sharey=True)
     axs[0, 0].plot(np.real(x))
     axs[0, 1].plot(np.imag(x))
     axs[1, 0].plot(np.real(shift_phase(x, phase)))
     axs[1, 1].plot(np.imag(shift_phase(x, phase)))
-
-
-def get_iq_object(filename, header_filename):
-    """
-    Return suitable object accorting to extension.
-
-    Parameters
-    ----------
-    filename
-
-    Returns
-    -------
-
-    """
-    # Object generation
-    _, file_extension = os.path.splitext(filename)
-
-    iq_data = None
-
-    if file_extension.lower() == '.txt' or file_extension.lower() == '.csv':
-        log.info('This is an ASCII file.')
-        iq_data = CSVData(filename)
-
-    if file_extension.lower() == '.bin':
-        log.info('This is a raw binary file.')
-        iq_data = BINData(filename)
-
-    if file_extension.lower() == '.wav':
-        log.info('This is a wav file.')
-        iq_data = WAVData(filename)
-
-    if file_extension.lower() == '.iqt':
-        log.info('This is an iqt file.')
-        iq_data = IQTData(filename)
-
-    if file_extension.lower() == '.iq':
-        log.info('This is an iq file.')
-        iq_data = IQTData(filename)
-
-    if file_extension.lower() == '.tiq':
-        log.info('This is a tiq file.')
-        iq_data = TIQData(filename)
-
-    if file_extension.lower() == '.tdms':
-        log.info('This is a TDMS file.')
-        iq_data = TDMSData(filename)
-
-    if file_extension.lower() == '.dat':
-        log.info('This is a TCAP file.')
-        if not header_filename:
-            log.info('TCAP files need a text header file as well. Aborting....')
-            return None
-        else:
-            iq_data = TCAPData(filename, header_filename)
-
-    if file_extension.lower() == '.xdat':
-        log.info('This is a XDAT file.')
-        if not header_filename:
-            log.info('XDAT files need a text header file as well. Aborting....')
-            return None
-        else:
-            iq_data = XDATData(filename, header_filename)
-
-    return iq_data

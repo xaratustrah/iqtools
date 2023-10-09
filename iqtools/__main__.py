@@ -3,7 +3,7 @@
 Collection of tools for dealing with IQ data. This code converts data in TIQ
 format and extracts the data in numpy format
 
-xaratustrah oct-2014
+xaratustrah@github oct-2014
             mar-2015
             aug-2015
             jan-2016
@@ -90,20 +90,20 @@ def main():
     if args.fft:
         log.info('Generating FFT plot.')
         f1, p1, _ = iq_data.get_fft()
-        plot_spectrum(f1, p1, iq_data.center, iq_data.span, dbm=False,
-                      span=args.span, filename='{}_fft'.format(outfilename_wo_ext))
+        plot_spectrum(f1, p1, cen=iq_data.center, span=args.span, dbm=False,
+                      filename='{}_fft'.format(outfilename_wo_ext))
 
     if args.psd:
         log.info('Generating PSD plot.')
         f2, p2 = iq_data.get_pwelch()
-        plot_spectrum(f2, p2, iq_data.center, iq_data.span, dbm=True,
-                      span=args.span, filename='{}_psd_welch'.format(outfilename_wo_ext))
+        plot_spectrum(f2, p2, cen=iq_data.center, span=args.span, dbm=True,
+                      filename='{}_psd_welch'.format(outfilename_wo_ext))
 
     if args.sgram:
         iq_data.method = 'fft'
         log.info('Generating spectrogram plot.')
-        x, y, z = iq_data.get_spectrogram(args.nframes, args.lframes)
-        plot_spectrogram(x, y, z, iq_data.center, cmap=cm.jet, dpi=300, dbm=False,
+        x, y, z = iq_data.get_power_spectrogram(args.nframes, args.lframes)
+        plot_spectrogram(x, y, z, cen = iq_data.center, cmap=cm.jet, dpi=300, dbm=False,
                          span=args.span, filename='{}_spectrogram'.format(outfilename_wo_ext))
 
     if args.npy:

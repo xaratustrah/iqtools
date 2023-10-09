@@ -2,7 +2,7 @@
 Class for IQ Data
 IQT format
 
-Xaratustrah Aug-2015
+xaratustrah@github Aug-2015
 
 """
 
@@ -25,15 +25,14 @@ class IQTData(IQBase):
         self.max_input_level = 0
         self.scale = 0
 
-    def read_samples(self, nsamples, offset=0):
-        # TODO:
-        pass
-
     def read(self, nframes=10, lframes=1024, sframes=0):
-        """
-        Read IQT Files
-        :return:
-        """
+        """Read a section of the file.
+
+        Args:
+            nframes (int, optional): Number of frames to be read. Defaults to 10.
+            lframes (int, optional): Length of each frame. Defaults to 1024.
+            sframes (int, optional): Starting frame. Defaults to 0.
+        """        
         # in iqt files, lframes is always fixed 1024 at the time of reading the file.
         # At the usage time, the lframe can be changed from time data
 
@@ -154,11 +153,14 @@ class IQTData(IQBase):
 
     @staticmethod
     def read_header(str):
-        """
-        Parses key = value from the file header
-        :param str:
-        :return: dictionary
-        """
+        """Parses key / values from the file header
+
+        Args:
+            str (string): header string
+
+        Returns:
+            dictionary: A dictionary of key/values
+        """        
         dic = {}
         for line in str:
             name, var = line.partition("=")[::2]

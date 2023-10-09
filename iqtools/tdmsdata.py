@@ -2,7 +2,7 @@
 Class for IQ Data
 TDMS format
 
-Xaratustrah Aug-2015
+xaratustrah@github Aug-2015
 
 """
 
@@ -12,6 +12,7 @@ import logging as log
 import numpy as np
 from .iqbase import IQBase
 import pytdms
+from nptdms import TdmsFile
 
 
 class TDMSData(IQBase):
@@ -27,6 +28,8 @@ class TDMSData(IQBase):
 
         self.rf_att = 0.0
         self.date_time = ''
+        
+        self.read_tdms_information()
 
     def read(self, nframes=10, lframes=1024, sframes=0):
         self.read_samples(nframes * lframes, offset=sframes * lframes)
@@ -55,9 +58,9 @@ class TDMSData(IQBase):
                          nsamples) / self.tdms_nSamplesPerRecord) + 1
 
         # that would be too much
-        if start_record + n_records > self.tdms_nRecordsPerFile:
+        if start_record + n_records - 1> self.tdms_nRecordsPerFile:
             raise ValueError(
-                'Requested number of samples requires {} records, which is larger than the available {} records in this file.'.format(start_record + n_records, self.tdms_nRecordsPerFile))
+                f'Requested number of records is larger than the available {self.tdms_nRecordsPerFile} records.')
 
         # instead of real file size find out where to stop
         absolute_size = self.tdms_first_rec_size + \
@@ -115,7 +118,19 @@ class TDMSData(IQBase):
         self.data_array = self.data_array * self.scale
         log.info("TDMS Read finished.")
 
+
     def read_complete_file(self):
+        tdms_file = TdmsFile.read(self.filename) 
+        i_channel = tdms_file['RecordData']['I']
+        q_channel = tdms_file['RecordData']['Q']
+        #timestamp_channel = tdms_file['RecordHeader']['absolute timestamp']
+        gain_channel = tdms_file['RecordHeader']['gain']
+        self.scale = gain_channel[0]
+        data = np.zeros(2 * i_channel[:].size, dtype=np.float32)
+        data[::2], data[1::2] = i_channel[:], q_channel[:]
+        self.data_array = data.view(np.complex64) * self.scale
+
+    def read_complete_file_old(self):
         """
         Read a complete TDMS file. Hope you know what you are doing!
         :return:
@@ -185,7 +200,7 @@ class TDMSData(IQBase):
         self.fs = float(objects[b'/'][3][b'IQRate'][1])
         self.rf_att = float(objects[b'/'][3][b'RFAttentuation'][1])
         self.center = float(objects[b'/'][3][b'IQCarrierFrequency'][1])
-        self.date_time = time.ctime(os.path.getctime(self.filename))
+        self.date_time = time.ctime(os.path.getmtime(self.filename))
         self.tdms_nSamplesPerRecord = int(
             objects[b'/'][3][b'NSamplesPerRecord'][1])
         self.tdms_nRecordsPerFile = int(
@@ -193,3 +208,21 @@ class TDMSData(IQBase):
         self.nsamples_total = self.tdms_nSamplesPerRecord * self.tdms_nRecordsPerFile
 
         self.information_read = True
+
+
+# ---------
+# Test functions
+
+def test_reader_functions(filename, first, last):
+    # complete file contains 1073741824 samples
+    lframes = 2**18
+    nframes = 4096
+    iq1 = get_iq_object(filename)
+    iq2 = get_iq_object(filename)
+    iq1.read_complete_file()
+    for i in range(first, last, 1):
+        iq2.read_samples(lframes, offset=i * lframes)
+        a = iq1.data_array[i * lframes: (i+1) * lframes]
+        b = iq2.data_array
+        assert(np.array_equal(a,b))
+        
