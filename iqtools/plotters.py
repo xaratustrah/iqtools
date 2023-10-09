@@ -43,7 +43,7 @@ def plot_frame_power(yy, frame_power):
     plt.title('Frame power')
 
 
-def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None):
+def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None, xlabel = None, ylabel = None):
     """
     Plot the calculated spectrogram
     :param xx: first dimension
@@ -92,11 +92,17 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
 
     delta_f = np.abs(np.abs(xx[0, 1]) - np.abs(xx[0, 0]))
     delta_t = np.abs(np.abs(yy[1, 0]) - np.abs(yy[0, 0]))
-
-    plt.xlabel(
-        "Delta f @ {} (resolution = {})".format(get_eng_notation(cen, unit='Hz'), get_eng_notation(delta_f, unit='Hz')))
-    plt.ylabel('Time [sec] (resolution = {})'.format(
-        get_eng_notation(delta_t, 's')))
+    
+    if xlabel:
+        plt.xlabel(xlabel)
+    else:
+        plt.xlabel(
+        r"$\Delta f$ @ {} (resolution = {})".format(get_eng_notation(cen, unit='Hz'), get_eng_notation(delta_f, unit='Hz')))
+    if ylabel:
+        plt.ylabel(ylabel)
+    else:
+        plt.ylabel('Time [sec] (resolution = {})'.format(
+            get_eng_notation(delta_t, 's')))
     plt.title(title)
 
     if dbm:
