@@ -512,7 +512,7 @@ def read_rsa_specan_xml(filename):
     return f, p, (xunits, yunits)
 
 
-def read_data_csv(filename):
+def read_rsa_data_csv(filename):
     """Read special format CSV data file from RSA5100 series output.
     Please note that 50 ohm power termination is already considered
     for these data.
