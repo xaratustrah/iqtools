@@ -11,4 +11,3 @@ mkdocs
 mkdocs-material
 mkdocstrings
 mkdocstrings-python
-pyqt5

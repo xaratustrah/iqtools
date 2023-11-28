@@ -406,7 +406,7 @@ def write_signal_to_bin(cx, filename, fs=1, center=0, write_header=True):
     cx.tofile(filename + '.bin')
 
 
-def write_signal_to_csv(cx, filename, fs=1, center=0):
+def write_signal_to_csv(cx, filename, fs=1, center=0, delimiter='|'):
     """Write complex valued signal to CSV text file
     
     Args:
@@ -419,8 +419,8 @@ def write_signal_to_csv(cx, filename, fs=1, center=0):
     cx = np.insert(cx, 0, complex(fs, center))
     with open(filename + '.csv', 'w') as f:
         for i in range(len(cx)):
-            f.write('{}|{}\n'.format(
-                np.real(cx[i]), np.imag(cx[i])))
+            f.write('{}{}{}\n'.format(
+                np.real(cx[i]), delimiter, np.imag(cx[i])))
 
 
 def write_signal_to_wav(cx, filename, fs=1):
@@ -557,7 +557,7 @@ def write_timedata_to_npy(iq_obj, filename):
     np.save(filename + '.npy', vars(iq_obj))
 
 
-def write_spectrum_to_csv(ff, pp, filename, center=0):
+def write_spectrum_to_csv(ff, pp, filename, center=0, delimiter = '|'):
     """Writes 1D spectrum to text CSV format. First column will be frequency, second linear power and third logarithmic power.
 
     Args:
@@ -570,7 +570,7 @@ def write_spectrum_to_csv(ff, pp, filename, center=0):
         (ff, pp, IQBase.get_dbm(pp)))
     b = np.reshape(a, (3, -1)).T
     np.savetxt(filename + '.csv', b, header='Delta f [Hz] @ {:.2e} [Hz]|Power [W]|Power [dBm]'.format(
-        center), delimiter='|')
+        center), delimiter=delimiter)
 
 
 def write_spectrogram_to_nifti(zz, filename):
