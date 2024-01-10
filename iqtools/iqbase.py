@@ -500,6 +500,18 @@ class IQBase(object):
         final = summ / nbw
         return final
 
+    def downsample_and_average(self, every=2):
+        """Downsampling and averaging in the time domain. This function overrides the data array and also the sampling
+        frequency, allowing further operations to be performed smoothly. If you do not want this behaviour, please make a copy of the object first.
+
+        Args:
+            every (int, optional): Defaults to 2. How many samples to average in time domain.
+
+        """
+        assert len(self.data_array) % every == 0
+        self.data_array = np.mean(np.reshape(self.data_array, (int(len(self.data_array) / every), every)), axis= 1)
+        self.fs = self.fs / every
+
     @staticmethod
     def zoom_in_freq(f, p, center=0, span=1000):
         """Cut the frequency domain data
