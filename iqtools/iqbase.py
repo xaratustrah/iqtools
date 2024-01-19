@@ -10,7 +10,7 @@ import numpy as np
 from scipy.signal import welch, find_peaks_cwt
 from abc import ABCMeta, abstractmethod
 from scipy.signal.windows import dpss
-#from multitaper import *
+import pyfftw
 
 def pmtm(signal, dpss, axis=-1):
     """Estimate the power spectral density of the input signal. This function is adopted from [this project](https://github.com/xaratustrah/multitaper) which was in turn a fork of [this project](https://github.com/nerdull/multitaper).
@@ -51,7 +51,7 @@ class IQBase(object):
         self.file_basename = os.path.basename(filename)
         self.filename_wo_ext = os.path.splitext(filename)[0]
         self.window = 'rectangular'
-        self.method = 'fft'
+        self.method = 'npfft'
 
     def __str__(self):
         return self.dic2htmlstring(vars(self))
@@ -241,22 +241,30 @@ class IQBase(object):
         ```
 
         Args:
-            nframes (int): _description_
-            lframes (int): _description_
+            nframes (int): Number of time frames, i.e. rows of matrix
+            lframes (int): Number of frequency bins, i.e. number of columns of matrix
 
         Returns:
             (tuple): time, frequency and power as mesh grids
         """
 
-        assert self.method in ['fft', 'welch', 'mtm']
+        assert self.method in ['npfft', 'fftw', 'welch', 'mtm']
 
         # define an empty np-array for appending
         pout = np.zeros(nframes * lframes)
 
-        if self.method == 'fft':
+        if self.method == 'npfft':
             sig = np.reshape(self.data_array, (nframes, lframes))
             # fft must return power, so needs to be squared
             zz = np.abs(np.fft.fftshift(np.fft.fft(sig, axis=1), axes=1)) ** 2
+
+        elif self.method == 'fftw':
+            pyfftw.config.NUM_THREADS = 4
+            pyfftw.config.PLANNER_EFFORT = 'FFTW_MEASURE'
+
+            qq = pyfftw.empty_aligned([nframes, lframes], dtype='complex64')
+            qq [:,:] = np.reshape(self.data_array, (nframes, lframes))
+            zz = np.abs(np.fft.fftshift(pyfftw.interfaces.numpy_fft.fft(qq, axis=1), axes=1)) ** 2
 
         elif self.method == 'welch':
             # go through the data array section wise and create a results array

@@ -100,7 +100,7 @@ def main():
                       filename='{}_psd_welch'.format(outfilename_wo_ext))
 
     if args.sgram:
-        iq_data.method = 'fft'
+        iq_data.method = 'npfft'
         log.info('Generating spectrogram plot.')
         x, y, z = iq_data.get_power_spectrogram(args.nframes, args.lframes)
         plot_spectrogram(x, y, z, cen = iq_data.center, cmap=cm.jet, dpi=300, dbm=False,
