@@ -350,6 +350,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#fast-batch-processing-of-large-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fast batch processing of large files
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#interface-with-cern-root" class="md-nav__link">
     <span class="md-ellipsis">
       Interface with CERN ROOT
@@ -835,6 +844,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#fast-batch-processing-of-large-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fast batch processing of large files
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#interface-with-cern-root" class="md-nav__link">
     <span class="md-ellipsis">
       Interface with CERN ROOT
@@ -944,6 +962,40 @@ plot_spectrogram(xx, yy, zz, cen=iq.center, title=iq.file_basename, decimal_plac
 <div class="highlight"><pre><span></span><code>sly = slice(412, 512)
 slx = slice(84000,110000)
 plot_spectrogram(xx[sly,slx], yy[sly,slx], zz[sly,slx], ...)
+</code></pre></div>
+<h2 id="fast-batch-processing-of-large-files">Fast batch processing of large files</h2>
+<p>For batch processing, remember to call the Python VM only once. This is achieved by looping on the files inside the program instead of calling the program on each file. Here is an example of fast processing for large files:</p>
+<div class="highlight"><pre><span></span><code>from iqtools import *
+import sys
+
+nframes = 4096
+lframes = 2**18
+
+def process(filename):
+    # make an object
+    iq = get_iq_object(filename)
+
+    #read file, e.g. large TDMS files
+    iq.read_complete_file()
+
+    #switch to fast FFTW engine 
+    iq.method=&#39;fftw&#39;
+
+    # make spectrogram with sparse coordinates
+    xx, yy, zz = iq.get_power_spectrogram(lframes = lframes, nframes = nframes, sparse=True)
+
+    # optional averaging
+    xx, yy, zz = get_averaged_spectrogram(xx, yy, zz, every=8)
+
+    #save to NPZ format
+    # np.savez(filename + &#39;.npz&#39;, xx, yy, zz)
+
+def main():
+    for filename in sys.argv[1:]:
+        process(filename)
+
+if __name__ == &#39;__main__&#39;:
+    main()
 </code></pre></div>
 <h2 id="interface-with-cern-root">Interface with CERN ROOT</h2>
 <p><div class="highlight"><pre><span></span><code>from iqtools import *

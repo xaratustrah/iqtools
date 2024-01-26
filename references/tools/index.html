@@ -1287,14 +1287,14 @@
 
 
 <h2 id="iqtools.tools.get_averaged_spectrogram" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_averaged_spectrogram</span><span class="p">(</span><span class="n">xa</span><span class="p">,</span> <span class="n">ya</span><span class="p">,</span> <span class="n">za</span><span class="p">,</span> <span class="n">every</span><span class="p">)</span></code>
+          <code class="highlight language-python"><span class="n">get_averaged_spectrogram</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">every</span><span class="p">)</span></code>
 
 </h2>
 
 
   <div class="doc doc-contents ">
   
-      <p>Averages a spectrogram in time, given every such frames in n_time_frames
+      <p>Averages a spectrogram in time, given every such frames in n_time_frames. Coordinate vectors, i.e. xx and yy can be sparse
 example:</p>
 <ul>
 <li>a spectrogram with 100 frames in time each 1024 bins in frequency will be averaged every 5 frames in time bin by bin, resulting in a new spectrogram
@@ -1321,7 +1321,7 @@ with only 20 frames and same frame length as original.</li>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Frequency meshgrid</p>
+              <p>Frequency meshgrid, can be sparse</p>
             </div>
           </td>
           <td>
@@ -1335,7 +1335,7 @@ with only 20 frames and same frame length as original.</li>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Time meshgrid</p>
+              <p>Time meshgrid, can be sparse</p>
             </div>
           </td>
           <td>
@@ -1429,16 +1429,22 @@ with only 20 frames and same frame length as original.</li>
 <span class="normal">343</span>
 <span class="normal">344</span>
 <span class="normal">345</span>
-<span class="normal">346</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_averaged_spectrogram</span><span class="p">(</span><span class="n">xa</span><span class="p">,</span> <span class="n">ya</span><span class="p">,</span> <span class="n">za</span><span class="p">,</span> <span class="n">every</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Averages a spectrogram in time, given every such frames in n_time_frames</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_averaged_spectrogram</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">every</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Averages a spectrogram in time, given every such frames in n_time_frames. Coordinate vectors, i.e. xx and yy can be sparse</span>
 <span class="sd">    example:</span>
 
 <span class="sd">    * a spectrogram with 100 frames in time each 1024 bins in frequency will be averaged every 5 frames in time bin by bin, resulting in a new spectrogram</span>
 <span class="sd">    with only 20 frames and same frame length as original.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        xx (ndarray): Frequency meshgrid</span>
-<span class="sd">        yy (ndarray): Time meshgrid</span>
+<span class="sd">        xx (ndarray): Frequency meshgrid, can be sparse</span>
+<span class="sd">        yy (ndarray): Time meshgrid, can be sparse</span>
 <span class="sd">        zz (ndarray): Power meshgrid</span>
 <span class="sd">        every (int): Averaging step</span>
 
@@ -1446,20 +1452,26 @@ with only 20 frames and same frame length as original.</li>
 <span class="sd">        (tuple): Tuple of meshgrids</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>    
-    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">za</span><span class="p">)</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">zz</span><span class="p">)</span>
     <span class="n">dim3</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rows</span> <span class="o">/</span> <span class="n">every</span><span class="p">)</span>
 
     <span class="c1"># This is such an ndarray gymnastics I think I would never be</span>
     <span class="c1"># able to figure out ever again how I managed it,</span>
     <span class="c1"># but it works fine!</span>
 
-    <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">za</span><span class="p">,</span> <span class="p">(</span><span class="n">dim3</span><span class="p">,</span> <span class="n">every</span><span class="p">,</span> <span class="n">cols</span><span class="p">))</span>
+    <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">zz</span><span class="p">,</span> <span class="p">(</span><span class="n">dim3</span><span class="p">,</span> <span class="n">every</span><span class="p">,</span> <span class="n">cols</span><span class="p">))</span>
     <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">zz</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">ya</span><span class="p">,</span> <span class="p">(</span><span class="n">dim3</span><span class="p">,</span> <span class="n">every</span><span class="p">,</span> <span class="n">cols</span><span class="p">))</span>
-    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">yy</span><span class="p">[:,</span> <span class="n">every</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">(</span><span class="n">dim3</span><span class="p">,</span> <span class="n">cols</span><span class="p">))</span>
+    <span class="c1"># we have to check yy before, make sure it is sparse or not</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">yy</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">yy</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">(</span><span class="n">dim3</span><span class="p">,</span> <span class="n">every</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">yy</span><span class="p">,</span> <span class="p">(</span><span class="n">dim3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="n">xa</span><span class="p">[:</span><span class="n">dim3</span><span class="p">],</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">yy</span><span class="p">,</span> <span class="p">(</span><span class="n">dim3</span><span class="p">,</span> <span class="n">every</span><span class="p">,</span> <span class="n">cols</span><span class="p">))</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">yy</span><span class="p">[:,</span> <span class="n">every</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">(</span><span class="n">dim3</span><span class="p">,</span> <span class="n">cols</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">xx</span><span class="p">[:</span><span class="n">dim3</span><span class="p">],</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -1792,13 +1804,7 @@ After cooling / shifting, the frequency axis will have useless information. so i
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">354</span>
 <span class="normal">355</span>
 <span class="normal">356</span>
 <span class="normal">357</span>
@@ -1826,7 +1832,13 @@ After cooling / shifting, the frequency axis will have useless information. so i
 <span class="normal">379</span>
 <span class="normal">380</span>
 <span class="normal">381</span>
-<span class="normal">382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_cooled_spectrogram</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">yy_idx</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_cooled_spectrogram</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">yy_idx</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Software cool the spectrogram. Shifts rows to match the maximum of the selected time frame.</span>
 <span class="sd">    After cooling / shifting, the frequency axis will have useless information. so it is left as just numbers.</span>
 
@@ -2924,13 +2936,7 @@ with the difference that the mesh will be created anew.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">662</span>
-<span class="normal">663</span>
-<span class="normal">664</span>
-<span class="normal">665</span>
-<span class="normal">666</span>
-<span class="normal">667</span>
-<span class="normal">668</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">668</span>
 <span class="normal">669</span>
 <span class="normal">670</span>
 <span class="normal">671</span>
@@ -2943,7 +2949,13 @@ with the difference that the mesh will be created anew.</p>
 <span class="normal">678</span>
 <span class="normal">679</span>
 <span class="normal">680</span>
-<span class="normal">681</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_root_th2d</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
+<span class="normal">687</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_root_th2d</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert spectrpgram to CERN ROOT TH2 Object</span>
 
 <span class="sd">    Args:</span>
@@ -3262,13 +3274,7 @@ with the difference that the mesh will be created anew.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">444</span>
 <span class="normal">445</span>
 <span class="normal">446</span>
 <span class="normal">447</span>
@@ -3277,7 +3283,13 @@ with the difference that the mesh will be created anew.</p>
 <span class="normal">450</span>
 <span class="normal">451</span>
 <span class="normal">452</span>
-<span class="normal">453</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_analytical</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_analytical</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Makes an analytical signal using Hilbert transformation</span>
 
 <span class="sd">    Args:</span>
@@ -3550,13 +3562,7 @@ with the difference that the mesh will be created anew.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">532</span>
-<span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">538</span>
 <span class="normal">539</span>
 <span class="normal">540</span>
 <span class="normal">541</span>
@@ -3565,7 +3571,13 @@ with the difference that the mesh will be created anew.</p>
 <span class="normal">544</span>
 <span class="normal">545</span>
 <span class="normal">546</span>
-<span class="normal">547</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parse_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parse_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses filenames of experimental data in the following format:</span>
 
 <span class="sd">        58Ni26+_374MeVu_250uA_pos_0_0.tiq</span>
@@ -3661,13 +3673,7 @@ for these data.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">515</span>
-<span class="normal">516</span>
-<span class="normal">517</span>
-<span class="normal">518</span>
-<span class="normal">519</span>
-<span class="normal">520</span>
-<span class="normal">521</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">521</span>
 <span class="normal">522</span>
 <span class="normal">523</span>
 <span class="normal">524</span>
@@ -3675,7 +3681,13 @@ for these data.</p>
 <span class="normal">526</span>
 <span class="normal">527</span>
 <span class="normal">528</span>
-<span class="normal">529</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_rsa_data_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_rsa_data_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read special format CSV data file from RSA5100 series output.</span>
 <span class="sd">    Please note that 50 ohm power termination is already considered</span>
 <span class="sd">    for these data.</span>
@@ -3768,13 +3780,7 @@ for these data.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
 <span class="normal">463</span>
 <span class="normal">464</span>
 <span class="normal">465</span>
@@ -3789,7 +3795,13 @@ for these data.</p>
 <span class="normal">474</span>
 <span class="normal">475</span>
 <span class="normal">476</span>
-<span class="normal">477</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_rsa_result_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_rsa_result_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read special format CSV result file from RSA5000 series output</span>
 
 <span class="sd">    Args:</span>
@@ -3890,13 +3902,7 @@ these files are produced while saving traces.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">480</span>
-<span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">486</span>
 <span class="normal">487</span>
 <span class="normal">488</span>
 <span class="normal">489</span>
@@ -3922,7 +3928,13 @@ these files are produced while saving traces.</p>
 <span class="normal">509</span>
 <span class="normal">510</span>
 <span class="normal">511</span>
-<span class="normal">512</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_rsa_specan_xml</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_rsa_specan_xml</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read the resulting saved trace file Specan from the Tektronix RSA5000 series</span>
 <span class="sd">    these files are produced while saving traces.</span>
 
@@ -4023,18 +4035,18 @@ these files are produced while saving traces.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">589</span>
-<span class="normal">590</span>
-<span class="normal">591</span>
-<span class="normal">592</span>
-<span class="normal">593</span>
-<span class="normal">594</span>
-<span class="normal">595</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">595</span>
 <span class="normal">596</span>
 <span class="normal">597</span>
 <span class="normal">598</span>
 <span class="normal">599</span>
-<span class="normal">600</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">remove_plot_content_from_spectrogram_svg</span><span class="p">(</span><span class="n">input_filename</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">):</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">remove_plot_content_from_spectrogram_svg</span><span class="p">(</span><span class="n">input_filename</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Removes plot content from an existing SVG file. This function is specifically useful if you like to have an empty spectrogram plot for publication purposes.</span>
 
 <span class="sd">    Args:</span>
@@ -4278,13 +4290,7 @@ Data follows afterwards in I, Q format each 32-bit as well.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">394</span>
 <span class="normal">395</span>
 <span class="normal">396</span>
 <span class="normal">397</span>
@@ -4296,7 +4302,13 @@ Data follows afterwards in I, Q format each 32-bit as well.</p>
 <span class="normal">403</span>
 <span class="normal">404</span>
 <span class="normal">405</span>
-<span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_signal_to_bin</span><span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">write_header</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_signal_to_bin</span><span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">write_header</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write complex valued signal to raw binary file</span>
 <span class="sd">    If write header is set to true, then the first 4 bytes of the file are 32-bit</span>
 <span class="sd">    sampling Frequency and then follows the center frequency also in 32-bit. the</span>
@@ -4411,13 +4423,7 @@ Data follows afterwards in I, Q format each 32-bit as well.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">415</span>
 <span class="normal">416</span>
 <span class="normal">417</span>
 <span class="normal">418</span>
@@ -4425,7 +4431,13 @@ Data follows afterwards in I, Q format each 32-bit as well.</p>
 <span class="normal">420</span>
 <span class="normal">421</span>
 <span class="normal">422</span>
-<span class="normal">423</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_signal_to_csv</span><span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_signal_to_csv</span><span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write complex valued signal to CSV text file</span>
 
 <span class="sd">    Args:</span>
@@ -4522,16 +4534,16 @@ Data follows afterwards in I, Q format each 32-bit as well.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">426</span>
-<span class="normal">427</span>
-<span class="normal">428</span>
-<span class="normal">429</span>
-<span class="normal">430</span>
-<span class="normal">431</span>
-<span class="normal">432</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">432</span>
 <span class="normal">433</span>
 <span class="normal">434</span>
-<span class="normal">435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_signal_to_wav</span><span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_signal_to_wav</span><span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write complex valued signal as audio WAV file</span>
 
 <span class="sd">    Args:</span>
@@ -4609,18 +4621,18 @@ Data follows afterwards in I, Q format each 32-bit as well.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span>
-<span class="normal">581</span>
-<span class="normal">582</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">582</span>
 <span class="normal">583</span>
 <span class="normal">584</span>
 <span class="normal">585</span>
 <span class="normal">586</span>
-<span class="normal">587</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_spectrogram_to_nifti</span><span class="p">(</span><span class="n">zz</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_spectrogram_to_nifti</span><span class="p">(</span><span class="n">zz</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Writes spectrogram to a NIFTI file.</span>
 
 <span class="sd">    Args:</span>
@@ -4728,20 +4740,20 @@ Data follows afterwards in I, Q format each 32-bit as well.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">560</span>
-<span class="normal">561</span>
-<span class="normal">562</span>
-<span class="normal">563</span>
-<span class="normal">564</span>
-<span class="normal">565</span>
-<span class="normal">566</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">566</span>
 <span class="normal">567</span>
 <span class="normal">568</span>
 <span class="normal">569</span>
 <span class="normal">570</span>
 <span class="normal">571</span>
 <span class="normal">572</span>
-<span class="normal">573</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_spectrum_to_csv</span><span class="p">(</span><span class="n">ff</span><span class="p">,</span> <span class="n">pp</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span><span class="p">):</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_spectrum_to_csv</span><span class="p">(</span><span class="n">ff</span><span class="p">,</span> <span class="n">pp</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Writes 1D spectrum to text CSV format. First column will be frequency, second linear power and third logarithmic power.</span>
 
 <span class="sd">    Args:</span>
@@ -4865,13 +4877,7 @@ Data follows afterwards in I, Q format each 32-bit as well.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
-<span class="normal">638</span>
-<span class="normal">639</span>
-<span class="normal">640</span>
-<span class="normal">641</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">641</span>
 <span class="normal">642</span>
 <span class="normal">643</span>
 <span class="normal">644</span>
@@ -4890,7 +4896,13 @@ Data follows afterwards in I, Q format each 32-bit as well.</p>
 <span class="normal">657</span>
 <span class="normal">658</span>
 <span class="normal">659</span>
-<span class="normal">660</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_spectrum_to_root</span><span class="p">(</span><span class="n">ff</span><span class="p">,</span> <span class="n">pp</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span>
+<span class="normal">665</span>
+<span class="normal">666</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_spectrum_to_root</span><span class="p">(</span><span class="n">ff</span><span class="p">,</span> <span class="n">pp</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write spectrum to a ROOT file using objects of TH class</span>
 
 <span class="sd">    Args:</span>
@@ -4984,14 +4996,14 @@ Data follows afterwards in I, Q format each 32-bit as well.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_timedata_to_npy</span><span class="p">(</span><span class="n">iq_obj</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_timedata_to_npy</span><span class="p">(</span><span class="n">iq_obj</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Saves the iq object to a npy format.</span>
 
 <span class="sd">    Args:</span>
@@ -5059,13 +5071,7 @@ The distance between the time samples is <strong>1/(sampling_rate)</strong>.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">606</span>
-<span class="normal">607</span>
-<span class="normal">608</span>
-<span class="normal">609</span>
-<span class="normal">610</span>
-<span class="normal">611</span>
-<span class="normal">612</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">612</span>
 <span class="normal">613</span>
 <span class="normal">614</span>
 <span class="normal">615</span>
@@ -5085,7 +5091,13 @@ The distance between the time samples is <strong>1/(sampling_rate)</strong>.</p>
 <span class="normal">629</span>
 <span class="normal">630</span>
 <span class="normal">631</span>
-<span class="normal">632</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_timedata_to_root</span><span class="p">(</span><span class="n">iq_obj</span><span class="p">):</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_timedata_to_root</span><span class="p">(</span><span class="n">iq_obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Writes time data to a root TTree.</span>
 <span class="sd">    The structure of the root files in this case is like this: there are two</span>
 <span class="sd">    trees inside, one tree has only one branch with an integer in it, which</span>

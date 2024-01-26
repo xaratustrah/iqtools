@@ -1814,7 +1814,15 @@
 <span class="normal">554</span>
 <span class="normal">555</span>
 <span class="normal">556</span>
-<span class="normal">557</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">IQBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">IQBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="c1"># Abstract class</span>
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
@@ -1833,7 +1841,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">file_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename_wo_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="s1">&#39;rectangular&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;fft&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;npfft&#39;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic2htmlstring</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
@@ -2005,7 +2013,7 @@
                          <span class="n">nperseg</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">return_onesided</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">p_avg</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_power_spectrogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_power_spectrogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get power spectrogram. Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh</span>
 <span class="sd">        x, y and z are ndarrays and have the same shape. In order to access the contents use these kind of</span>
 <span class="sd">        indexing as below:</span>
@@ -2023,22 +2031,30 @@
 <span class="sd">        ```</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            nframes (int): _description_</span>
-<span class="sd">            lframes (int): _description_</span>
+<span class="sd">            nframes (int): Number of time frames, i.e. rows of matrix</span>
+<span class="sd">            lframes (int): Number of frequency bins, i.e. number of columns of matrix</span>
+<span class="sd">            sparse (bool): This will return xx and yy in sparse form which saves a lot of memory. The resulting xx, yy follow the usual broadcasting rules. xx, yy and zz can be plotted directly using matploblib&#39;s pcolormesh.      </span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            (tuple): time, frequency and power as mesh grids</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;fft&#39;</span><span class="p">,</span> <span class="s1">&#39;welch&#39;</span><span class="p">,</span> <span class="s1">&#39;mtm&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;npfft&#39;</span><span class="p">,</span> <span class="s1">&#39;fftw&#39;</span><span class="p">,</span> <span class="s1">&#39;welch&#39;</span><span class="p">,</span> <span class="s1">&#39;mtm&#39;</span><span class="p">]</span>
 
         <span class="c1"># define an empty np-array for appending</span>
         <span class="n">pout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nframes</span> <span class="o">*</span> <span class="n">lframes</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;fft&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;npfft&#39;</span><span class="p">:</span>
             <span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="p">,</span> <span class="p">(</span><span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">))</span>
             <span class="c1"># fft must return power, so needs to be squared</span>
             <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axes</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;fftw&#39;</span><span class="p">:</span>
+            <span class="n">pyfftw</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">NUM_THREADS</span> <span class="o">=</span> <span class="mi">4</span>
+            <span class="n">pyfftw</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">PLANNER_EFFORT</span> <span class="o">=</span> <span class="s1">&#39;FFTW_MEASURE&#39;</span>
+            <span class="n">qq</span> <span class="o">=</span> <span class="n">pyfftw</span><span class="o">.</span><span class="n">empty_aligned</span><span class="p">([</span><span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;complex64&#39;</span><span class="p">)</span>
+            <span class="n">qq</span> <span class="p">[:,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="p">,</span> <span class="p">(</span><span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">))</span>
+            <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">pyfftw</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">numpy_fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">qq</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axes</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;welch&#39;</span><span class="p">:</span>
             <span class="c1"># go through the data array section wise and create a results array</span>
@@ -2056,13 +2072,13 @@
             <span class="n">zz</span> <span class="o">=</span> <span class="n">pmtm</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">mydpss</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># create a mesh grid from 0 to nframes -1 in Y direction</span>
-        <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lframes</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nframes</span><span class="p">))</span>
+        <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lframes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nframes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">sparse</span><span class="o">=</span><span class="n">sparse</span><span class="p">)</span>
         <span class="n">yy</span> <span class="o">=</span> <span class="n">yy</span> <span class="o">*</span> <span class="n">lframes</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span>
         <span class="c1"># center the frequencies around zero</span>
         <span class="n">xx</span> <span class="o">=</span> <span class="n">xx</span> <span class="o">-</span> <span class="n">xx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="n">xx</span> <span class="o">=</span> <span class="n">xx</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">/</span> <span class="n">lframes</span>
 
-        <span class="k">return</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span>
+        <span class="k">return</span> <span class="n">xx</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">yy</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">zz</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_dp_p_vs_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns two arrays for plotting dp_p vs time</span>
@@ -2560,17 +2576,17 @@ frequency, allowing further operations to be performed smoothly. If you do not w
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">503</span>
-<span class="normal">504</span>
-<span class="normal">505</span>
-<span class="normal">506</span>
-<span class="normal">507</span>
-<span class="normal">508</span>
-<span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">511</span>
 <span class="normal">512</span>
-<span class="normal">513</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">downsample_and_average</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">downsample_and_average</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Downsampling and averaging in the time domain. This function overrides the data array and also the sampling</span>
 <span class="sd">    frequency, allowing further operations to be performed smoothly. If you do not want this behaviour, please make a copy of the object first.</span>
 
@@ -2677,19 +2693,19 @@ frequency, allowing further operations to be performed smoothly. If you do not w
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">444</span>
 <span class="normal">445</span>
 <span class="normal">446</span>
 <span class="normal">447</span>
-<span class="normal">448</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">get_broad_peak_dbm</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the maximum usually useful for a broad peak</span>
 
@@ -2808,15 +2824,7 @@ frequency, allowing further operations to be performed smoothly. If you do not w
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">476</span>
-<span class="normal">477</span>
-<span class="normal">478</span>
-<span class="normal">479</span>
-<span class="normal">480</span>
-<span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">484</span>
 <span class="normal">485</span>
 <span class="normal">486</span>
 <span class="normal">487</span>
@@ -2833,7 +2841,15 @@ frequency, allowing further operations to be performed smoothly. If you do not w
 <span class="normal">498</span>
 <span class="normal">499</span>
 <span class="normal">500</span>
-<span class="normal">501</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_channel_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_channel_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return total power in band in Watts, considering noise bandwidth</span>
 
 <span class="sd">    Args:</span>
@@ -2941,19 +2957,19 @@ frequency, allowing further operations to be performed smoothly. If you do not w
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span>
-<span class="normal">454</span>
-<span class="normal">455</span>
-<span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
 <span class="normal">459</span>
 <span class="normal">460</span>
 <span class="normal">461</span>
-<span class="normal">462</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">get_dbm</span><span class="p">(</span><span class="n">watt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert Watt to dBm</span>
 
@@ -3086,15 +3102,7 @@ frequency, allowing further operations to be performed smoothly. If you do not w
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
 <span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
@@ -3106,7 +3114,15 @@ frequency, allowing further operations to be performed smoothly. If you do not w
 <span class="normal">302</span>
 <span class="normal">303</span>
 <span class="normal">304</span>
-<span class="normal">305</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_dp_p_vs_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_dp_p_vs_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns two arrays for plotting dp_p vs time</span>
 
 <span class="sd">    Args:</span>
@@ -3556,15 +3572,7 @@ array that can be plotted using the frequencies.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
 <span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span>
@@ -3575,7 +3583,15 @@ array that can be plotted using the frequencies.</p>
 <span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
-<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_frame_power_vs_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">):</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_frame_power_vs_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns two arrays for plotting frame power vs time</span>
 
 <span class="sd">    Args:</span>
@@ -3691,21 +3707,21 @@ array that can be plotted using the frequencies.</p>
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">336</span>
 <span class="normal">337</span>
 <span class="normal">338</span>
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
-<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">get_frame_sum_vs_time</span><span class="p">(</span><span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return sum of the values in frame</span>
 
@@ -3832,15 +3848,7 @@ the f_peak and p_peak are arrays of containing the coordinates of the peaks only
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">352</span>
 <span class="normal">353</span>
 <span class="normal">354</span>
 <span class="normal">355</span>
@@ -3873,7 +3881,15 @@ the f_peak and p_peak are arrays of containing the coordinates of the peaks only
 <span class="normal">382</span>
 <span class="normal">383</span>
 <span class="normal">384</span>
-<span class="normal">385</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">get_fwhm</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the full width at half maximum.</span>
 <span class="sd">    f and p are arrays of points corresponding to the original data, whereas</span>
@@ -4025,15 +4041,7 @@ the f_peak and p_peak are arrays of containing the coordinates of the peaks only
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">418</span>
-<span class="normal">419</span>
-<span class="normal">420</span>
-<span class="normal">421</span>
-<span class="normal">422</span>
-<span class="normal">423</span>
-<span class="normal">424</span>
-<span class="normal">425</span>
-<span class="normal">426</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">426</span>
 <span class="normal">427</span>
 <span class="normal">428</span>
 <span class="normal">429</span>
@@ -4041,7 +4049,15 @@ the f_peak and p_peak are arrays of containing the coordinates of the peaks only
 <span class="normal">431</span>
 <span class="normal">432</span>
 <span class="normal">433</span>
-<span class="normal">434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">get_narrow_peaks_dbm</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">accuracy</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find narrow peaks and return them</span>
 
@@ -4071,7 +4087,7 @@ the f_peak and p_peak are arrays of containing the coordinates of the peaks only
 
 
 <h3 id="iqtools.iqbase.IQBase.get_power_spectrogram" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_power_spectrogram</span><span class="p">(</span><span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">)</span></code>
+          <code class="highlight language-python"><span class="n">get_power_spectrogram</span><span class="p">(</span><span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h3>
 
@@ -4112,7 +4128,7 @@ for i in range (ncols):
           </td>
           <td>
             <div class="doc-md-description">
-              <p><em>description</em></p>
+              <p>Number of time frames, i.e. rows of matrix</p>
             </div>
           </td>
           <td>
@@ -4126,11 +4142,25 @@ for i in range (ncols):
           </td>
           <td>
             <div class="doc-md-description">
-              <p><em>description</em></p>
+              <p>Number of frequency bins, i.e. number of columns of matrix</p>
             </div>
           </td>
           <td>
               <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>sparse</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>This will return xx and yy in sparse form which saves a lot of memory. The resulting xx, yy follow the usual broadcasting rules. xx, yy and zz can be plotted directly using matploblib's pcolormesh.      </p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
           </td>
         </tr>
     </tbody>
@@ -4219,7 +4249,15 @@ for i in range (ncols):
 <span class="normal">280</span>
 <span class="normal">281</span>
 <span class="normal">282</span>
-<span class="normal">283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_power_spectrogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">):</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_power_spectrogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get power spectrogram. Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh</span>
 <span class="sd">    x, y and z are ndarrays and have the same shape. In order to access the contents use these kind of</span>
 <span class="sd">    indexing as below:</span>
@@ -4237,22 +4275,30 @@ for i in range (ncols):
 <span class="sd">    ```</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        nframes (int): _description_</span>
-<span class="sd">        lframes (int): _description_</span>
+<span class="sd">        nframes (int): Number of time frames, i.e. rows of matrix</span>
+<span class="sd">        lframes (int): Number of frequency bins, i.e. number of columns of matrix</span>
+<span class="sd">        sparse (bool): This will return xx and yy in sparse form which saves a lot of memory. The resulting xx, yy follow the usual broadcasting rules. xx, yy and zz can be plotted directly using matploblib&#39;s pcolormesh.      </span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (tuple): time, frequency and power as mesh grids</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;fft&#39;</span><span class="p">,</span> <span class="s1">&#39;welch&#39;</span><span class="p">,</span> <span class="s1">&#39;mtm&#39;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;npfft&#39;</span><span class="p">,</span> <span class="s1">&#39;fftw&#39;</span><span class="p">,</span> <span class="s1">&#39;welch&#39;</span><span class="p">,</span> <span class="s1">&#39;mtm&#39;</span><span class="p">]</span>
 
     <span class="c1"># define an empty np-array for appending</span>
     <span class="n">pout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nframes</span> <span class="o">*</span> <span class="n">lframes</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;fft&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;npfft&#39;</span><span class="p">:</span>
         <span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="p">,</span> <span class="p">(</span><span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">))</span>
         <span class="c1"># fft must return power, so needs to be squared</span>
         <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axes</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;fftw&#39;</span><span class="p">:</span>
+        <span class="n">pyfftw</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">NUM_THREADS</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="n">pyfftw</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">PLANNER_EFFORT</span> <span class="o">=</span> <span class="s1">&#39;FFTW_MEASURE&#39;</span>
+        <span class="n">qq</span> <span class="o">=</span> <span class="n">pyfftw</span><span class="o">.</span><span class="n">empty_aligned</span><span class="p">([</span><span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;complex64&#39;</span><span class="p">)</span>
+        <span class="n">qq</span> <span class="p">[:,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="p">,</span> <span class="p">(</span><span class="n">nframes</span><span class="p">,</span> <span class="n">lframes</span><span class="p">))</span>
+        <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">pyfftw</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">numpy_fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">qq</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axes</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
 
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;welch&#39;</span><span class="p">:</span>
         <span class="c1"># go through the data array section wise and create a results array</span>
@@ -4270,13 +4316,13 @@ for i in range (ncols):
         <span class="n">zz</span> <span class="o">=</span> <span class="n">pmtm</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">mydpss</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># create a mesh grid from 0 to nframes -1 in Y direction</span>
-    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lframes</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nframes</span><span class="p">))</span>
+    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lframes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nframes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">sparse</span><span class="o">=</span><span class="n">sparse</span><span class="p">)</span>
     <span class="n">yy</span> <span class="o">=</span> <span class="n">yy</span> <span class="o">*</span> <span class="n">lframes</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span>
     <span class="c1"># center the frequencies around zero</span>
     <span class="n">xx</span> <span class="o">=</span> <span class="n">xx</span> <span class="o">-</span> <span class="n">xx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">xx</span> <span class="o">=</span> <span class="n">xx</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">/</span> <span class="n">lframes</span>
 
-    <span class="k">return</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span>
+    <span class="k">return</span> <span class="n">xx</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">yy</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">zz</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -4545,15 +4591,7 @@ for i in range (ncols):
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">395</span>
 <span class="normal">396</span>
 <span class="normal">397</span>
 <span class="normal">398</span>
@@ -4574,7 +4612,15 @@ for i in range (ncols):
 <span class="normal">413</span>
 <span class="normal">414</span>
 <span class="normal">415</span>
-<span class="normal">416</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">get_sigma_estimate</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets an estimate for sigma. Could be used for more precise fitting.</span>
 
@@ -4686,17 +4732,17 @@ for i in range (ncols):
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">464</span>
-<span class="normal">465</span>
-<span class="normal">466</span>
-<span class="normal">467</span>
-<span class="normal">468</span>
-<span class="normal">469</span>
-<span class="normal">470</span>
-<span class="normal">471</span>
-<span class="normal">472</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">472</span>
 <span class="normal">473</span>
-<span class="normal">474</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">get_watt</span><span class="p">(</span><span class="n">dbm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert dBm to Watts</span>
 
@@ -5000,18 +5046,18 @@ for i in range (ncols):
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">541</span>
 <span class="normal">542</span>
 <span class="normal">543</span>
-<span class="normal">544</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">shift_cut_data_time</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handy tool to shift and cut data in time domain</span>
 
@@ -5119,18 +5165,18 @@ for i in range (ncols):
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">546</span>
-<span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span>
-<span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">554</span>
 <span class="normal">555</span>
 <span class="normal">556</span>
-<span class="normal">557</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">shift_to_center_frequency</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Just return the shifted frequency to center</span>
 
@@ -5266,15 +5312,7 @@ for i in range (ncols):
 
           <details class="quote">
             <summary>Source code in <code>iqtools/iqbase.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">515</span>
-<span class="normal">516</span>
-<span class="normal">517</span>
-<span class="normal">518</span>
-<span class="normal">519</span>
-<span class="normal">520</span>
-<span class="normal">521</span>
-<span class="normal">522</span>
-<span class="normal">523</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">523</span>
 <span class="normal">524</span>
 <span class="normal">525</span>
 <span class="normal">526</span>
@@ -5282,7 +5320,15 @@ for i in range (ncols):
 <span class="normal">528</span>
 <span class="normal">529</span>
 <span class="normal">530</span>
-<span class="normal">531</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">zoom_in_freq</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Cut the frequency domain data</span>
 
