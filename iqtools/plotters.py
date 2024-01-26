@@ -48,12 +48,12 @@ def plot_frame_power(yy, frame_power):
 
 
 def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filename=None, title='Spectrogram', zzmin=0, zzmax=1e6, mask=False, span=None, decimal_place=2):
-    """Plot the calculated spectrogram
+    """Plot the calculated spectrogram. For the coordinates, it also accepts sparse matrices.
 
 
     Args:
-        xx (ndarray): Frequency meshgrid
-        yy (ndarray): Time meshgrid
+        xx (ndarray): Frequency meshgrid, can be sparse
+        yy (ndarray): Time meshgrid, can be sparse
         zz (ndarray): Power meshgrid
         cen (float, optional): Center frequency. Defaults to 0.0.
         cmap (string, optional): Matplotlib.colormap. Defaults to cm.jet.
@@ -90,9 +90,15 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
         spanmask = (xx[0, :] != 0) | (xx[0, :] == 0)
     else:
         spanmask = (xx[0, :] <= span / 2) & (xx[0, :] >= -span / 2)
-
-    sp = plt.pcolormesh(xx[:, spanmask], yy[:, spanmask],
-                        zz[:, spanmask], cmap=cmap, norm=mynorm, shading='auto')
+    xx = xx[:, spanmask]
+    zz = zz[:, spanmask]
+    # we have to check yy before, make sure it is sparse or not
+    yy = yy[:,spanmask] if np.shape(yy)[1] > 1 else yy
+    
+    # here comes the plot
+    sp = plt.pcolormesh(xx, yy, zz, cmap=cmap, norm=mynorm, shading='auto')
+    
+    # here is the color bar
     cb = plt.colorbar(sp, format=f'%.{decimal_place}e')
 
     ax = plt.gca()

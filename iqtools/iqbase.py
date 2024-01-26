@@ -223,7 +223,7 @@ class IQBase(object):
                          nperseg=data.size, return_onesided=False)
         return np.fft.fftshift(f), np.fft.fftshift(p_avg)
 
-    def get_power_spectrogram(self, nframes, lframes):
+    def get_power_spectrogram(self, nframes, lframes, sparse=False):
         """Get power spectrogram. Go through the data frame by frame and perform transformation. They can be plotted using pcolormesh
         x, y and z are ndarrays and have the same shape. In order to access the contents use these kind of
         indexing as below:
@@ -243,6 +243,7 @@ class IQBase(object):
         Args:
             nframes (int): Number of time frames, i.e. rows of matrix
             lframes (int): Number of frequency bins, i.e. number of columns of matrix
+            sparse (bool): This will return xx and yy in sparse form which saves a lot of memory. The resulting xx, yy follow the usual broadcasting rules. xx, yy and zz can be plotted directly using matploblib's pcolormesh.      
 
         Returns:
             (tuple): time, frequency and power as mesh grids
@@ -261,7 +262,6 @@ class IQBase(object):
         elif self.method == 'fftw':
             pyfftw.config.NUM_THREADS = 4
             pyfftw.config.PLANNER_EFFORT = 'FFTW_MEASURE'
-
             qq = pyfftw.empty_aligned([nframes, lframes], dtype='complex64')
             qq [:,:] = np.reshape(self.data_array, (nframes, lframes))
             zz = np.abs(np.fft.fftshift(pyfftw.interfaces.numpy_fft.fft(qq, axis=1), axes=1)) ** 2
@@ -282,13 +282,13 @@ class IQBase(object):
             zz = pmtm(sig, mydpss, axis=1)
 
         # create a mesh grid from 0 to nframes -1 in Y direction
-        xx, yy = np.meshgrid(np.arange(lframes), np.arange(nframes))
+        xx, yy = np.meshgrid(np.arange(lframes, dtype=np.float32), np.arange(nframes, dtype=np.float32), sparse=sparse)
         yy = yy * lframes / self.fs
         # center the frequencies around zero
         xx = xx - xx[-1, -1] / 2
         xx = xx * self.fs / lframes
 
-        return xx, yy, zz
+        return xx.astype(np.float32), yy.astype(np.float32), zz.astype(np.float32)
 
     def get_dp_p_vs_time(self, xx, yy, zz, eta):
         """Returns two arrays for plotting dp_p vs time

@@ -42,6 +42,44 @@ slx = slice(84000,110000)
 plot_spectrogram(xx[sly,slx], yy[sly,slx], zz[sly,slx], ...)
 ```
 
+## Fast batch processing of large files
+For batch processing, remember to call the Python VM only once. This is achieved by looping on the files inside the program instead of calling the program on each file. Here is an example of fast processing for large files:
+
+```
+from iqtools import *
+import sys
+
+nframes = 4096
+lframes = 2**18
+
+def process(filename):
+    # make an object
+    iq = get_iq_object(filename)
+    
+    #read file, e.g. large TDMS files
+    iq.read_complete_file()
+    
+    #switch to fast FFTW engine 
+    iq.method='fftw'
+    
+    # make spectrogram with sparse coordinates
+    xx, yy, zz = iq.get_power_spectrogram(lframes = lframes, nframes = nframes, sparse=True)
+    
+    # optional averaging
+    xx, yy, zz = get_averaged_spectrogram(xx, yy, zz, every=8)
+    
+    #save to NPZ format
+    # np.savez(filename + '.npz', xx, yy, zz)
+
+def main():
+    for filename in sys.argv[1:]:
+        process(filename)
+
+if __name__ == '__main__':
+    main()
+```
+
+
 ## Interface with CERN ROOT
 
 ```

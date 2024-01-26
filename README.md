@@ -20,7 +20,7 @@ Quick but full installation if you have `mamba` installed. Tested on Linux and M
 ```
 mamba create -n my_env
 mamba activate my_env
-mamba install -y root pyqt
+mamba install -y root pyqt pyfftw
 pip install -r requirements.txt
 pip install .
 ```

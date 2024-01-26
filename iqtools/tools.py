@@ -313,16 +313,16 @@ def get_zoomed_spectrogram(xx, yy, zz, xcen=None, xspan=None, ycen=None, yspan=N
     return xx[yspanmask][:, xspanmask], yy[yspanmask][:, xspanmask], zz[yspanmask][:, xspanmask]
 
 
-def get_averaged_spectrogram(xa, ya, za, every):
-    """Averages a spectrogram in time, given every such frames in n_time_frames
+def get_averaged_spectrogram(xx, yy, zz, every):
+    """Averages a spectrogram in time, given every such frames in n_time_frames. Coordinate vectors, i.e. xx and yy can be sparse
     example:
         
     * a spectrogram with 100 frames in time each 1024 bins in frequency will be averaged every 5 frames in time bin by bin, resulting in a new spectrogram
     with only 20 frames and same frame length as original.
 
     Args:
-        xx (ndarray): Frequency meshgrid
-        yy (ndarray): Time meshgrid
+        xx (ndarray): Frequency meshgrid, can be sparse
+        yy (ndarray): Time meshgrid, can be sparse
         zz (ndarray): Power meshgrid
         every (int): Averaging step
 
@@ -330,20 +330,26 @@ def get_averaged_spectrogram(xa, ya, za, every):
         (tuple): Tuple of meshgrids
 
     """    
-    rows, cols = np.shape(za)
+    rows, cols = np.shape(zz)
     dim3 = int(rows / every)
 
     # This is such an ndarray gymnastics I think I would never be
     # able to figure out ever again how I managed it,
     # but it works fine!
 
-    zz = np.reshape(za, (dim3, every, cols))
+    zz = np.reshape(zz, (dim3, every, cols))
     zz = np.average(zz, axis=1)
 
-    yy = np.reshape(ya, (dim3, every, cols))
-    yy = np.reshape(yy[:, every - 1, :].flatten(), (dim3, cols))
+    # we have to check yy before, make sure it is sparse or not
+    if np.shape(yy)[1] == 1:
+        yy = np.average(np.reshape(yy.flatten(), (dim3, every)), axis=1)
+        yy = np.reshape(yy, (dim3, 1))
 
-    return xa[:dim3], yy, zz
+    else:
+        yy = np.reshape(yy, (dim3, every, cols))
+        yy = np.reshape(yy[:, every - 1, :].flatten(), (dim3, cols))
+
+    return xx[:dim3], yy, zz
 
 def get_cooled_spectrogram(xx, yy, zz, yy_idx, fill_with=0):
     """Software cool the spectrogram. Shifts rows to match the maximum of the selected time frame.
