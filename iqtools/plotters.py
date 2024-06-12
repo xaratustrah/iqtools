@@ -96,7 +96,7 @@ def plot_spectrogram(xx, yy, zz, cen=0.0, cmap=cm.jet, dpi=300, dbm=False, filen
     yy = yy[:,spanmask] if np.shape(yy)[1] > 1 else yy
     
     # here comes the plot
-    sp = plt.pcolormesh(xx, yy, zz, cmap=cmap, norm=mynorm, shading='auto')
+    sp = plt.pcolormesh(xx, yy, zz, cmap=cmap,  shading='auto')
     
     # here is the color bar
     cb = plt.colorbar(sp, format=f'%.{decimal_place}e')

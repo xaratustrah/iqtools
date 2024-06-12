@@ -2,7 +2,9 @@
 Class for IQ Data
 GNU Radio simple binary format reader
 
-xaratustrah@github Aug-2018
+xaratustrah@github
+Aug-2018
+June 2024
 
 """
 
@@ -18,6 +20,7 @@ class GRData(IQBase):
         # Additional fields in this subclass
         self.date_time = date_time
         self.center = center
+        self.fs = fs
         # each complex64 sample is 8 bytes on disk
         self.nsamples_total = os.path.getsize(filename) / 8
 
@@ -31,3 +34,20 @@ class GRData(IQBase):
         """        
 
         self.read_samples(nframes * lframes, offset=sframes * lframes)
+
+    def read_samples(self, nsamples, offset=0):
+        """Read samples.
+
+        Args:
+            nsamples (int): Number of samples to read from file
+            offset (int, optional): _description_. Defaults to 0.
+
+        Raises:
+            ValueError: Raises if the requested number of samples is larger than available
+        """        
+        if nsamples > self.nsamples_total - offset:
+            raise ValueError(
+                'Requested number of samples is larger than the available {} samples.'.format(self.nsamples_total))
+
+        x = np.fromfile(self.filename, dtype=np.complex64)
+        self.data_array = x[offset:nsamples + offset]
