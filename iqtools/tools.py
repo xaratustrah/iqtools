@@ -12,6 +12,7 @@ import xml.etree.ElementTree as et
 import numpy as np
 import nibabel as nib
 from bs4 import BeautifulSoup
+from scipy.optimize import curve_fit
 
 
 import types
