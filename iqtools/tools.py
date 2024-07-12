@@ -387,6 +387,33 @@ def get_cooled_spectrogram(xx, yy, zz, yy_idx, fill_with=0):
     
     return xc, yc * delta_y, newarr    
 
+
+def get_gaussian_sigma_vs_time(xx, yy, zz):
+    """Fits a Gaussian along every slice of power zz for each row in yy (i.e. time frame)
+
+    Args:
+        xx (ndarray): Frequency meshgrid
+        yy (ndarray): Time meshgrid
+        zz (ndarray): Power meshgrid
+        
+    Returns:
+        flat arrays times and sigmas
+    """
+    def gaussian_func(x, amplitude, mean, sigma):
+        return amplitude * np.exp(-(x - mean)**2 / (2 * sigma**2))
+
+    def fit_gaussian(row):
+        x_data = np.arange(len(row))
+        popt, _ = curve_fit(gaussian_func, x_data, row, p0=[1, np.argmax(row), 1])
+        return popt[2]
+
+    sigmas = np.apply_along_axis(fit_gaussian, axis=1, arr=zz)
+    delta_f = (xx[0][1] - xx[0][0])
+    
+    # using yy[:,0] below we cover both cases of yy being sparse and non-sparse
+    return yy[:,0].flatten(), np.abs(sigmas * delta_f)
+
+
 # -----------------------------------------#
 # functions related to input and output
 
