@@ -145,7 +145,7 @@ class mainWindow(QMainWindow, Ui_MainWindow):
 
         if self.comboBox_method.currentText() == 'fft-2D':
             self.method = 'fft-2D'
-            self.iq_data.method = 'fft'
+            self.iq_data.method = 'fftw'
         elif self.comboBox_method.currentText() == 'welch-2D':
             self.method = 'welch-2D'
             self.iq_data.method = 'welch'
