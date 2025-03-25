@@ -13,14 +13,19 @@ from .iqbase import IQBase
 
 
 class BINData(IQBase):
-    def __init__(self, filename):
+    def __init__(self, filename, includes_header=False):
         super().__init__(filename)
+
+        self.includes_header = includes_header
 
         # Additional fields in this subclass
         self.date_time = time.ctime(os.path.getctime(self.filename))
         self.center = 0.0
         # each complex64 sample is 8 bytes on disk
-        self.nsamples_total = os.path.getsize(filename) / 8
+        if self.includes_header:
+            self.nsamples_total = os.path.getsize(filename) / 8 - 1
+        else:
+            self.nsamples_total = os.path.getsize(filename) / 8
 
     def read(self, nframes=10, lframes=1024, sframes=0):
         """Read a section of the file.
@@ -50,8 +55,11 @@ class BINData(IQBase):
                 'Requested number of samples is larger than the available {} samples.'.format(self.nsamples_total))
 
         x = np.fromfile(self.filename, dtype=np.complex64)
-        self.fs = float(np.real(x[0]))
-        self.center = float(np.imag(x[0]))
-        all_data = x[1:]
+        if self.includes_header:
+            self.fs = float(np.real(x[0]))
+            self.center = float(np.imag(x[0]))
+            all_data = x[1:]
+        else:
+            all_data = x[:]
 
         self.data_array = all_data[offset:nsamples + offset]
