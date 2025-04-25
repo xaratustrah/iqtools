@@ -15,12 +15,12 @@ There are many ways to install `iqtools` either fully or partly. One way to do a
 
 #### TL;DR (for Linux and Mac):
 
-Quick but full installation if you have `mamba` installed. Tested on Linux and Mac. First clone the repo, then go to the directory and run these commands.
+Quick but full installation if you have `mamba` installed. Tested on Linux and Mac. First clone the repo, then go to the directory and run these commands. Currently Python Version 3.10 works best:
 
 ```
 mamba create -n my_env
 mamba activate my_env
-mamba install -y root pyqt pyfftw
+mamba install -y python=3.10 root pyqt pyfftw
 pip install -r requirements.txt
 pip install .
 ```
