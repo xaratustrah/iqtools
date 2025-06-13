@@ -306,7 +306,7 @@ class IQBase(object):
         n_time_frames = np.shape(xx)[0]
         dp_p = np.zeros(n_time_frames)
         for i in range(n_time_frames):
-            fwhm, f_peak, _, _ = IQBase.get_fwhm(xx[i, :], zz[i, :], skip=20)
+            fwhm, f_peak, _, _, _ = IQBase.get_fwhm(xx[i, :], zz[i, :], skip=20)
             dp_p[i] = fwhm / (f_peak + self.center) / eta
 
         # Flatten array for 2D plot
